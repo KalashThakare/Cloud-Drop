@@ -1,0 +1,61 @@
+backend/node_modules/
+frontend/node_modules/
+
+# Node.js dependencies
+node_modules/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-specific files
+.DS_Store       # macOS
+Thumbs.db       # Windows
+desktop.ini     # Windows
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+dist/
+build/
+temp/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+
+# Coverage reports
+coverage/
+
+# Lint and formatting caches
+eslintcache/
+.prettiercache/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Miscellaneous
+*.log.*
+*.pid
+*.seed
+*.log.*
+*.gz
