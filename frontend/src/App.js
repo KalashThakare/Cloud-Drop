@@ -1,25 +1,15 @@
+import "./FileUpload.css";
 
-import './App.css';
-
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img  className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="file-upload-container">
+      <input type="file" id="fileInput" className="file-input" />
+      <label htmlFor="fileInput" className="file-label">
+        Choose File
+      </label>
+      <button className="upload-file-button">
+        Upload File
+      </button>
     </div>
   );
 }
-
-export default App;
