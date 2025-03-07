@@ -2,6 +2,14 @@ import express from "express";
 import { config } from "dotenv";
 import cors from "cors";
 import multer from "multer";
+import authRoutes from "./routes/authRoutes.js"
+import functionRoutes from "./routes/functionRoutes.js"
+import connectToDb from "./dataBase/db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+connectToDb();
 
 const upload = multer({dest:'uploads/'});
 config({path:'./config/.env'});
