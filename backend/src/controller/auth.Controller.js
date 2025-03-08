@@ -1,4 +1,3 @@
-
 import User from "../models/user.Model.js"
 import bcrypt from "bcrypt";
 
@@ -41,7 +40,7 @@ export const signup =async(req,res)=>{
 
         
     } catch (error) {
-        res.status(400).json({message:"error in signup controller"})
+        res.status(500).json({message:"error in signup controller"})
         console.log(error);
     }
 }
@@ -77,12 +76,21 @@ export const login =async(req,res)=>{
         })
         
     } catch (error) {
-        res.status(400).json({message:"Error in Login controller"});
+        res.status(500).json({message:"Error in Login controller"});
         console.log(error);
     }
 
 }
 
-export const logout =()=>{
+export const logout =(req,res)=>{
+
+    try {
+        res.clearCookie('token');
+        res.status(200).json({message:"Logged out successfully"});
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message:"Logout controller error"});
+        
+    }
 
 }
