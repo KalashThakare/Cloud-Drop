@@ -46,7 +46,40 @@ export const signup =async(req,res)=>{
     }
 }
 
-export const login =()=>{
+export const login =async(req,res)=>{
+
+    const {email,password} = req.body;
+
+    try {
+
+        if(!email || !password){
+            return res.status(400).json({message:"Fields should not be empty"});
+        }
+
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(400).json({message:"No user found"});
+        }
+
+        const comparePass = await bcrypt.compare(password,user.password)
+
+        if(!comparePass){
+            return res.status(400).json({message:"Invalid credentials"});
+        }
+
+        const token = await user.generateAuthToken();
+
+        res.status(200).json({
+            email:user.email,
+            id:user._id,
+            token
+        })
+        
+    } catch (error) {
+        res.status(400).json({message:"Error in Login controller"});
+        console.log(error);
+    }
 
 }
 
