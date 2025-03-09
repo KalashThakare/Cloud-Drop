@@ -1,3 +1,7 @@
-export const upload=(req,res)=>{
-    
+export const upload=async (req,res)=>{
+    try {
+        
+    } catch (error) {
+        
+    }
 }
