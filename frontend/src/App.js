@@ -1,35 +1,25 @@
-import "./FileUpload.css";
+
 import { axiosInstance } from "./lib/axios.js";
 import React, {useState} from "react";
 
-export default function App() {
+export default function App() {  
+  const [file, setFile] = useState()
+  const [caption, setCaption] = useState("")
 
-  const [file,setFile] = useState();
+  const submit = async event => {
+    event.preventDefault()
 
-  const handleSubmit=async(e)=>{
-    e.preventDefault();
-    const data = new FormData();
-    data.append("image",file)
-
-    const response = await axiosInstance.post("/func/upload",data,{headers:{"Content-Type":'multipart/form-data'}});
-
-    if(response.status===200){
-      console.log("Success")
-    }
-    
+    const formData = new FormData();
+    formData.append("image", file)
+    formData.append("caption", caption)
+    await axiosInstance.post("/func/upload", formData, { headers: {'Content-Type': 'multipart/form-data'}})
   }
 
-
-
   return (
-    <div className="file-upload-container">
-      <input type="file" id="fileInput" className="file-input" onChange={(e)=>setFile(e.target.files[0])} accept="image/*"/>
-      <label htmlFor="fileInput" className="file-label">
-        Choose File
-      </label>
-      <button  className="upload-file-button" onSubmit={handleSubmit}>
-        Upload File
-      </button>
-    </div>
-  );
+     <form onSubmit={submit}>
+       <input onChange={e => setFile(e.target.files[0])} type="file" accept="image/*"></input>
+       <input value={caption} onChange={e => setCaption(e.target.value)} type="text" placeholder='Caption'></input>
+       <button type="submit">Submit</button>
+     </form>
+  )
 }

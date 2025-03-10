@@ -1,7 +1,5 @@
 import express from "express";
-import { config } from "dotenv";
 import cors from "cors";
-import multer from "multer";
 import authRoutes from "./routes/authRoutes.js"
 import functionRoutes from "./routes/functionRoutes.js"
 import connectToDb from "./dataBase/db.js";
@@ -11,9 +9,6 @@ dotenv.config();
 
 connectToDb();
 
-const upload = multer({dest:'uploads/'});
-config({path:'./config/.env'});
-
 const app =express();
 
 app.use(cors({
@@ -22,7 +17,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use(cookieParser());
 
 app.use("/auth",authRoutes);
 app.use("/func",functionRoutes);
