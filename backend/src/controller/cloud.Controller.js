@@ -14,7 +14,7 @@ export const Upload=async (req,res)=>{
 
         const params = {
             Bucket:process.env.BUCKET_NAME,
-            key:req.file.originalname,
+            Key:req.file.originalname,
             Body:body,
             ContentType:req.file.mimetype
         }
