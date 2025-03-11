@@ -1,8 +1,6 @@
 import s3 from "../lib/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import dotenv from "dotenv";
 
-dotenv.config();
 
 export const Upload=async (req,res)=>{
     try {
@@ -10,6 +8,12 @@ export const Upload=async (req,res)=>{
         console.log("req-body",req.body);
         console.log("req-file",req.file);
 
+        const file = req.file
+
+        if(!file){
+            return res.send(400).json({message:"No file found"});
+        }
+        
         const body=req.file.buffer;
 
         const params = {
