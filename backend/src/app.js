@@ -18,8 +18,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
-app.use("/auth",authRoutes);
-app.use("/func",functionRoutes);
+app.use("/api/auth",authRoutes);
+app.use("/api/func",functionRoutes);
 
 
 export default app;
