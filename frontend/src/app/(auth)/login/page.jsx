@@ -1,13 +1,16 @@
 'use client'
 import React, { useState } from "react";
+import { useAuthStore } from "@/store/useAuthStore.js";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const login = useAuthStore((state)=>state.login);
+
+  const handleSubmit =async (e) => {
     e.preventDefault();
-    console.log("Logging in with:", { email, password });
+    await login({email,password});
   };
 
   return (
