@@ -1,14 +1,22 @@
 'use client'
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Signup() {
-  const [name, setName] = useState("");
+
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const signup = useAuthStore((state)=>state.signup);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Signing up with:", { name, email, password });
+    console.log("Signing up with:", { email, password });
+    signup({email,password});
+    router.replace('/');
   };
 
   return (
@@ -20,19 +28,6 @@ export default function Signup() {
         <h2 className="text-3xl font-bold text-center mb-6 text-blue-100 tracking-wide">
           Create an Account
         </h2>
-
-        {/* Name Input */}
-        <div className="mb-4">
-          <label className="block text-gray-400 mb-1">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all"
-            required
-          />
-        </div>
 
         {/* Email Input */}
         <div className="mb-4">

@@ -26,5 +26,25 @@ export const useAuthStore = create((set,get)=>({
             toast.error("Invalid credentials")
             console.log(error.message)
         }
+    },
+
+    logout:async()=>{
+        try {
+            await axiosInstance.post("/auth/logout");
+            set({authUser:null});
+            toast.success('logged out successfully');
+        } catch (error) {
+            toast.error('Error');
+        }
+    },
+
+    signup:async(data)=>{
+        try {
+            const res = await axiosInstance.post("/auth/signup",data);
+            set({authUser:res.data});
+            toast.success('Signed In');
+        } catch (error) {
+            toast.error('Error');
+        }
     }
 }))
