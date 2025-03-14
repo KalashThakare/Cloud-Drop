@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js"
 import functionRoutes from "./routes/functionRoutes.js"
+import awsRoutes from "./routes/awsRoutes.js"
 import connectToDb from "./dataBase/db.js";
 import dotenv from "dotenv";
 
@@ -20,6 +21,7 @@ app.use(express.urlencoded({extended:true}));
 
 app.use("/api/auth",authRoutes);
 app.use("/api/func",functionRoutes);
+app.use("/api/aws",awsRoutes);
 
 
 export default app;
