@@ -1,16 +1,23 @@
 'use client'
 import React, { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore.js";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const login = useAuthStore((state)=>state.login);
 
-  const handleSubmit =async (e) => {
+  const handleSubmit =(e) => {
     e.preventDefault();
-    await login({email,password});
+    console.log({email,password})
+    login({email,password});
+    router.replace("/");
+    
   };
 
   return (

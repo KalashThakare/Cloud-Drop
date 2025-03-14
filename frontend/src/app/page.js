@@ -1,13 +1,26 @@
 'use client'
 import { axiosInstance } from "@/lib/axios.js";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function App() {
+
+  const router = useRouter();
+
+  const authUser = useAuthStore((state)=>state.authUser);
+
+  useEffect(()=>{
+    if(authUser==null){
+      router.replace("/login");
+    }
+  },[authUser,router]);
+
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
 
-  const submit = async (event) => {
-    event.preventDefault();
+  const submit = async (e) => {
+    e.preventDefault();
 
     const formData = new FormData();
     formData.append("image", file);
