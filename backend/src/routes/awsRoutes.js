@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { awsConfig } from "../controller/aws.Controller";
+import { awsConfig } from "../controller/aws.Controller.js";
 
 const router = Router();
 

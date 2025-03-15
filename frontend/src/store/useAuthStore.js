@@ -2,8 +2,9 @@ import { axiosInstance } from "@/lib/axios.js";
 import { create } from "zustand";
 import {toast} from "sonner";
 
-export const useAuthStore = create((set,get)=>({
+export const useAuthStore = create((set)=>({
     authUser:null,
+    isloggingin:false,
 
     checkAuth:async()=>{
         try {
@@ -16,21 +17,23 @@ export const useAuthStore = create((set,get)=>({
     },
 
     login:async(data)=>{
+        set({isloggingin:true})
         try {
             const res=await axiosInstance.post("/auth/login",data)
             set({authUser:res.data});
             toast.success('logged in successfully');
-            console.log("success")
         } catch (error) {
             set({authUser:null});
             toast.error("Invalid credentials")
             console.log(error.message)
+        }finally{
+            set({isloggingin:false})
         }
     },
 
     logout:async()=>{
         try {
-            await axiosInstance.post("/auth/logout");
+            const res=await axiosInstance.post("/auth/logout");
             set({authUser:null});
             toast.success('logged out successfully');
         } catch (error) {

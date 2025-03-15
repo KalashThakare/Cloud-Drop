@@ -17,7 +17,6 @@ export default function Login() {
     console.log({email,password})
     login({email,password});
     router.replace("/");
-    
   };
 
   return (
