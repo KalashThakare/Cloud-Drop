@@ -22,10 +22,12 @@ export const useAuthStore = create((set)=>({
             const res=await axiosInstance.post("/auth/login",data)
             set({authUser:res.data});
             toast.success('logged in successfully');
+            return res.data;
         } catch (error) {
             set({authUser:null});
             toast.error("Invalid credentials")
             console.log(error.message)
+            return null;
         }finally{
             set({isloggingin:false})
         }

@@ -12,10 +12,10 @@ export default function Login() {
 
   const login = useAuthStore((state)=>state.login);
 
-  const handleSubmit =(e) => {
+  const handleSubmit =async(e) => {
     e.preventDefault();
     console.log({email,password})
-    login({email,password});
+    const authUser = await login({email,password});
     router.replace("/");
   };
 
