@@ -3,88 +3,114 @@ import { axiosInstance } from "@/lib/axios.js";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { LogOut,FilePlus2 } from "lucide-react";
+import { LogOut, FilePlus2, Trash2 } from "lucide-react";
 
 export default function App() {
-
   const router = useRouter();
-
-  const authUser = useAuthStore((state)=>state.authUser);
+  const authUser = useAuthStore((state) => state.authUser);
   const logout = useAuthStore((state) => state.logout);
-
-  useEffect(()=>{
-    console.log(authUser)
-    if(authUser==null){
-      router.replace("/login");
-    }
-  },[authUser,router]);
 
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
+  const [buckets, setBuckets] = useState([]);
+
+  useEffect(() => {
+    if (authUser == null) {
+      router.replace("/login");
+    }
+    fetchBuckets();
+  }, [authUser, router]);
+
+  const fetchBuckets = async () => {
+
+  };
+
+  const deleteBucket = async (bucketName) => {
+  
+  };
 
   const submit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("image", file);
     formData.append("caption", caption);
-    
     await axiosInstance.post("/func/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen flex flex-col items-center">
+      {/* Logout Button */}
       <button 
-        onClick={() => {
-          logout();
-          router.replace("/login");
-        }}
-        className="absolute top right-5 flex items-center gap-2 p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
+        onClick={() => { logout(); router.replace("/login"); }}
+        className="absolute top-5 right-5 flex items-center gap-2 p-2 text-white rounded-lg transition-all hover:bg-red-600"
       >
-        <LogOut size={20} />
-        Logout
+        <LogOut size={20} /> Logout
       </button>
 
+      {/* Add Bucket Button */}
       <button 
-        onClick={() => {
-          router.push("/add_bucket");
-        }}
-        className="absolute top left-5 flex items-center gap-2 p-2 bg-green-500 text-white rounded-lg transition-all hover:bg-green-800"
+        onClick={() => { router.push("/add_bucket"); }}
+        className="absolute top-5 left-5 flex items-center gap-2 p-2 text-white rounded-lg transition-all hover:bg-green-500"
       >
-        <FilePlus2 size={20} />
-        Add Bucket
+        <FilePlus2 size={20} /> Add Bucket
       </button>
+
       
-      <form 
-        onSubmit={submit} 
-        className="max-w-md mx-auto mt-12 p-6 rounded-xl bg-black shadow-lg flex flex-col gap-4 text-center border border-gray-700"
-      >
-        <h1 className="text-2xl font-bold mb-2 text-cyan-300">Cloud-drop</h1>
-  
-        <input
-          onChange={(e) => setFile(e.target.files[0])}
-          type="file"
-          accept="image/*"
-          className="p-5 border-2 border-dashed border-gray-600 rounded-xl bg-gray-900 cursor-pointer text-white transition-all hover:border-blue-400 hover:bg-gray-800"
-        />
-  
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          type="text"
-          placeholder="Caption"
-          className="p-3 border border-gray-600 rounded-lg text-lg text-white bg-gray-900 focus:border-blue-400 focus:outline-none transition-all"
-        />
-  
-        <button 
-          type="submit" 
-          className="p-3 bg-blue-600 text-white rounded-lg text-lg cursor-pointer transition-all hover:bg-blue-500 active:translate-y-0"
+
+      <div className="flex gap-8 mt-12">
+
+      <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
+          <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">Your Buckets</h1>
+          <ul>
+            {buckets.length > 0 ? (
+              buckets.map((bucket) => (
+                <li key={bucket.bucketName} className="flex justify-between items-center p-3 border-b border-gray-600">
+                  <div>
+                    <p className="font-semibold">{bucket.bucketName}</p>
+                    <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                  </div>
+                  <button
+                    onClick={() => deleteBucket(bucket.bucketName)}
+                    className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </li>
+              ))
+            ) : (
+              <p className="text-center text-gray-400">No buckets found</p>
+            )}
+          </ul>
+        </div>
+        {/* Upload Form */}
+        <form 
+          onSubmit={submit} 
+          className="w-96 p-6 rounded-xl bg-black shadow-lg flex flex-col gap-4 text-center border border-gray-700"
         >
-          Upload
-        </button>
-      </form>
+          <h1 className="text-2xl font-bold mb-2 text-cyan-300">Cloud-drop</h1>
+          <input
+            onChange={(e) => setFile(e.target.files[0])}
+            type="file"
+            accept="image/*"
+            className="p-5 border-2 border-dashed border-gray-600 rounded-xl bg-gray-900 cursor-pointer text-white transition-all hover:border-blue-400 hover:bg-gray-800"
+          />
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            type="text"
+            placeholder="Caption"
+            className="p-3 border border-gray-600 rounded-lg text-lg text-white bg-gray-900 focus:border-blue-400 focus:outline-none transition-all"
+          />
+          <button 
+            type="submit" 
+            className="p-3 bg-blue-600 text-white rounded-lg text-lg cursor-pointer transition-all hover:bg-blue-500 active:translate-y-0"
+          >
+            Upload
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
