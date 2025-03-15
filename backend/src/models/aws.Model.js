@@ -1,24 +1,24 @@
 import mongoose from "mongoose";
 
 const configModel = new mongoose.Schema({
-    bucket_name:{
+    bucketName:{
         type:String,
         required:true
     },
-    bucket_region:{
+    bucketRegion:{
         type:String,
         required:true
     },
-    bucket_key:{
+    bucketKey:{
         type:String,
         required:true
     },
-    bucket_secret:{
+    bucketSecret:{
         type:String,
         required:true
     }
 })
 
-const config = new mongoose.model('config',configModel);
+const Bucket = new mongoose.model('config',configModel);
 
-export default config;
+export default Bucket;
