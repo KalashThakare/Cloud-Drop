@@ -3,7 +3,7 @@ import { axiosInstance } from "@/lib/axios.js";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { LogOut } from "lucide-react";
+import { LogOut,FilePlus2 } from "lucide-react";
 
 export default function App() {
 
@@ -45,6 +45,16 @@ export default function App() {
       >
         <LogOut size={20} />
         Logout
+      </button>
+
+      <button 
+        onClick={() => {
+          router.push("/add_bucket");
+        }}
+        className="absolute top left-5 flex items-center gap-2 p-2 bg-green-500 text-white rounded-lg transition-all hover:bg-green-800"
+      >
+        <FilePlus2 size={20} />
+        Add Bucket
       </button>
       
       <form 
