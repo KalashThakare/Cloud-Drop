@@ -34,8 +34,6 @@ export const awsConfig= async(req,res)=>{
             bucketSecret:encryptedAccesssKey,
         })
 
-        
-
         await user.save();
 
         const addedBucket = user.buckets[user.buckets.length - 1];
@@ -64,7 +62,13 @@ export const connectToBucket =async(req,res)=>{
             return res.status(400).json({message:"Please enter bucket name"});
         }
 
-        const bucket = await Buckets.findOne({bucketName});
+        const user = await User.findById(req.user._id);
+
+        if(!user){
+            return res.status(400).json({message:"Unauthorised"});
+        }
+
+        const bucket = await user.buckets.find(bucket=>bucket.bucketName==bucketName);
 
         if(bucket){
             const Key = decrypt(bucket.bucketKey,secret);

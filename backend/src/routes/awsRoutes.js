@@ -5,6 +5,6 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 const router = Router();
 
 router.post("/config",protectRoute,awsConfig);
-router.post('/connect',connectToBucket);
+router.post('/connect',protectRoute,connectToBucket);
 
 export default router;
