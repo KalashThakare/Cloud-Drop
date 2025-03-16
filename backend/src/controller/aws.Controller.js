@@ -1,6 +1,6 @@
-import Buckets from "../models/aws.Model.js";
+import User from "../models/user.Model.js";
 import { encrypt,decrypt } from "../lib/AES.js";
-import { createS3Client, s3 } from "../lib/s3.js";
+import { createS3Client } from "../lib/s3.js";
 
 export const awsConfig= async(req,res)=>{
     const {bucketName,bucketRegion,bucketKey,bucketSecret} = req.body; 
@@ -10,7 +10,13 @@ export const awsConfig= async(req,res)=>{
             return res.status(400).json({message:"All fields are necessary"});
         }
 
-        const existingBucket = await Buckets.findOne({bucketName});
+        const user = await User.findById(req.user._id);
+
+        if(!user){
+            return res.status(400).json({message:"User not found"});
+        }
+
+        const existingBucket = await user.buckets.find(bucket=>bucket.bucketName==bucketName);
 
         if(existingBucket){
             return res.status(400).json({message:"Bucket alredy exist"});
@@ -21,24 +27,23 @@ export const awsConfig= async(req,res)=>{
         const encryptedAccesssKey = encrypt(bucketSecret,secret);
         
 
-        const newBucket = new Buckets({
+        const newBucket = user.buckets.push({
             bucketName,
             bucketRegion,
             bucketKey:encryptedKey,
             bucketSecret:encryptedAccesssKey,
         })
 
-        if(newBucket){
+        
 
-            await newBucket.save();
+        await user.save();
 
-            res.status(200).json({
-                bucketName:newBucket.bucketName,
-                bucketRegion:newBucket.bucketRegion,
-            });
-        }else{
-            return res.status(400).json({message:"Error in awsConfig controller"});
-        }
+        const addedBucket = user.buckets[user.buckets.length - 1];
+
+        res.status(200).json({
+            bucketName: addedBucket.bucketName,
+            bucketRegion: addedBucket.bucketRegion,
+        });
 
         
     } catch (error) {

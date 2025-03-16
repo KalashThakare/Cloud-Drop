@@ -69,6 +69,14 @@ export const login =async(req,res)=>{
 
         const token = await user.generateAuthToken();
 
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", 
+            sameSite: "strict", 
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+        
+
         res.status(200).json({
             email:user.email,
             id:user._id,

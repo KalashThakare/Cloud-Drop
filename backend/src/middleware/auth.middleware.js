@@ -1,10 +1,12 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.Model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const protectRoute =async (req,res,next)=>{
     try {
 
-        const token = req.cookie.jwt;
+        const token = req.cookies.jwt;
 
         if(!token){
             return res.status(401).json({messagge:"Unauthorised -No token provided"})
@@ -16,7 +18,7 @@ export const protectRoute =async (req,res,next)=>{
             return res.status(401).json({messagge:"Unauthorised"});
         }
 
-        const user = await User.findById(decoded.userId).select("-password");
+        const user = await User.findById(decoded._id).select("-password");
 
         if(!user){
             return res.status(401).json({message:"user not found"});
@@ -27,6 +29,7 @@ export const protectRoute =async (req,res,next)=>{
         next();
         
     } catch (error) {
-        
+        console.log(error.message);
+        res.status(500).json({message:"Error in auth Middleware"})
     }
 }

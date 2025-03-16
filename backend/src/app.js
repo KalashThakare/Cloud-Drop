@@ -5,6 +5,7 @@ import functionRoutes from "./routes/functionRoutes.js"
 import awsRoutes from "./routes/awsRoutes.js"
 import connectToDb from "./dataBase/db.js";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser"
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(cookieParser());
 
 app.use("/api/auth",authRoutes);
 app.use("/api/func",functionRoutes);
