@@ -1,4 +1,3 @@
-import s3 from "../lib/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 

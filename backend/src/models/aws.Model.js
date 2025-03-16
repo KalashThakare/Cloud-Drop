@@ -19,6 +19,6 @@ const configModel = new mongoose.Schema({
     }
 })
 
-const Bucket = new mongoose.model('config',configModel);
+const Buckets = new mongoose.model('config',configModel);
 
-export default Bucket;
+export default Buckets;
