@@ -1,6 +1,6 @@
 import Buckets from "../models/aws.Model.js";
-import { S3Client } from "@aws-sdk/client-s3";
 import { encrypt,decrypt } from "../lib/AES.js";
+import { createS3Client, s3 } from "../lib/s3.js";
 
 export const awsConfig= async(req,res)=>{
     const {bucketName,bucketRegion,bucketKey,bucketSecret} = req.body; 
@@ -64,16 +64,13 @@ export const connectToBucket =async(req,res)=>{
         if(bucket){
             const Key = decrypt(bucket.bucketKey,secret);
             const accessKey = decrypt(bucket.bucketSecret,secret);
+            const bucket_Region = bucket.bucketRegion;
 
-            const s3 = new S3Client({
-                region:bucket.bucketRegion,
-                credentials:{
-                    accessKeyId:Key,
-                    secretAccessKey:accessKey
-                }
-            })
+            req.s3 = createS3Client({Key,accessKey,bucket_Region});
 
-            return res.status(200).json({message:"Bucket connected"});
+            return res.status(200).json({message:"Bucket connected",bucketName});
+        }else{
+            return res.status(400).json({message:"Error connecting bucket"});
         }
 
     } catch (error) {

@@ -12,6 +12,10 @@ export const Upload=async (req,res)=>{
         if(!file){
             return res.send(400).json({message:"No file found"});
         }
+
+        if (!req.s3) {
+            return res.status(500).json({ message: "S3 Client not initialized" });
+        }
         
         const body=req.file.buffer;
 
@@ -24,7 +28,7 @@ export const Upload=async (req,res)=>{
 
         const command = new PutObjectCommand(params);
 
-        await s3.send(command);
+        await req.s3.send(command);
 
         res.status(200).json({message:"File uploaded successfully"});
         console.log("Success");
