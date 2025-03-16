@@ -87,3 +87,26 @@ export const connectToBucket =async(req,res)=>{
         res.status(500).json("Error in Connect To Bucket",error.message);
     }
 }
+
+export const fetchBucket=async(req,res)=>{
+    try {
+
+        const user = await User.findById(req.user._id);
+
+        if(!user){
+            return res.status(400).json({message:"user not found"});
+        }
+
+        const buckets = user.buckets;
+
+        if (!buckets || buckets.length === 0) {
+            return res.status(200).json({ message: "No buckets found. Please add a bucket." });
+        }
+
+        return res.status(200).json({message:"success",buckets});
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message:"Error in fetching buckets"});
+    }
+}
