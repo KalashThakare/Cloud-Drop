@@ -21,7 +21,7 @@ export const awsConfig= async(req,res)=>{
         const encryptedAccesssKey = encrypt(bucketSecret,secret);
         
 
-        const newBucket = new Bucket({
+        const newBucket = new Buckets({
             bucketName,
             bucketRegion,
             bucketKey:encryptedKey,
