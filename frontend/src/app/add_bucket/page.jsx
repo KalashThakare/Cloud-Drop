@@ -7,17 +7,17 @@ import { bucketFunc } from "@/store/bucketFunc.js";
 export default function AddBucket() {
   const router = useRouter();
   const [bucket, setBucket] = useState({
-    name: "",
-    region: "",
-    key: "",
-    secret: "",
+    bucketName: "",
+    bucketRegion: "",
+    bucketKey: "",
+    bucketSecret: "",
   });
 
   const handleChange = (e) => {
     setBucket({ ...bucket, [e.target.name]: e.target.value });
   };
 
-  const {addBucket} = bucketFunc();
+  const { addBucket } = bucketFunc();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,9 +42,9 @@ export default function AddBucket() {
           <div className="relative">
             <input
               type="text"
-              name="name"
+              name="bucketName"
               placeholder="Enter bucket name"
-              value={bucket.name}
+              value={bucket.bucketName}
               onChange={handleChange}
               className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
               required
@@ -59,9 +59,9 @@ export default function AddBucket() {
           <div className="relative">
             <input
               type="text"
-              name="region"
+              name="bucketRegion"
               placeholder="Enter bucket region"
-              value={bucket.region}
+              value={bucket.bucketRegion}
               onChange={handleChange}
               className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
               required
@@ -76,9 +76,9 @@ export default function AddBucket() {
           <div className="relative">
             <input
               type="text"
-              name="key"
+              name="bucketKey"
               placeholder="Enter bucket key"
-              value={bucket.key}
+              value={bucket.bucketKey}
               onChange={handleChange}
               className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
               required
@@ -93,9 +93,9 @@ export default function AddBucket() {
           <div className="relative">
             <input
               type="password"
-              name="secret"
+              name="bucketSecret"
               placeholder="Enter bucket secret"
-              value={bucket.secret}
+              value={bucket.bucketSecret}
               onChange={handleChange}
               className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
               required
