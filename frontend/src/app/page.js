@@ -3,12 +3,15 @@ import { axiosInstance } from "@/lib/axios.js";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { LogOut, FilePlus2, Trash2 } from "lucide-react";
+import { LogOut, FilePlus2, Trash2 ,Plug} from "lucide-react";
+import { bucketFunc } from "@/store/bucketFunc.js";
 
 export default function App() {
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
   const logout = useAuthStore((state) => state.logout);
+  const fetchBuckets = bucketFunc((state)=>state.fetchedBuckets);
+  const fetchBucket = bucketFunc((state) => state.fetchBucket);
 
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
@@ -18,12 +21,10 @@ export default function App() {
     if (authUser == null) {
       router.replace("/login");
     }
-    fetchBuckets();
-  }, [authUser, router]);
+    fetchBucket();
+  }, [authUser, router,fetchBucket]);
 
-  const fetchBuckets = async () => {
-
-  };
+  
 
   const deleteBucket = async (bucketName) => {
   
@@ -64,15 +65,21 @@ export default function App() {
       <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
           <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">Your Buckets</h1>
           <ul>
-            {buckets.length > 0 ? (
-              buckets.map((bucket) => (
-                <li key={bucket.bucketName} className="flex justify-between items-center p-3 border-b border-gray-600">
+            {fetchBuckets.length > 0 ? (
+              fetchBuckets.map((buckets) => (
+                <li key={buckets.bucketName} className="flex justify-between items-center p-3 border-b border-gray-600">
                   <div>
-                    <p className="font-semibold">{bucket.bucketName}</p>
-                    <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                    <p className="font-semibold">{buckets.bucketName}</p>
+                    <p className="text-sm text-gray-400">{buckets.bucketRegion}</p>
                   </div>
                   <button
-                    onClick={() => deleteBucket(bucket.bucketName)}
+                      onClick={() => connectToBucket(bucket.bucketName)}
+                      className="p-2 bg-green-600 text-white rounded-lg transition-all hover:bg-green-500"
+                    >
+                      <Plug size={16} />
+                    </button>
+                  <button
+                    onClick={() => deleteBucket(buckets.bucketName)}
                     className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
                   >
                     <Trash2 size={16} />

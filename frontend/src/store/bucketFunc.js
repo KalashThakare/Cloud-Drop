@@ -5,7 +5,7 @@ import { create } from "zustand";
 export const bucketFunc = create((set,get)=>({
 
     bucket:null,
-
+    fetchedBuckets:[],
 
     addBucket:async(data)=>{
         try {
@@ -16,6 +16,17 @@ export const bucketFunc = create((set,get)=>({
             console.log(error);
             toast.error('Server error try again');
             set({bucket:null});
+        }
+    },
+
+    fetchBucket:async()=>{
+        try {
+            const res=await axiosInstance.get("/aws/buckets");
+            console.log(res.data);
+            set({fetchedBuckets:res.data.buckets})
+        } catch (error) {
+            console.log(error.message);
+            set({fetchedBuckets:[]});
         }
     }
 }))
