@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LogOut, FilePlus2, Trash2 ,Plug} from "lucide-react";
 import { bucketFunc } from "@/store/bucketFunc.js";
+import { toast } from "sonner";
 
 export default function App() {
   const router = useRouter();
@@ -12,10 +13,11 @@ export default function App() {
   const logout = useAuthStore((state) => state.logout);
   const fetchBuckets = bucketFunc((state)=>state.fetchedBuckets);
   const fetchBucket = bucketFunc((state) => state.fetchBucket);
+  const connectBucket = bucketFunc((state)=>state.connectBucket);
+  const selectedBucket = bucketFunc((state)=>state.selectedBucket);
 
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
-  const [buckets, setBuckets] = useState([]);
 
   useEffect(() => {
     if (authUser == null) {
@@ -23,6 +25,15 @@ export default function App() {
     }
     fetchBucket();
   }, [authUser, router,fetchBucket]);
+
+  const connectToBucket=async(bucketName)=>{
+    try {
+      await connectBucket({bucketName});
+      console.log(bucketName);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   
 
@@ -32,12 +43,23 @@ export default function App() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if(!selectedBucket){
+      toast.error('Please select bucket first');
+    }
     const formData = new FormData();
+    console.log(selectedBucket.bucketName);
+    formData.append("bucketName",selectedBucket.bucketName);
     formData.append("image", file);
+    console.log(file)
     formData.append("caption", caption);
-    await axiosInstance.post("/func/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    try {
+      await axiosInstance.post("/func/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("file uploaded successfully");
+    } catch (error) {
+      toast.error('Upload failed');
+    }
   };
 
   return (
@@ -73,7 +95,7 @@ export default function App() {
                     <p className="text-sm text-gray-400">{buckets.bucketRegion}</p>
                   </div>
                   <button
-                      onClick={() => connectToBucket(bucket.bucketName)}
+                      onClick={() => connectToBucket(buckets.bucketName)}
                       className="p-2 bg-green-600 text-white rounded-lg transition-all hover:bg-green-500"
                     >
                       <Plug size={16} />

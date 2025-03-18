@@ -75,7 +75,10 @@ export const connectToBucket =async(req,res)=>{
             const accessKey = decrypt(bucket.bucketSecret,secret);
             const bucket_Region = bucket.bucketRegion;
 
-            req.s3 = createS3Client({Key,accessKey,bucket_Region});
+            const s3Client = createS3Client({ Key, accessKey, bucket_Region });
+
+            req.app.locals.s3Clients = req.app.locals.s3Clients || {};
+            req.app.locals.s3Clients[bucketName] = s3Client;
 
             return res.status(200).json({message:"Bucket connected",bucketName});
         }else{

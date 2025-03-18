@@ -6,6 +6,7 @@ export const bucketFunc = create((set,get)=>({
 
     bucket:null,
     fetchedBuckets:[],
+    selectedBucket:null,
 
     addBucket:async(data)=>{
         try {
@@ -27,6 +28,19 @@ export const bucketFunc = create((set,get)=>({
         } catch (error) {
             console.log(error.message);
             set({fetchedBuckets:[]});
+        }
+    },
+
+    connectBucket:async(data)=>{
+        try {
+            const res = await axiosInstance.post("/aws/connect",data);
+            set({bucket:res.data});
+            set({selectedBucket:res.data});
+            toast.success('Bucket connected');
+        } catch (error) {
+            set({bucket:null});
+            set({selectedBucket:null});
+            toast.error('Connection failed');
         }
     }
 }))

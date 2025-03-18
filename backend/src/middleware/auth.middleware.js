@@ -33,3 +33,18 @@ export const protectRoute =async (req,res,next)=>{
         res.status(500).json({message:"Error in auth Middleware"})
     }
 }
+
+export const attachS3Client = (req, res, next) => {
+    const { bucketName } = req.body;
+
+    if (!bucketName) {
+        return res.status(400).json({ message: "Please connect to a bucket first." });
+    }
+
+    if (!req.app.locals.s3Clients || !req.app.locals.s3Clients[bucketName]) {
+        return res.status(400).json({ message: "Bucket not connected." });
+    }
+
+    req.s3 = req.app.locals.s3Clients[bucketName];
+    next();
+};
