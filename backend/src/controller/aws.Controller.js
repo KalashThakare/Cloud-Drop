@@ -113,3 +113,31 @@ export const fetchBucket=async(req,res)=>{
         res.status(500).json({message:"Error in fetching buckets"});
     }
 }
+
+export const deleteBucket = async(req,res)=>{
+    try {
+        const {bucketName} = req.body;
+
+        if(!bucketName){
+            res.status(400).json({message:"Please select bucket"});
+        }
+
+        const user = await User.findById(req.user._id)
+
+        const bucket = await user.buckets.find(bucket=>bucket.bucketName==bucketName);
+
+        if(!bucket){
+            res.status(400).json({message:"BUcket not founnd"});
+        }
+
+        user.buckets = user.buckets.filter(bucket => bucket.bucketName !== bucketName);
+
+        await user.save();
+
+        return res.status(200).json({message:"Buclet deleted successfully"});
+
+    } catch (error) {
+        console.log("Error deleting bucket",error);
+        res.status(500).json({message:"error in deleteBucket controller"});
+    }
+}

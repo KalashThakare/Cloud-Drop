@@ -15,6 +15,7 @@ export default function App() {
   const fetchBucket = bucketFunc((state) => state.fetchBucket);
   const connectBucket = bucketFunc((state)=>state.connectBucket);
   const selectedBucket = bucketFunc((state)=>state.selectedBucket);
+  const deleteBucket = bucketFunc((state)=>state.deleteBucket);
 
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
@@ -37,8 +38,10 @@ export default function App() {
 
   
 
-  const deleteBucket = async (bucketName) => {
-  
+  const deleteBucketId = async (bucketName) => {
+    await deleteBucket({bucketName});
+    fetchBucket();
+    console.log(bucketName);
   };
 
   const submit = async (e) => {
@@ -116,7 +119,7 @@ export default function App() {
                     <Plug size={16} />
                   </button>
                   <button
-                    onClick={() => deleteBucket(bucket.bucketName)}
+                    onClick={() => deleteBucketId(bucket.bucketName)}
                     className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
                   >
                     <Trash2 size={16} />

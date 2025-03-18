@@ -42,5 +42,18 @@ export const bucketFunc = create((set,get)=>({
             set({selectedBucket:null});
             toast.error('Connection failed');
         }
+    },
+
+    deleteBucket:async(data)=>{
+        try {
+            const res = await axiosInstance.post("/aws/delete",data);
+            set({bucket:res.data});
+            toast.success("Bucket deleted");
+        } catch (error) {
+            console.log("bucket delete error",error);
+            toast.error("Error deleting bucket");
+            set({bucket:null});
+
+        }
     }
 }))
