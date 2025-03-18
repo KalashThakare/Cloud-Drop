@@ -86,32 +86,50 @@ export default function App() {
 
       <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
           <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">Your Buckets</h1>
+          {selectedBucket && (
+            <div className="p-3 mb-4 text-center text-white bg-green-700 rounded-lg">
+              Connected to: <strong>{selectedBucket.bucketName}</strong>
+            </div>
+          )}
+
           <ul>
-            {fetchBuckets.length > 0 ? (
-              fetchBuckets.map((buckets) => (
-                <li key={buckets.bucketName} className="flex justify-between items-center p-3 border-b border-gray-600">
-                  <div>
-                    <p className="font-semibold">{buckets.bucketName}</p>
-                    <p className="text-sm text-gray-400">{buckets.bucketRegion}</p>
-                  </div>
+          {fetchBuckets.length > 0 ? (
+            fetchBuckets.map((bucket) => (
+              <li
+                key={bucket.bucketName}
+                className={`flex justify-between items-center p-3 border-b border-gray-600 
+                  ${selectedBucket?.bucketName === bucket.bucketName ? "bg-green-900 text-cyan-300" : ""}`}
+              >
+                <div className="flex-1 min-w-[150px]">
+                  <p className="font-semibold truncate">{bucket.bucketName}</p>
+                  <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                </div>
+
+                <div className="flex gap-5">
+
                   <button
-                      onClick={() => connectToBucket(buckets.bucketName)}
-                      className="p-2 bg-green-600 text-white rounded-lg transition-all hover:bg-green-500"
-                    >
-                      <Plug size={16} />
-                    </button>
+                    onClick={() => connectToBucket(bucket.bucketName)}
+                    disabled={selectedBucket?.bucketName === bucket.bucketName}
+                    className={`p-2 rounded-lg transition-all 
+                      ${selectedBucket?.bucketName === bucket.bucketName ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}`}
+                  >
+                    <Plug size={16} />
+                  </button>
                   <button
-                    onClick={() => deleteBucket(buckets.bucketName)}
+                    onClick={() => deleteBucket(bucket.bucketName)}
                     className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
                   >
                     <Trash2 size={16} />
                   </button>
-                </li>
-              ))
-            ) : (
-              <p className="text-center text-gray-400">No buckets found</p>
-            )}
-          </ul>
+
+                </div>
+              </li>
+            ))
+          ) : (
+            <p className="text-center text-gray-400">No buckets found</p>
+          )}
+        </ul>
+
         </div>
         {/* Upload Form */}
         <form 
