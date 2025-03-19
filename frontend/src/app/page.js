@@ -19,6 +19,8 @@ export default function App() {
 
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
+  const [connectingBucket, setConnectingBucket] = useState(null);
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (authUser == null) {
@@ -26,6 +28,10 @@ export default function App() {
     }
     fetchBucket();
   }, [authUser, router,fetchBucket]);
+
+  const handleConnectClick = (bucketName) => {
+    setConnectingBucket(bucketName);
+  };
 
   const connectToBucket=async(bucketName)=>{
     try {
@@ -35,7 +41,6 @@ export default function App() {
       console.log(error);
     }
   }
-
   
 
   const deleteBucketId = async (bucketName) => {
@@ -98,34 +103,69 @@ export default function App() {
           <ul>
           {fetchedBuckets.length > 0 ? (
             fetchedBuckets.map((bucket) => (
+
               <li
                 key={bucket.bucketName}
-                className={`flex justify-between items-center p-3 border-b border-gray-600 
+                className={` items-center p-3 border-b border-gray-600 
                   ${selectedBucket?.bucketName === bucket.bucketName ? "bg-green-900 text-cyan-300" : ""}`}
               >
-                <div className="flex-1 min-w-[150px]">
-                  <p className="font-semibold truncate">{bucket.bucketName}</p>
-                  <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                  <div className="flex flex-col">
+
+                    <div className="flex">
+                      <div className="flex-1 min-w-[150px]">
+                      <p className="font-semibold truncate">{bucket.bucketName}</p>
+                      <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                    </div>
+
+                  
+
+                    <div className="flex gap-5">
+
+                      <div>
+                        <button
+                          onClick={() => handleConnectClick(bucket.bucketName)}
+                          disabled={selectedBucket?.bucketName === bucket.bucketName}
+                          className={`p-2 rounded-lg transition-all 
+                            ${selectedBucket?.bucketName === bucket.bucketName ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}`}
+                        >
+                        <Plug size={16} />
+                        </button>
+                      </div>
+
+                      <div>
+                        <button
+                        onClick={() => deleteBucketId(bucket.bucketName)}
+                        className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
+                        >
+                        <Trash2 size={16} />
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+
+                    <div className="flex">
+                      {connectingBucket === bucket.bucketName && (
+                      <div className="mt-2 flex gap-2">
+                      <input
+                        type="password"
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="p-2 w-full border border-gray-600 rounded-lg bg-gray-900 text-white focus:border-blue-400 focus:outline-none"
+                      />
+                      <button
+                        onClick={connectToBucket}
+                        className="p-2 bg-blue-600 text-white rounded-lg transition-all hover:bg-blue-500"
+                      >
+                        Connect
+                      </button>
+                      </div>
+                      )}
+                    </div>
+
                 </div>
 
-                <div className="flex gap-5">
-
-                  <button
-                    onClick={() => connectToBucket(bucket.bucketName)}
-                    disabled={selectedBucket?.bucketName === bucket.bucketName}
-                    className={`p-2 rounded-lg transition-all 
-                      ${selectedBucket?.bucketName === bucket.bucketName ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}`}
-                  >
-                    <Plug size={16} />
-                  </button>
-                  <button
-                    onClick={() => deleteBucketId(bucket.bucketName)}
-                    className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-
-                </div>
               </li>
             ))
           ) : (
