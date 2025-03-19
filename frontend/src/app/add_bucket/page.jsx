@@ -11,6 +11,7 @@ export default function AddBucket() {
     bucketRegion: "",
     bucketKey: "",
     bucketSecret: "",
+    secret:""
   });
 
   const handleChange = (e) => {
@@ -72,7 +73,7 @@ export default function AddBucket() {
 
         {/* Bucket Key */}
         <div className="mb-4">
-          <label className="block text-gray-400 mb-1">Bucket Key</label>
+          <label className="block text-gray-400 mb-1">Bucket AccessKeyId</label>
           <div className="relative">
             <input
               type="text"
@@ -89,13 +90,31 @@ export default function AddBucket() {
 
         {/* Bucket Secret */}
         <div className="mb-6">
-          <label className="block text-gray-400 mb-1">Bucket Secret</label>
+          <label className="block text-gray-400 mb-1">Bucket SecretAccessKey</label>
           <div className="relative">
             <input
               type="password"
               name="bucketSecret"
               placeholder="Enter bucket secret"
               value={bucket.bucketSecret}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+              required
+            />
+            <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+        </div>
+
+
+        <div className="mb-6">
+          <label className="block  mb-1">Bucket Secret</label>
+          <p className="text-gray-400"> <span className="text-red-800">Reminder: </span>Please remember your secret, as it is required to connect to the bucket. Copy it and store it securely—once entered, it cannot be retrieved!</p>
+          <div className="relative mt-5">
+            <input
+              type="password"
+              name="secret"
+              placeholder="Enter bucket secret"
+              value={bucket.secret}
               onChange={handleChange}
               className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
               required

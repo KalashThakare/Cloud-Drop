@@ -3,10 +3,10 @@ import { encrypt,decrypt } from "../lib/AES.js";
 import { createS3Client } from "../lib/s3.js";
 
 export const awsConfig= async(req,res)=>{
-    const {bucketName,bucketRegion,bucketKey,bucketSecret} = req.body; 
+    const {bucketName,bucketRegion,bucketKey,bucketSecret,secret} = req.body; 
     try {
 
-        if(!bucketKey || !bucketName || !bucketRegion || !bucketSecret){
+        if(!bucketKey || !bucketName || !bucketRegion || !bucketSecret || !secret){
             return res.status(400).json({message:"All fields are necessary"});
         }
 
@@ -22,7 +22,6 @@ export const awsConfig= async(req,res)=>{
             return res.status(400).json({message:"Bucket alredy exist"});
         }
 
-        const secret = process.env.SECRET_TEXT;
         const encryptedKey = encrypt(bucketKey,secret); 
         const encryptedAccesssKey = encrypt(bucketSecret,secret);
         
@@ -54,9 +53,7 @@ export const connectToBucket =async(req,res)=>{
 
     try {
 
-        const {bucketName} = req.body;
-
-        const secret = process.env.SECRET_TEXT;
+        const {bucketName,secret} = req.body;
 
         if(!bucketName){
             return res.status(400).json({message:"Please enter bucket name"});

@@ -20,7 +20,7 @@ export default function App() {
   const [file, setFile] = useState();
   const [caption, setCaption] = useState("");
   const [connectingBucket, setConnectingBucket] = useState(null);
-  const [password, setPassword] = useState("");
+  const [secret, setSecret] = useState("");
 
   useEffect(() => {
     if (authUser == null) {
@@ -33,10 +33,12 @@ export default function App() {
     setConnectingBucket(bucketName);
   };
 
-  const connectToBucket=async(bucketName)=>{
+  const connectToBucket=async(bucketName,secret)=>{
     try {
-      await connectBucket({bucketName});
-      console.log(bucketName);
+
+      console.log(bucketName,secret);
+      await connectBucket({bucketName,secret});
+      
     } catch (error) {
       console.log(error);
     }
@@ -150,13 +152,13 @@ export default function App() {
                       <input
                         type="password"
                         placeholder="Enter password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={secret}
+                        onChange={(e) => setSecret(e.target.value)}
                         className="p-2 w-full border border-gray-600 rounded-lg bg-gray-900 text-white focus:border-blue-400 focus:outline-none"
                       />
                       <button
-                        onClick={connectToBucket}
-                        className="p-2 bg-blue-600 text-white rounded-lg transition-all hover:bg-blue-500"
+                        onClick={()=>connectToBucket(bucket.bucketName,secret)}
+                        className="p-2 bg-blue-600 text-white rounded-lg transition-all hover:bg-green-600"
                       >
                         Connect
                       </button>
