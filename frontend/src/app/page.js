@@ -11,7 +11,7 @@ export default function App() {
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
   const logout = useAuthStore((state) => state.logout);
-  const fetchBuckets = bucketFunc((state)=>state.fetchedBuckets);
+  const fetchedBuckets = bucketFunc((state)=>state.fetchedBuckets);
   const fetchBucket = bucketFunc((state) => state.fetchBucket);
   const connectBucket = bucketFunc((state)=>state.connectBucket);
   const selectedBucket = bucketFunc((state)=>state.selectedBucket);
@@ -96,8 +96,8 @@ export default function App() {
           )}
 
           <ul>
-          {fetchBuckets.length > 0 ? (
-            fetchBuckets.map((bucket) => (
+          {fetchedBuckets.length > 0 ? (
+            fetchedBuckets.map((bucket) => (
               <li
                 key={bucket.bucketName}
                 className={`flex justify-between items-center p-3 border-b border-gray-600 

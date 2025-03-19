@@ -16,7 +16,7 @@ export const bucketFunc = create((set,get)=>({
         } catch (error) {
             console.log(error);
             toast.error('Server error try again');
-            set({bucket:null});
+            set({bucket:null}); 
         }
     },
 
@@ -24,7 +24,7 @@ export const bucketFunc = create((set,get)=>({
         try {
             const res=await axiosInstance.get("/aws/buckets");
             console.log(res.data);
-            set({fetchedBuckets:res.data.buckets})
+            set({fetchedBuckets:res.data.buckets || []})
         } catch (error) {
             console.log(error.message);
             set({fetchedBuckets:[]});
