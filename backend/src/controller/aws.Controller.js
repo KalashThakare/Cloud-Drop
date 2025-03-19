@@ -1,6 +1,7 @@
 import User from "../models/user.Model.js";
 import { encrypt,decrypt } from "../lib/AES.js";
 import { createS3Client } from "../lib/s3.js";
+import bcrypt from "bcrypt";
 
 export const awsConfig= async(req,res)=>{
     const {bucketName,bucketRegion,bucketKey,bucketSecret,secret} = req.body; 
@@ -22,8 +23,11 @@ export const awsConfig= async(req,res)=>{
             return res.status(400).json({message:"Bucket alredy exist"});
         }
 
-        const encryptedKey = encrypt(bucketKey,secret); 
-        const encryptedAccesssKey = encrypt(bucketSecret,secret);
+        const salt = await bcrypt.genSalt(11);
+
+        const hashedSecret = await bcrypt.hash(secret,salt);
+        const encryptedKey = encrypt(bucketKey,hashedSecret); 
+        const encryptedAccesssKey = encrypt(bucketSecret,hashedSecret);
         
 
         const newBucket = user.buckets.push({
@@ -31,6 +35,7 @@ export const awsConfig= async(req,res)=>{
             bucketRegion,
             bucketKey:encryptedKey,
             bucketSecret:encryptedAccesssKey,
+            secret:hashedSecret
         })
 
         await user.save();
@@ -51,9 +56,13 @@ export const awsConfig= async(req,res)=>{
 
 export const connectToBucket =async(req,res)=>{
 
+    const {bucketName,secret} = req.body;
+
     try {
 
-        const {bucketName,secret} = req.body;
+        if(!secret){
+            return res.status(400).json({message:"Please enter secret"});
+        }
 
         if(!bucketName){
             return res.status(400).json({message:"Please enter bucket name"});
@@ -67,9 +76,15 @@ export const connectToBucket =async(req,res)=>{
 
         const bucket = await user.buckets.find(bucket=>bucket.bucketName==bucketName);
 
-        if(bucket){
-            const Key = decrypt(bucket.bucketKey,secret);
-            const accessKey = decrypt(bucket.bucketSecret,secret);
+        if (!bucket) {
+            return res.status(400).json({ message: "Bucket not found" });
+        }
+
+        const compareSecret = await bcrypt.compare(secret,bucket.secret);
+
+        if(bucket && compareSecret){
+            const Key = decrypt(bucket.bucketKey,bucket.secret);
+            const accessKey = decrypt(bucket.bucketSecret,bucket.secret);
             const bucket_Region = bucket.bucketRegion;
 
             const s3Client = createS3Client({ Key, accessKey, bucket_Region });
@@ -84,7 +99,8 @@ export const connectToBucket =async(req,res)=>{
 
     } catch (error) {
         console.log(error);
-        res.status(500).json("Error in Connect To Bucket",error.message);
+        res.status(500).json({ error: "Error in Connect To Bucket", message: error.message });
+
     }
 }
 

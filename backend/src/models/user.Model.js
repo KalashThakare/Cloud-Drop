@@ -17,6 +17,10 @@ const ConfigSchema = new mongoose.Schema({
     bucketSecret: {
         type: String,
         required: true
+    },
+    secret:{
+        type:String,
+        required:true
     }
 });
 
