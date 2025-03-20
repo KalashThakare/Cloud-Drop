@@ -2,6 +2,7 @@ import User from "../models/user.Model.js";
 import { encrypt,decrypt } from "../lib/AES.js";
 import { createS3Client } from "../lib/s3.js";
 import bcrypt from "bcrypt";
+import { ListObjectsV2Command } from '@aws-sdk/client-s3';
 
 export const awsConfig= async(req,res)=>{
     const {bucketName,bucketRegion,bucketKey,bucketSecret,secret} = req.body; 
@@ -92,6 +93,12 @@ export const connectToBucket =async(req,res)=>{
             req.app.locals.s3Clients = req.app.locals.s3Clients || {};
             req.app.locals.s3Clients[bucketName] = s3Client;
 
+            const filesResponse = await fetchFilesFromS3(s3Client, bucketName);
+
+            if(filesResponse=='AccessDenied'){
+                return res.status(400).json({message:"Please update your policies"});
+            };
+
             return res.status(200).json({message:"Bucket connected",bucketName});
         }else{
             return res.status(400).json({message:"Error connecting bucket"});
@@ -147,10 +154,22 @@ export const deleteBucket = async(req,res)=>{
 
         await user.save();
 
-        return res.status(200).json({message:"Buclet deleted successfully"});
+        return res.status(200).json({message:"Bucket deleted successfully"});
 
     } catch (error) {
         console.log("Error deleting bucket",error);
         res.status(500).json({message:"error in deleteBucket controller"});
     }
 }
+
+const fetchFilesFromS3 = async (s3Client, bucketName) => {
+    try {
+        const command = new ListObjectsV2Command({ Bucket: bucketName });
+        const data = await s3Client.send(command);
+
+        return { success: true, files: data.Contents || [] };
+    } catch (error) {
+        console.error("Error fetching files:", error);
+        return { success: false, message: error.message };
+    }
+};
