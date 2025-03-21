@@ -7,6 +7,7 @@ import { LogOut, FilePlus2, Trash2 ,Plug} from "lucide-react";
 import { bucketFunc } from "@/store/bucketFunc.js";
 import { toast } from "sonner";
 import FileSelector from "@/components/FileSelector";
+import SignedUrlGenerator from "@/components/SignedUrlGenerator";
 
 export default function App() {
   const router = useRouter();
@@ -207,9 +208,11 @@ export default function App() {
 
 
 
-      <div className="mt-5 flex flex-col-2 w-screen">
+      <div className="m-5  flex flex-row gap-10 justify-between">
 
         <FileSelector />
+
+        <SignedUrlGenerator />
 
       </div>
     </div>

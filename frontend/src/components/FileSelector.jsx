@@ -7,7 +7,7 @@ export default function FileSelector({ userBucket }) {
 
 
   return (
-    <div className="w-full max-w-sm p-4 bg-black text-white rounded-2xl shadow-lg border-[0.5px] border-cyan-300">
+    <div className="w-[40vw] max-w-sm p-4 bg-black text-white rounded-2xl shadow-lg border-[0.5px] border-cyan-300">
       <h2 className="text-xl font-semibold text-center text-blue-100 mb-4">
         Select a File
       </h2>
