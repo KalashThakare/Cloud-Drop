@@ -58,10 +58,24 @@ export const bucketFunc = create((set,get)=>({
         }
     },
 
-    generateUrl:async(data)=>{
+    generateUrl:async(fileName,expiration)=>{
         try {
-            const res = await axiosInstance.post("/func/signedurl",data);
+
+            const bucketName = get().selectedBucket; 
+
+            if (!selectedBucket) {
+                toast.error("No bucket selected. Please connect a bucket first.");
+                return;
+            }
+            const res = await axiosInstance.post("/func/signedurl",{
+                fileName,
+                expiration,
+                bucketName
+            });
+
             set({generatedUrl:res.data});
+
+            
         } catch (error) {
             console.log(error);
             toast.error('error generating signed Url');

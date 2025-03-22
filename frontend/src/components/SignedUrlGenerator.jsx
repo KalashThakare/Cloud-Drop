@@ -11,6 +11,7 @@ export default function SignedUrlGenerator() {
 
   const generateUrl = bucketFunc((state)=>state.generateUrl);
   const generatedUrl = bucketFunc((state)=>state.generatedUrl);
+  const selectedBucket = bucketFunc((state)=>state.selectedBucket);
 
   const generateSignedUrl = async () => {
     if (!fileName || !expiration) {
@@ -18,9 +19,7 @@ export default function SignedUrlGenerator() {
       return;
     }
 
-    const data = {fileName,expiration}
-
-    generateUrl(data);
+    generateUrl(fileName,expiration);
 
     setSignedUrl(generatedUrl);
 

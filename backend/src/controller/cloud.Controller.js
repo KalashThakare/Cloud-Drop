@@ -54,9 +54,7 @@ export const generateSignedUrl =async(req,res)=>{
 
     try {
 
-        const bucketName = req.app.locals.connectedBucket
-
-        const {fileName,expiration} = req.body;
+        const {fileName,expiration,bucketName} = req.body;
 
         if(!bucketName){
             return res.status(400).json({message:"Please enter Bucket Name"});
