@@ -1,4 +1,5 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 
 export const Upload=async (req,res)=>{
@@ -47,4 +48,44 @@ export const Upload=async (req,res)=>{
         res.status(500).json({message:"Error in upload controller"});
         console.log(error);
     }
+}
+
+export const generateSignedUrl =async(req,res)=>{
+
+    try {
+
+        const bucketName = req.app.locals.connectedBucket
+
+        const {fileName,expiration} = req.body;
+
+        if(!bucketName){
+            return res.status(400).json({message:"Please enter Bucket Name"});
+        }
+
+        const s3Client = req.app.locals.s3Clients?.[bucketName];
+
+        if(!s3Client){
+            return res.status(400).json({message:"S3 client not initialized"});
+        }
+
+        const Url = await getSignedUrl(
+            s3Client,
+            GetObjectCommand({
+                Bucket:bucketName,
+                Key:fileName
+            }),
+            {expiresIn:`${expiration}`*60}
+        )
+
+        if(!Url){
+            return res.status(400).json({message:"Error in generating Url"});
+        }
+
+        res.status(200).json({message:"Success"});
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"error in getSignedUrl controller"});
+    }
+
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { bucketFunc } from "@/store/bucketFunc.js";
 
 export default function SignedUrlGenerator() {
   const [fileName, setFileName] = useState("");
@@ -8,19 +9,21 @@ export default function SignedUrlGenerator() {
   const [allowDownload, setAllowDownload] = useState(true);
   const [signedUrl, setSignedUrl] = useState("");
 
+  const generateUrl = bucketFunc((state)=>state.generateUrl);
+  const generatedUrl = bucketFunc((state)=>state.generatedUrl);
+
   const generateSignedUrl = async () => {
-    if (!fileName) {
-      alert("Please enter a file name.");
+    if (!fileName || !expiration) {
+      alert("Please enter a file name and expiration Time");
       return;
     }
 
+    const data = {fileName,expiration}
 
-    const data = await response.json();
-    if (response.ok) {
-      setSignedUrl(data.signedUrl);
-    } else {
-      alert(data.message || "Error generating signed URL");
-    }
+    generateUrl(data);
+
+    setSignedUrl(generatedUrl);
+
   };
 
   return (

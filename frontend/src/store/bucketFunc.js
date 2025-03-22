@@ -7,6 +7,7 @@ export const bucketFunc = create((set,get)=>({
     bucket:null,
     fetchedBuckets:[],
     selectedBucket:null,
+    generatedUrl:(''),
 
     addBucket:async(data)=>{
         try {
@@ -54,6 +55,18 @@ export const bucketFunc = create((set,get)=>({
             toast.error("Error deleting bucket");
             set({bucket:null});
 
+        }
+    },
+
+    generateUrl:async(data)=>{
+        try {
+            const res = await axiosInstance.post("/func/signedurl",data);
+            set({generatedUrl:res.data});
+        } catch (error) {
+            console.log(error);
+            toast.error('error generating signed Url');
+        }finally{
+            set({generatedUrl:''});
         }
     }
 }))

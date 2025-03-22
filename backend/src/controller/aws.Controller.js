@@ -93,6 +93,8 @@ export const connectToBucket =async(req,res)=>{
             req.app.locals.s3Clients = req.app.locals.s3Clients || {};
             req.app.locals.s3Clients[bucketName] = s3Client;
 
+            req.app.locals.connectedBucket = bucketName;
+
             const filesResponse = await fetchFilesFromS3(s3Client, bucketName);
 
             if(filesResponse=='AccessDenied'){
