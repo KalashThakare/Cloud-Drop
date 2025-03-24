@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { bucketFunc } from "@/store/bucketFunc.js";
+import { Clipboard } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignedUrlGenerator() {
   const [fileName, setFileName] = useState("");
@@ -9,9 +11,9 @@ export default function SignedUrlGenerator() {
   const [allowDownload, setAllowDownload] = useState(true);
   const [signedUrl, setSignedUrl] = useState("");
 
-  const generateUrl = bucketFunc((state)=>state.generateUrl);
-  const generatedUrl = bucketFunc((state)=>state.generatedUrl);
-  const selectedBucket = bucketFunc((state)=>state.selectedBucket);
+  const generateUrl = bucketFunc((state) => state.generateUrl);
+  const generatedUrl = bucketFunc((state) => state.generatedUrl);
+  const selectedBucket = bucketFunc((state) => state.selectedBucket);
 
   const generateSignedUrl = async () => {
     if (!fileName || !expiration) {
@@ -19,24 +21,45 @@ export default function SignedUrlGenerator() {
       return;
     }
 
-    generateUrl(fileName,expiration);
-
+    generateUrl(fileName, expiration);
   };
 
   useEffect(() => {
     if (generatedUrl) {
-      setSignedUrl( generatedUrl.Url || "Invalid URL response");
+      setSignedUrl(generatedUrl.Url || "Invalid URL response");
     }
   }, [generatedUrl]);
+
+  const copyToClipboard = () => {
+    if (signedUrl) {
+      navigator.clipboard.writeText(signedUrl);
+      toast.success('URL Copied')
+    }
+  };
 
   return (
     <div className="flex items-center justify-between bg-black p-6 rounded-xl border-[0.5px] border-cyan-300 shadow-lg w-[50vw] max-w-3xl mx-auto">
       {/* Left Side: Signed URL Display */}
       <div className="w-[70%] p-4">
         <h2 className="text-lg font-semibold text-white mb-2">Signed URL</h2>
-        <div className="p-3 bg-gray-800 text-cyan-300 border-2 border-cyan-300 rounded-md min-h-[80px] break-all">
-          {signedUrl ? String(signedUrl) : "URL will appear here..."}
+        <div className="mt-7 p-3 bg-gray-800 text-cyan-300 border-2 border-cyan-300 rounded-md min-h-[80px] break-all flex items-center justify-between">
+          <span className="truncate">{signedUrl ? signedUrl : "URL will appear here..."}</span>
         </div>
+        <div className="mt-7">
+          {signedUrl && (
+            <button
+              onClick={copyToClipboard}
+              className="flex items-center px-4 py-2 rounded-lg border border-purple-500 bg-gray-900/50 backdrop-blur-md shadow-lg transition-all duration-300 hover:bg-gray-800 hover:border-orange-400"
+            >
+              <Clipboard className="w-5 h-5 text-purple-400 transition-colors duration-300 hover:text-orange-400" />
+              <span className="ml-2 text-purple-400 font-medium text-sm transition-colors duration-300 hover:text-orange-400">
+                Copy Link
+              </span>
+            </button>
+          )}
+        </div>
+
+
       </div>
 
       {/* Right Side: Actions & Inputs */}
