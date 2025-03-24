@@ -68,7 +68,7 @@ export const generateSignedUrl =async(req,res)=>{
 
         const Url = await getSignedUrl(
             s3Client,
-            GetObjectCommand({
+            new GetObjectCommand({
                 Bucket:bucketName,
                 Key:fileName
             }),
@@ -79,7 +79,7 @@ export const generateSignedUrl =async(req,res)=>{
             return res.status(400).json({message:"Error in generating Url"});
         }
 
-        res.status(200).json({message:"Success"});
+        res.status(200).json({message:"Success",Url});
         
     } catch (error) {
         console.log(error);

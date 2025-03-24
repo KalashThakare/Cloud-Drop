@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { bucketFunc } from "@/store/bucketFunc.js";
 
 export default function SignedUrlGenerator() {
@@ -21,9 +21,13 @@ export default function SignedUrlGenerator() {
 
     generateUrl(fileName,expiration);
 
-    setSignedUrl(generatedUrl);
-
   };
+
+  useEffect(() => {
+    if (generatedUrl) {
+      setSignedUrl( generatedUrl.Url || "Invalid URL response");
+    }
+  }, [generatedUrl]);
 
   return (
     <div className="flex items-center justify-between bg-black p-6 rounded-xl border-[0.5px] border-cyan-300 shadow-lg w-[50vw] max-w-3xl mx-auto">
@@ -31,7 +35,7 @@ export default function SignedUrlGenerator() {
       <div className="w-[70%] p-4">
         <h2 className="text-lg font-semibold text-white mb-2">Signed URL</h2>
         <div className="p-3 bg-gray-800 text-cyan-300 border-2 border-cyan-300 rounded-md min-h-[80px] break-all">
-          {signedUrl ? signedUrl : "URL will appear here..."}
+          {signedUrl ? String(signedUrl) : "URL will appear here..."}
         </div>
       </div>
 

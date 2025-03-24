@@ -6,7 +6,7 @@ export const bucketFunc = create((set,get)=>({
 
     bucket:null,
     fetchedBuckets:[],
-    selectedBucket:null,
+    selectedBucket:(''),
     generatedUrl:(''),
 
     addBucket:async(data)=>{
@@ -61,9 +61,9 @@ export const bucketFunc = create((set,get)=>({
     generateUrl:async(fileName,expiration)=>{
         try {
 
-            const bucketName = get().selectedBucket; 
+            const bucketName = get().selectedBucket.bucketName; 
 
-            if (!selectedBucket) {
+            if (!bucketName) {
                 toast.error("No bucket selected. Please connect a bucket first.");
                 return;
             }
@@ -79,8 +79,6 @@ export const bucketFunc = create((set,get)=>({
         } catch (error) {
             console.log(error);
             toast.error('error generating signed Url');
-        }finally{
-            set({generatedUrl:''});
         }
     }
 }))
