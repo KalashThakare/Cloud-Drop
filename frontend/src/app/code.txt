@@ -1,0 +1,711 @@
+"use client";
+
+import { axiosInstance } from "@/lib/axios.js";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
+import { LogOut, FilePlus2, Trash2 ,Plug} from "lucide-react";
+import { bucketFunc } from "@/store/bucketFunc.js";
+import { toast } from "sonner";
+import FileSelector from "@/components/FileSelector";
+import SignedUrlGenerator from "@/components/SignedUrlGenerator";
+import Link from "next/link";
+
+import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar.jsx";
+import {
+  IconArrowLeft,
+  IconBrandTabler,
+  IconSettings,
+  IconUserBolt,
+} from "@tabler/icons-react";
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
+
+var your_buckets = 0;
+var home = 1;
+var cloud_drop = 0;
+var file_upload = 0;
+var signed_url = 0;
+var add_bucket = 0;
+
+function Home() {
+  const links = [
+    {
+      label: "Your Buckets",
+      href: ("/Home"),
+      icon: (
+        <IconBrandTabler className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Cloud Drop",
+      href: ("#"),
+      icon: (
+        <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "File Upload",
+      href: ("#"),
+      icon: (
+        <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Signed URL",
+      href: ("#"),
+      icon: (
+        <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Logout",
+      href: ("#"),
+      icon: (
+        <LogOut  className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+  ];
+  const [open, setOpen] = useState(false);
+
+  const router = useRouter();
+    const authUser = useAuthStore((state) => state.authUser);
+    const logout = useAuthStore((state) => state.logout);
+    const fetchedBuckets = bucketFunc((state)=>state.fetchedBuckets);
+    const fetchBucket = bucketFunc((state) => state.fetchBucket);
+    const connectBucket = bucketFunc((state)=>state.connectBucket);
+    const selectedBucket = bucketFunc((state)=>state.selectedBucket);
+    const deleteBucket = bucketFunc((state)=>state.deleteBucket);
+  
+    const [file, setFile] = useState();
+    const [caption, setCaption] = useState("");
+    const [connectingBucket, setConnectingBucket] = useState(null);
+    const [secret, setSecret] = useState("");
+  
+    useEffect(() => {
+      if (authUser == null) {
+        router.replace("/login");
+      }
+      fetchBucket();
+    }, [authUser, router,fetchBucket]);
+  
+    const handleConnectClick = (bucketName) => {
+      setConnectingBucket(bucketName);
+    };
+  
+    const connectToBucket=async(bucketName,secret)=>{
+      try {
+  
+        console.log(bucketName,secret);
+        await connectBucket({bucketName,secret});
+        
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    
+  
+    const deleteBucketId = async (bucketName) => {
+      await deleteBucket({bucketName});
+      fetchBucket();
+      console.log(bucketName);
+    };
+  
+    const submit = async (e) => {
+      e.preventDefault();
+      if(!selectedBucket){
+        toast.error('Please select bucket first');
+      }
+      const formData = new FormData();
+      console.log(selectedBucket.bucketName);
+      formData.append("bucketName",selectedBucket.bucketName);
+      formData.append("image", file);
+      console.log(file)
+      formData.append("caption", caption);
+      try {
+        await axiosInstance.post("/func/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("file uploaded successfully");
+      } catch (error) {
+        toast.error('Upload failed');
+      }
+    };
+
+
+  return (
+    <div
+      className={cn(
+        "mx-auto flex w-full h-screen flex-1 flex-col overflow-hidden rounded-md border border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800",
+      )}>
+      <Sidebar open={open} setOpen={setOpen} animate={false} className="w-2/9">
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <>
+              <Logo />
+            </>
+            <div className="mt-8 flex flex-col gap-2">
+              {links.map((link, idx) => (
+                <SidebarLink key={idx} link={link} onClick={idx === 4 ? () => { logout(); router.replace("/login"); } : display(idx)} />
+              ))}
+            </div>
+          </div>
+        </SidebarBody>
+      </Sidebar>
+      <Dashboard />
+      <div className="w-2/9">Notification Bar</div>
+    </div>
+  );
+};
+
+
+
+export const Logo = () => {
+  return (
+    <Link
+      href="/add_bucket"
+      className="relative z-20 flex items-center space-x-2 text-sm font-normal text-black dark:text-white hover:bg-green-400 hover:text-black rounded-full w-fit px-4 py-2">
+      <FilePlus2 size={20} className=""/>
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="font-medium whitespace-pre">
+        Add Bucket
+      </motion.span>
+    </Link>
+  );
+};
+export const LogoIcon = () => {
+  return (
+    <Link
+      href="#"
+      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black">
+      <div
+        className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+    </Link>
+  );
+};
+
+
+const Dashboard = () => {
+  return (
+    <div className="flex justify-center items-center h-full w-full flex-1 flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
+      {home ? (
+        <div id="Home">
+          <h1>Welcome to Cloud Drop</h1>
+        </div>
+      ) : add_bucket ? (
+        <div id="Add_Bucket">
+          <h1>Add_Bucket</h1>
+        </div>
+      ) : your_buckets ? (
+        <div id="Your_Buckets">
+          <h1>Your_Buckets</h1>
+        </div>
+      ) : cloud_drop ? (
+        <div id="Cloud_Drop">
+          <h1>cloud_drop</h1>
+        </div>
+      ) : file_upload ? (
+        <div id="File_Upload">
+          <h1>file_upload</h1>
+        </div>
+      ) : signed_url ? (
+        <div id="Signed_URL">
+          <h1>signed_url</h1>
+        </div>
+      ) : null}
+    </div>
+
+  );
+};
+
+function display(val){
+  if(val === 0){
+    your_buckets = 1;
+    home = 0;
+    cloud_drop = 0;
+    file_upload = 0;
+    signed_url = 0;
+    add_bucket = 0;
+  }
+  if(val === 1){
+    your_buckets = 0;
+    home = 0;
+    cloud_drop = 1;
+    file_upload = 0;
+    signed_url = 0;
+    add_bucket = 0;
+  }
+  if(val === 2){
+    your_buckets = 0;
+    home = 0;
+    cloud_drop = 0;
+    file_upload = 1;
+    signed_url = 0;
+    add_bucket = 0;
+  }
+  if(val === 3){
+    your_buckets = 0;
+    home = 0;
+    cloud_drop = 0;
+    file_upload = 0;
+    signed_url = 1;
+    add_bucket = 0;
+  }
+  if(val === 5){
+    your_buckets = 0;
+    home = 1;
+    cloud_drop = 0;
+    file_upload = 0;
+    signed_url = 0;
+    add_bucket = 0;
+  }
+  if(val === 6){
+    your_buckets = 0;
+    home = 0;
+    cloud_drop = 0;
+    file_upload = 0;
+    signed_url = 0;
+    add_bucket = 1;
+  }
+}
+
+export default Home;
+
+
+
+
+
+
+
+
+
+
+
+
+"use client";
+
+import { axiosInstance } from "@/lib/axios";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
+import { LogOut, FilePlus2 } from "lucide-react";
+import { bucketFunc } from "@/store/bucketFunc";
+import { toast } from "sonner";
+import Link from "next/link";
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarLink,
+} from "../components/ui/sidebar.jsx";
+import {
+  IconArrowLeft,
+  IconBrandTabler,
+  IconSettings,
+  IconUserBolt,
+} from "@tabler/icons-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+function Home() {
+  const [activeView, setActiveView] = useState("home");
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState();
+  const [caption, setCaption] = useState("");
+  const [connectingBucket, setConnectingBucket] = useState(null);
+  const [secret, setSecret] = useState("");
+
+  const router = useRouter();
+  const authUser = useAuthStore((state) => state.authUser);
+  const logout = useAuthStore((state) => state.logout);
+  const fetchedBuckets = bucketFunc((state) => state.fetchedBuckets);
+  const fetchBucket = bucketFunc((state) => state.fetchBucket);
+  const connectBucket = bucketFunc((state) => state.connectBucket);
+  const selectedBucket = bucketFunc((state) => state.selectedBucket);
+  const deleteBucket = bucketFunc((state) => state.deleteBucket);
+
+  useEffect(() => {
+    if (authUser === null) {
+      router.replace("/login");
+    }
+    fetchBucket();
+  }, [authUser, router, fetchBucket]);
+
+  const links = [
+    {
+      label: "Your Buckets",
+      href: "#",
+      icon: (
+        <IconBrandTabler className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Cloud Drop",
+      href: "#",
+      icon: (
+        <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "File Upload",
+      href: "#",
+      icon: (
+        <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Signed URL",
+      href: "#",
+      icon: (
+        <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Logout",
+      href: "#",
+      icon: (
+        <LogOut className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+  ];
+
+  const handleConnectClick = (bucketName) => {
+    setConnectingBucket(bucketName);
+  };
+
+  const connectToBucket = async (bucketName, secret) => {
+    try {
+      await connectBucket({ bucketName, secret });
+      toast.success("Bucket connected successfully");
+    } catch (error) {
+      toast.error("Failed to connect bucket");
+      console.error(error);
+    }
+  };
+
+  const deleteBucketId = async (bucketName) => {
+    try {
+      await deleteBucket({ bucketName });
+      fetchBucket();
+      toast.success("Bucket deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete bucket");
+      console.error(error);
+    }
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!selectedBucket) {
+      toast.error("Please select bucket first");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("bucketName", selectedBucket.bucketName);
+    formData.append("image", file);
+    formData.append("caption", caption);
+
+    try {
+      await axiosInstance.post("/func/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("File uploaded successfully");
+      setFile(null);
+      setCaption("");
+    } catch (error) {
+      toast.error("Upload failed");
+      console.error(error);
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        "mx-auto flex w-full h-screen flex-1 flex-col overflow-hidden rounded-md border border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800"
+      )}
+    >
+      <Sidebar open={open} setOpen={setOpen} animate={false} className="w-2/9">
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <Logo />
+            <div className="mt-8 flex flex-col gap-2">
+              {links.map((link, idx) => (
+                <SidebarLink
+                  key={idx}
+                  link={link}
+                  onClick={
+                    idx === 4
+                      ? () => {
+                          logout();
+                          router.replace("/login");
+                        }
+                      : () =>
+                          setActiveView(
+                            link.label.toLowerCase().replace(" ", "_")
+                          )
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        </SidebarBody>
+      </Sidebar>
+      <Dashboard activeView={activeView} />
+      <div className="w-2/9">Notification Bar</div>
+    </div>
+  );
+}
+
+const Logo = () => {
+  return (
+    <Link
+      href="/add_bucket"
+      className="relative z-20 flex items-center space-x-2 text-sm font-normal text-black dark:text-white hover:bg-green-400 hover:text-black rounded-full w-fit px-4 py-2"
+    >
+      <FilePlus2 size={20} />
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="font-medium whitespace-pre"
+      >
+        Add Bucket
+      </motion.span>
+    </Link>
+  );
+};
+
+const Dashboard = ({ activeView }) => {
+  return (
+    <div className="flex justify-center items-center h-full w-full flex-1 flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
+      {activeView === "home" && (
+        <div id="Home">
+          <h1>Welcome to Cloud Drop</h1>
+        </div>
+      )}
+      {activeView === "add_bucket" && (
+        <div className="flex min-h-screen items-center justify-center bg-black">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm p-6 rounded-2xl shadow-xl text-white border border-cyan-300"
+      >
+        <h2 className="text-3xl font-bold text-center mb-6 text-blue-100 tracking-wide flex items-center justify-center gap-2">
+          <FolderPlus className="w-8 h-8 text-cyan-300" /> Add New Bucket
+        </h2>
+
+        {/* Bucket Name */}
+        <div className="mb-4">
+          <label className="block text-gray-400 mb-1">Bucket Name</label>
+          <div className="relative">
+            <input
+              type="text"
+              name="bucketName"
+              placeholder="Enter bucket name"
+              value={bucket.bucketName}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+              required
+            />
+            <FolderPlus className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Bucket Region */}
+        <div className="mb-4">
+          <label className="block text-gray-400 mb-1">Bucket Region</label>
+          <div className="relative">
+            <input
+              type="text"
+              name="bucketRegion"
+              placeholder="Enter bucket region"
+              value={bucket.bucketRegion}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+              required
+            />
+            <Globe className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Bucket Key */}
+        <div className="mb-4">
+          <label className="block text-gray-400 mb-1">Bucket AccessKeyId</label>
+          <div className="relative">
+            <input
+              type="text"
+              name="bucketKey"
+              placeholder="Enter bucket key"
+              value={bucket.bucketKey}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+              required
+            />
+            <Key className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Bucket Secret */}
+        <div className="mb-6">
+          <label className="block text-gray-400 mb-1">Bucket SecretAccessKey</label>
+          <div className="relative">
+            <input
+              type="password"
+              name="bucketSecret"
+              placeholder="Enter bucket secret"
+              value={bucket.bucketSecret}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+              required
+            />
+            <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+        </div>
+
+
+        <div className="mb-6">
+          <label className="block  mb-1">Bucket Secret</label>
+          <p className="text-gray-400"> <span className="text-red-800">Reminder: </span>Please remember your secret, as it is required to connect to the bucket. Copy it and store it securely—once entered, it cannot be retrieved!</p>
+          <div className="relative mt-5">
+            <input
+              type="password"
+              name="secret"
+              placeholder="Enter bucket secret"
+              value={bucket.secret}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+              required
+            />
+            <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full p-3 bg-blue-600 text-white rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-green-600 active:scale-95 shadow-lg flex items-center justify-center gap-2"
+        >
+          <FolderPlus className="w-5 h-5" /> Add Bucket
+        </button>
+      </form>
+    </div>
+      )}
+      {activeView === "your_buckets" && (
+        <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
+          <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">Your Buckets</h1>
+          {selectedBucket && (
+            <div className="p-3 mb-4 text-center text-white bg-green-700 rounded-lg">
+              Connected to: <strong>{selectedBucket.bucketName}</strong>
+            </div>
+          )}
+
+          <ul>
+          {fetchedBuckets.length > 0 ? (
+            fetchedBuckets.map((bucket) => (
+
+              <li
+                key={bucket.bucketName}
+                className={` items-center p-3 border-b border-gray-600 
+                  ${selectedBucket?.bucketName === bucket.bucketName ? "bg-green-900 text-cyan-300" : ""}`}
+              >
+                  <div className="flex flex-col">
+
+                    <div className="flex">
+                      <div className="flex-1 min-w-[150px]">
+                      <p className="font-semibold truncate">{bucket.bucketName}</p>
+                      <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                    </div>
+                    <div className="flex gap-5">
+
+                      <div>
+                        <button
+                          onClick={() => handleConnectClick(bucket.bucketName)}
+                          disabled={selectedBucket?.bucketName === bucket.bucketName}
+                          className={`p-2 rounded-lg transition-all 
+                            ${selectedBucket?.bucketName === bucket.bucketName ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}`}
+                        >
+                        <Plug size={16} />
+                        </button>
+                      </div>
+
+                      <div>
+                        <button
+                        onClick={() => deleteBucketId(bucket.bucketName)}
+                        className="p-2 bg-red-600 text-white rounded-lg transition-all hover:bg-red-500"
+                        >
+                        <Trash2 size={16} />
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+
+                    <div className="flex">
+                      {connectingBucket === bucket.bucketName && (
+                      <div className="mt-2 flex gap-2">
+                      <input
+                        type="password"
+                        placeholder="Enter password"
+                        value={secret}
+                        onChange={(e) => setSecret(e.target.value)}
+                        className="p-2 w-full border border-gray-600 rounded-lg bg-gray-900 text-white focus:border-blue-400 focus:outline-none"
+                      />
+                      <button
+                        onClick={()=>connectToBucket(bucket.bucketName,secret)}
+                        className="p-2 bg-blue-600 text-white rounded-lg transition-all hover:bg-green-600"
+                      >
+                        Connect
+                      </button>
+                      </div>
+                      )}
+                    </div>
+
+                </div>
+
+              </li>
+            ))
+          ) : (
+            <p className="text-center text-gray-400">No buckets found</p>
+          )}
+        </ul>
+
+      </div>
+      )}
+      {activeView === "cloud_drop" && (
+        <form 
+          onSubmit={submit} 
+          className="w-96 p-6 rounded-xl bg-black shadow-lg flex flex-col gap-4 text-center border border-gray-700"
+        >
+          <h1 className="text-2xl font-bold mb-2 text-cyan-300">Cloud-drop</h1>
+          <input
+            onChange={(e) => setFile(e.target.files[0])}
+            type="file"
+            accept="image/*"
+            className="p-5 border-2 border-dashed border-gray-600 rounded-xl bg-gray-900 cursor-pointer text-white transition-all hover:border-blue-400 hover:bg-gray-800"
+          />
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            type="text"
+            placeholder="Caption"
+            className="p-3 border border-gray-600 rounded-lg text-lg text-white bg-gray-900 focus:border-blue-400 focus:outline-none transition-all"
+          />
+          <button 
+            type="submit" 
+            className="p-3 bg-blue-600 text-white rounded-lg text-lg cursor-pointer transition-all hover:bg-blue-500 active:translate-y-0"
+          >
+            Upload
+          </button>
+        </form>
+      )}
+      {activeView === "file_upload" && (
+        <FileSelector />
+      )}
+      {activeView === "signed_url" && (
+        <SignedUrlGenerator />
+      )}
+    </div>
+  );
+};
+
+export default Home;

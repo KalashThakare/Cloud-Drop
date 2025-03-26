@@ -10,15 +10,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.31.0",
     "axios": "^1.8.3",
+    "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "lucide-react": "^0.479.0",
+    "motion": "^12.6.0",
     "next": "15.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
     "sonner": "^2.0.1",
+    "tailwind-merge": "^3.0.2",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
