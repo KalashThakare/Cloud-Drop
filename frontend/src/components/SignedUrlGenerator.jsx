@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { bucketFunc } from "@/store/bucketFunc.js";
-import { Clipboard } from "lucide-react";
+import { Clipboard, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SignedUrlGenerator() {
@@ -10,6 +10,7 @@ export default function SignedUrlGenerator() {
   const [maxUses, setMaxUses] = useState(1);
   const [allowDownload, setAllowDownload] = useState(true);
   const [signedUrl, setSignedUrl] = useState("");
+  const [recipientEmails, setRecipientEmails] = useState("");
 
   const generateUrl = bucketFunc((state) => state.generateUrl);
   const generatedUrl = bucketFunc((state) => state.generatedUrl);
@@ -17,11 +18,51 @@ export default function SignedUrlGenerator() {
 
   const generateSignedUrl = async () => {
     if (!fileName || !expiration) {
-      alert("Please enter a file name and expiration Time");
+      toast.warning("Please enter a file name and expiration Time");
       return;
     }
 
     generateUrl(fileName, expiration);
+  };
+
+  const sendEmail = async () => {
+    if (!recipientEmails) {
+      toast.warning("Please enter at least one recipient email address");
+      return;
+    }
+
+    const emailArray = recipientEmails.split(",").map((email) => email.trim());
+
+    const emailData = {
+      bucketName: selectedBucket,
+      fileName,
+      expiration,
+      viewOnce,
+      maxUses,
+      allowDownload,
+      recipientEmails: emailArray,
+    };
+
+    console.log("Email Data:", emailData);
+
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailData),
+      });
+
+      if (response.ok) {
+        toast.success("Emails sent successfully!");
+      } else {
+        toast.error("Failed to send emails.");
+      }
+    } catch (error) {
+      console.error("Error sending emails:", error);
+      toast.error("An error occurred while sending the emails.");
+    }
   };
 
   useEffect(() => {
@@ -33,37 +74,68 @@ export default function SignedUrlGenerator() {
   const copyToClipboard = () => {
     if (signedUrl) {
       navigator.clipboard.writeText(signedUrl);
-      toast.success('URL Copied')
+      toast.success("URL Copied");
     }
   };
 
   return (
-    <div className="flex items-center justify-between bg-black p-6 rounded-xl border-[0.5px] border-cyan-300 shadow-lg w-[50vw] max-w-3xl mx-auto">
-      {/* Left Side: Signed URL Display */}
-      <div className="w-[70%] p-4">
-        <h2 className="text-lg font-semibold text-white mb-2">Signed URL</h2>
+    <div className="flex items-center justify-between gap-5 bg-black p-6 rounded-2xl border-[0.5px] border-cyan-300 shadow-lg w-[50vw] max-w-3xl mx-auto">
+{/* Left Side: Signed URL Display */}
+      <div className="w-[60%] p-4">
+        <h2 className="text-xl font-semibold text-white mb-2">Signed URL</h2>
         <div className="mt-7 p-3 bg-gray-800 text-cyan-300 border-2 border-cyan-300 rounded-md min-h-[80px] break-all flex items-center justify-between">
-          <span className="truncate">{signedUrl ? signedUrl : "URL will appear here..."}</span>
+          <span className="truncate">
+            {signedUrl ? signedUrl : "URL will appear here..."}
+          </span>
         </div>
-        <div className="mt-7">
+
+
+{/* Copy Link Button */}
+        <div
+          className="mt-7 bg-gray-900/50 backdrop-blur-md shadow-lg transition-all duration-300"
+          onClick={signedUrl ? copyToClipboard : undefined}
+        >
           {signedUrl && (
-            <button
-              onClick={copyToClipboard}
-              className="flex items-center px-4 py-2 rounded-lg border border-purple-500 bg-gray-900/50 backdrop-blur-md shadow-lg transition-all duration-300 hover:bg-gray-800 hover:border-orange-400"
-            >
-              <Clipboard className="w-5 h-5 text-purple-400 transition-colors duration-300 hover:text-orange-400" />
-              <span className="ml-2 text-purple-400 font-medium text-sm transition-colors duration-300 hover:text-orange-400">
+            <div className="flex justify-center w-full px-4 py-2 cursor-pointer rounded-lg border border-purple-500 text-purple-400 hover:bg-gray-800 hover:border-orange-400 hover:text-orange-400">
+              <Clipboard className="w-5 h-5 transition-colors duration-300" />
+              <span className="ml-2 font-medium text-sm transition-colors duration-300">
                 Copy Link
               </span>
-            </button>
+            </div>
           )}
         </div>
 
+        <div className="w-[full] h-0.5 mt-8 bg-cyan-300"></div>
+
+{/* Add Email Recipients and Send Link Button */}
+        <div className="mt-8">
+          <textarea
+            placeholder="Enter recipient emails (comma-separated)..."
+            value={recipientEmails}
+            onChange={(e) => setRecipientEmails(e.target.value)}
+            className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
+          />
+
+          <div
+            className="mt-7 bg-gray-900/50 backdrop-blur-md shadow-lg transition-all duration-300"
+            onClick={sendEmail}
+          >
+              <div className="flex justify-center w-full px-4 py-2 cursor-pointer rounded-lg border border-purple-500 text-purple-400 hover:bg-gray-800 hover:border-orange-400 hover:text-orange-400">
+                <Mail className="w-5 h-5 transition-colors duration-300" />
+                <span className="ml-2 font-medium text-sm transition-colors duration-300">
+                  Send Link via Email
+                </span>
+              </div>
+          </div>
+        </div>
 
       </div>
 
-      {/* Right Side: Actions & Inputs */}
-      <div className="w-1/2 p-4 flex flex-col space-y-3">
+  <div className="w-0.5 h-full my-52 bg-cyan-300"></div>
+
+{/* Right Side: Actions & Inputs */}
+  <div className="w-1/2 p-4 flex flex-col space-y-3">
+        <label className="text-white text-sm">Enter File Name:</label>
         <input
           type="text"
           placeholder="Enter file name..."
@@ -80,15 +152,7 @@ export default function SignedUrlGenerator() {
           className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
         />
 
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={viewOnce}
-            onChange={() => setViewOnce(!viewOnce)}
-            className="accent-cyan-300"
-          />
-          <span className="text-white text-sm">Allow View Only Once</span>
-        </div>
+        
 
         <label className="text-white text-sm">Max Uses:</label>
         <input
@@ -99,7 +163,7 @@ export default function SignedUrlGenerator() {
           disabled={viewOnce}
         />
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 mt-1">
           <input
             type="checkbox"
             checked={allowDownload}
@@ -109,9 +173,21 @@ export default function SignedUrlGenerator() {
           <span className="text-white text-sm">Allow Download</span>
         </div>
 
+
+        <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={viewOnce}
+                    onChange={() => setViewOnce(!viewOnce)}
+                    className="accent-cyan-300"
+                  />
+                  <span className="text-white text-sm">Allow View Only Once</span>
+        </div>
+
+
         <button
           onClick={generateSignedUrl}
-          className="w-full bg-blue-600 text-white p-2 rounded border-2 border-cyan-300 hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white p-2 rounded-2xl border-2 border-cyan-300 hover:bg-blue-700"
         >
           Generate URL
         </button>
