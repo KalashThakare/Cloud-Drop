@@ -14,7 +14,7 @@ export const generateVerificationToken=async(recipients,bucketName,expiration,fi
     });
 }
 
-export const mailVerification=async(token)=>{
+export const mailVerification=async(req,token)=>{
     if(!verificationTokens[token]){
         return {success:false};
     }

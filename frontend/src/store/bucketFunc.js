@@ -80,5 +80,18 @@ export const bucketFunc = create((set,get)=>({
             console.log(error);
             toast.error('error generating signed Url');
         }
+    },
+
+    sendMail:async(emaildata)=>{
+        try {
+            if(!emaildata){
+                toast.error("Some fields look empty")
+            }
+            const res = await axiosInstance.post("/func/req-access",emaildata);
+
+        } catch (error) {
+            console.log(error);
+            toast.error("error sending mail");
+        }
     }
 }))

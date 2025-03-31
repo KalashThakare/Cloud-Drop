@@ -10,11 +10,12 @@ export default function SignedUrlGenerator() {
   const [maxUses, setMaxUses] = useState(1);
   const [allowDownload, setAllowDownload] = useState(true);
   const [signedUrl, setSignedUrl] = useState("");
-  const [recipientEmails, setRecipientEmails] = useState("");
+  const [recipients, setRecipient] = useState("");
 
   const generateUrl = bucketFunc((state) => state.generateUrl);
   const generatedUrl = bucketFunc((state) => state.generatedUrl);
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
+  const sendMail = bucketFunc((state)=>state.sendMail);
 
   const generateSignedUrl = async () => {
     if (!fileName || !expiration) {
@@ -26,44 +27,27 @@ export default function SignedUrlGenerator() {
   };
 
   const sendEmail = async () => {
-    if (!recipientEmails) {
+    if (!recipients) {
       toast.warning("Please enter at least one recipient email address");
       return;
     }
 
-    const emailArray = recipientEmails.split(",").map((email) => email.trim());
+    const emailArray = recipients.split(",").map((email) => email.trim());
 
     const emailData = {
-      bucketName: selectedBucket,
+      bucketName: selectedBucket.bucketName,
       fileName,
       expiration,
       viewOnce,
       maxUses,
       allowDownload,
-      recipientEmails: emailArray,
+      recipients: emailArray,
     };
 
     console.log("Email Data:", emailData);
 
-    try {
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(emailData),
-      });
-
-      if (response.ok) {
-        toast.success("Emails sent successfully!");
-      } else {
-        toast.error("Failed to send emails.");
-      }
-    } catch (error) {
-      console.error("Error sending emails:", error);
-      toast.error("An error occurred while sending the emails.");
-    }
-  };
+    sendMail(emailData);
+  }  
 
   useEffect(() => {
     if (generatedUrl) {
@@ -111,8 +95,8 @@ export default function SignedUrlGenerator() {
         <div className="mt-8">
           <textarea
             placeholder="Enter recipient emails (comma-separated)..."
-            value={recipientEmails}
-            onChange={(e) => setRecipientEmails(e.target.value)}
+            value={recipients}
+            onChange={(e) => setRecipient(e.target.value)}
             className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
           />
 
