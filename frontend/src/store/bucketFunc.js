@@ -82,12 +82,20 @@ export const bucketFunc = create((set,get)=>({
         }
     },
 
-    sendMail:async(emaildata)=>{
+    sendMail:async(fileName,expiration,recipient)=>{
         try {
-            if(!emaildata){
+
+            const bucketName = get().selectedBucket.bucketName; 
+
+            if (!bucketName) {
+                toast.error("No bucket selected. Please connect a bucket first.");
+                return;
+            }
+
+            if(!fileName || !expiration || !recipient){
                 toast.error("Some fields look empty")
             }
-            const res = await axiosInstance.post("/func/req-access",emaildata);
+            const res = await axiosInstance.post("/func/req-access",{fileName,expiration,recipient,bucketName});
 
         } catch (error) {
             console.log(error);

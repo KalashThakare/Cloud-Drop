@@ -34,19 +34,9 @@ export default function SignedUrlGenerator() {
 
     const emailArray = recipients.split(",").map((email) => email.trim());
 
-    const emailData = {
-      bucketName: selectedBucket.bucketName,
-      fileName,
-      expiration,
-      viewOnce,
-      maxUses,
-      allowDownload,
-      recipients: emailArray,
-    };
+    const recipient=emailArray
 
-    console.log("Email Data:", emailData);
-
-    sendMail(emailData);
+    await sendMail(fileName,expiration,recipient);
   }  
 
   useEffect(() => {

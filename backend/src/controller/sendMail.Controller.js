@@ -1,12 +1,13 @@
-import { generateVerificationToken,mailVerification } from "../../services/verifyService.js";
+import { generateVerificationToken,mailVerification } from "../services/verifyService.js";
 
 
 
 
 export const reqAccess = async(req,res)=>{
     try {
-        const {recipients,bucketName,expiration,fileName} = req.body;
-        await generateVerificationToken(recipients,fileName,bucketName,expiration);
+        const {recipient,bucketName,expiration,fileName} = req.body;
+        console.log(req.body)
+        await generateVerificationToken(recipient,bucketName,expiration,fileName);
 
         res.status(200).json({message:"Verification links sent successfully!"});
     } catch (error) {
@@ -18,7 +19,8 @@ export const reqAccess = async(req,res)=>{
 export const verifyEmail = async(req,res)=>{
     try {
         const {token} = req.query;
-        const result = await mailVerification(token);
+        console.log(token)
+        const result = await mailVerification(req,token);
 
         if(result.success){
             res.status(200).json({message:"A secure link has been sent to your email"});

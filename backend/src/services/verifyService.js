@@ -1,14 +1,17 @@
 import {v4 as uuidv4} from "uuid";
-import { sendVerificationEmail } from "../src/lib/nodeMailer.js";
+import { sendUrl, sendVerificationEmail } from "../lib/nodeMailer.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const verificationTokens = {};
 
-export const generateVerificationToken=async(recipients,bucketName,expiration,fileName)=>{
-    recipients.forEach((email) => {
+export const generateVerificationToken=async(recipient,bucketName,expiration,fileName)=>{
+    recipient.forEach((email) => {
         const token = uuidv4();
         const verificationLink = `http://localhost:4000/api/func/verify?token=${token}`
 
-        verificationTokens[token]={email,bucketName,expiration,fileName};
+        verificationTokens[token]={email,fileName,bucketName,expiration};
+        console.log("Saving Verification Token:", { email, bucketName, expiration, fileName });
 
         sendVerificationEmail(email,verificationLink);
     });
@@ -25,6 +28,11 @@ export const mailVerification=async(req,token)=>{
     try {
     
             const s3Client = req.app.locals.s3Clients?.[bucketName];
+
+            if (!s3Client) {
+                console.error(`S3 Client not found for bucket: ${bucketName}`);
+                return { success: false };
+            }
     
             const Url = await getSignedUrl(
                 s3Client,
@@ -35,7 +43,7 @@ export const mailVerification=async(req,token)=>{
                 {expiresIn:`${expiration}`*60}
             )
 
-            await sendSignedUrl(email, Url);
+            await sendUrl(email, Url);
     
             return {success:true};
             
