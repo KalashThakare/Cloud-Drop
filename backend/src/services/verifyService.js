@@ -8,7 +8,7 @@ const verificationTokens = {};
 export const generateVerificationToken=async(recipient,bucketName,expiration,fileName)=>{
     recipient.forEach((email) => {
         const token = uuidv4();
-        const verificationLink = `http://localhost:4000/api/func/verify?token=${token}`
+        const verificationLink = `http://localhost:4000/api/func/verify?token=${token}&bucketName=${bucketName}`
 
         verificationTokens[token]={email,fileName,bucketName,expiration};
         console.log("Saving Verification Token:", { email, bucketName, expiration, fileName });

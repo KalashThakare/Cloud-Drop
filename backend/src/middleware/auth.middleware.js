@@ -35,7 +35,7 @@ export const protectRoute =async (req,res,next)=>{
 }
 
 export const attachS3Client = (req, res, next) => {
-    const { bucketName } = req.body;
+    const bucketName = req.body.bucketName || req.query.bucketName;
 
     if (!bucketName) {
         return res.status(400).json({ message: "Please connect to a bucket first." });

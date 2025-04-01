@@ -22,12 +22,12 @@ router.post(
   Upload
 );
 
-router.post("/req-access",(req, res, next) => { 
-  console.log("Raw incoming request body:", req.body); 
-  next();
-},attachS3Client,reqAccess);
+router.post("/req-access",reqAccess);
 
-router.get("/verify",verifyEmail);
+router.get("/verify",(req, res, next) => { 
+  console.log("Raw incoming request body:", req.query); 
+  next();
+},attachS3Client,verifyEmail);
 
 
 
