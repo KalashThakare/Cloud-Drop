@@ -49,7 +49,7 @@ function Home() {
 
   useEffect(() => {
     if (authUser === null) {
-      router.replace("/login");
+      router.push("/login");
     }
     fetchBucket();
   }, [authUser, router, fetchBucket]);
