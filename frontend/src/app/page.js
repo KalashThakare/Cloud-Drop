@@ -4,7 +4,16 @@ import { axiosInstance } from "@/lib/axios";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { LogOut, FilePlus2, FolderPlus, Globe, Key, Lock, Plug, Trash2 } from "lucide-react";
+import {
+  LogOut,
+  FilePlus2,
+  FolderPlus,
+  Globe,
+  Key,
+  Lock,
+  Plug,
+  Trash2,
+} from "lucide-react";
 import { bucketFunc } from "@/store/bucketFunc";
 import { toast } from "sonner";
 import {
@@ -34,8 +43,11 @@ function Home() {
     bucketName: "",
     bucketRegion: "",
     bucketKey: "",
-    bucketSecret: ""
+    bucketSecret: "",
   });
+
+  const [accountId, setAccountId] = useState("");
+  const [bucketName, setBucketName] = useState("");
 
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
@@ -101,7 +113,8 @@ function Home() {
         logout();
         router.replace("/login");
       },
-      className: "hover:bg-red-500 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",
+      className:
+        "hover:bg-red-500 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",
     },
   ];
 
@@ -134,7 +147,7 @@ function Home() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setBucket(prev => ({ ...prev, [name]: value }));
+    setBucket((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -146,7 +159,7 @@ function Home() {
         bucketName: "",
         bucketRegion: "",
         bucketKey: "",
-        bucketSecret: ""
+        bucketSecret: "",
       });
       fetchBucket();
       setActiveView("your_buckets");
@@ -190,8 +203,8 @@ function Home() {
       <Sidebar open={open} setOpen={setOpen} animate={true} className="w-2/9">
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-            <div 
-              onClick={() => setActiveView("add_bucket")} 
+            <div
+              onClick={() => setActiveView("add_bucket")}
               className="relative z-20 flex items-center space-x-2 text-md font-normal text-black dark:text-white hover:bg-green-400 hover:text-black rounded-full w-fit hover:px-5 hover:py-3 px-4 py-2 cursor-pointer"
             >
               <FilePlus2 size={20} className="h-6 w-6" />
@@ -216,7 +229,7 @@ function Home() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard 
+      <Dashboard
         activeView={activeView}
         fetchedBuckets={fetchedBuckets}
         selectedBucket={selectedBucket}
@@ -235,7 +248,74 @@ function Home() {
         setCaption={setCaption}
         submit={submit}
       />
-      <div className="w-2/9 flex justify-center items-center">Notification Bar</div>
+      <div className="w-[30rem] max-w-full flex justify-center items-center h-full px-5">
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!accountId || !bucketName) {
+              toast.error("Please fill in all fields");
+              return;
+            }
+            try {
+              const response = await axiosInstance.post("/connect-bucket", {
+                accountId,
+                bucketName,
+              });
+              toast.success("Bucket connected successfully");
+              console.log("Response from backend:", response.data);
+            } catch (error) {
+              toast.error("Failed to connect bucket");
+              console.error(error);
+            }
+          }}
+          className="w-full max-w-md p-6 rounded-2xl shadow-xl bg-black text-white border border-gray-700"
+        >
+          <h2 className="text-3xl font-bold text-center mb-6 text-cyan-300 tracking-wide flex items-center justify-center gap-2">
+            <Plug className="w-8 h-8 text-cyan-300" /> Connect Bucket
+          </h2>
+
+          <div className="mb-4">
+            <label className="block text-gray-400 mb-1">
+              Enter your Account Id
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+                placeholder="Enter Account Id"
+                className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+                required
+              />
+              <Key className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-400 mb-1">
+              Enter your Bucket Name
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={bucketName}
+                onChange={(e) => setBucketName(e.target.value)}
+                placeholder="Enter Bucket Name"
+                className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+                required
+              />
+              <FolderPlus className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full p-3 bg-blue-600 text-white rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-green-600 active:scale-95 shadow-lg flex items-center justify-center gap-2"
+          >
+            <Plug className="w-5 h-5" /> Connect Bucket
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -257,7 +337,7 @@ const Dashboard = ({
   setFile,
   caption,
   setCaption,
-  submit
+  submit,
 }) => {
   return (
     <div className="flex justify-center border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
@@ -309,7 +389,9 @@ const Dashboard = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-400 mb-1">Bucket AccessKeyId</label>
+              <label className="block text-gray-400 mb-1">
+                Bucket AccessKeyId
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -325,7 +407,9 @@ const Dashboard = ({
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-400 mb-1">Bucket SecretAccessKey</label>
+              <label className="block text-gray-400 mb-1">
+                Bucket SecretAccessKey
+              </label>
               <div className="relative">
                 <input
                   type="password"
@@ -351,7 +435,9 @@ const Dashboard = ({
       )}
       {activeView === "your_buckets" && (
         <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
-          <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">Your Buckets</h1>
+          <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">
+            Your Buckets
+          </h1>
           {selectedBucket && (
             <div className="p-3 mb-4 text-center text-white bg-green-700 rounded-lg">
               Connected to: <strong>{selectedBucket.bucketName}</strong>
@@ -364,21 +450,37 @@ const Dashboard = ({
                 <li
                   key={bucket.bucketName}
                   className={`items-center p-3 border-b border-gray-600 
-                    ${selectedBucket?.bucketName === bucket.bucketName ? "bg-green-900 text-cyan-300" : ""}`}
+                    ${
+                      selectedBucket?.bucketName === bucket.bucketName
+                        ? "bg-green-900 text-cyan-300"
+                        : ""
+                    }`}
                 >
                   <div className="flex flex-col">
                     <div className="flex">
                       <div className="flex-1 min-w-[150px]">
-                        <p className="font-semibold truncate">{bucket.bucketName}</p>
-                        <p className="text-sm text-gray-400">{bucket.bucketRegion}</p>
+                        <p className="font-semibold truncate">
+                          {bucket.bucketName}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {bucket.bucketRegion}
+                        </p>
                       </div>
                       <div className="flex gap-5">
                         <div>
                           <button
-                            onClick={() => handleConnectClick(bucket.bucketName)}
-                            disabled={selectedBucket?.bucketName === bucket.bucketName}
+                            onClick={() =>
+                              handleConnectClick(bucket.bucketName)
+                            }
+                            disabled={
+                              selectedBucket?.bucketName === bucket.bucketName
+                            }
                             className={`p-2 rounded-lg transition-all 
-                              ${selectedBucket?.bucketName === bucket.bucketName ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}`}
+                              ${
+                                selectedBucket?.bucketName === bucket.bucketName
+                                  ? "bg-gray-500 cursor-not-allowed"
+                                  : "bg-green-600 hover:bg-green-500"
+                              }`}
                           >
                             <Plug size={16} />
                           </button>
@@ -404,7 +506,9 @@ const Dashboard = ({
                           className="p-2 w-full border border-gray-600 rounded-lg bg-gray-900 text-white focus:border-blue-400 focus:outline-none"
                         />
                         <button
-                          onClick={() => connectToBucket(bucket.bucketName, secret)}
+                          onClick={() =>
+                            connectToBucket(bucket.bucketName, secret)
+                          }
                           className="p-2 bg-blue-600 text-white rounded-lg transition-all hover:bg-green-600"
                         >
                           Connect
@@ -421,8 +525,8 @@ const Dashboard = ({
         </div>
       )}
       {activeView === "cloud_drop" && (
-        <form 
-          onSubmit={submit} 
+        <form
+          onSubmit={submit}
           className="w-96 p-6 rounded-xl bg-black shadow-lg flex flex-col gap-4 text-center border border-gray-700"
         >
           <h1 className="text-2xl font-bold mb-2 text-cyan-300">Cloud-drop</h1>
@@ -439,20 +543,16 @@ const Dashboard = ({
             placeholder="Caption"
             className="p-3 border border-gray-600 rounded-lg text-lg text-white bg-gray-900 focus:border-blue-400 focus:outline-none transition-all"
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="p-3 bg-blue-600 text-white rounded-lg text-lg cursor-pointer transition-all hover:bg-blue-500 active:translate-y-0"
           >
             Upload
           </button>
         </form>
       )}
-      {activeView === "file_upload" && (
-        <FileSelector />
-      )}
-      {activeView === "signed_url" && (
-        <SignedUrlGenerator />
-      )}
+      {activeView === "file_upload" && <FileSelector />}
+      {activeView === "signed_url" && <SignedUrlGenerator />}
     </div>
   );
 };
