@@ -184,7 +184,7 @@ function Home() {
   return (
     <div
       className={cn(
-        "mx-auto flex w-full h-screen flex-1 flex-col overflow-hidden rounded-md border-0 border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800"
+        "mx-auto flex w-full h-screen flex-1 flex-col overflow-hidden border-0 border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800"
       )}
     >
       <Sidebar open={open} setOpen={setOpen} animate={true} className="w-2/9">
@@ -235,7 +235,7 @@ function Home() {
         setCaption={setCaption}
         submit={submit}
       />
-      <div className="w-2/9">Notification Bar</div>
+      <div className="w-2/9 flex justify-center items-center">Notification Bar</div>
     </div>
   );
 }
@@ -260,7 +260,7 @@ const Dashboard = ({
   submit
 }) => {
   return (
-    <div className="flex justify-center border-0 items-center h-full w-full flex-1 flex-col gap-2 rounded-2xl border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
+    <div className="flex justify-center border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
       {activeView === "home" && (
         <div id="Home">
           <h1>Welcome to Cloud Drop</h1>
