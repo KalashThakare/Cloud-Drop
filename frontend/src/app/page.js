@@ -58,6 +58,7 @@ function Home() {
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const deleteBucket = bucketFunc((state) => state.deleteBucket);
   const addBucket = bucketFunc((state) => state.addBucket);
+  const userBucket = bucketFunc((state) => state.userBucket);
 
   useEffect(() => {
     if (authUser === null) {
@@ -256,17 +257,7 @@ function Home() {
               toast.error("Please fill in all fields");
               return;
             }
-            try {
-              const response = await axiosInstance.post("/connect-bucket", {
-                accountId,
-                bucketName,
-              });
-              toast.success("Bucket connected successfully");
-              console.log("Response from backend:", response.data);
-            } catch (error) {
-              toast.error("Failed to connect bucket");
-              console.error(error);
-            }
+           userBucket({accountId,bucketName});
           }}
           className="w-full max-w-md p-6 rounded-2xl shadow-xl bg-black text-white border border-gray-700"
         >

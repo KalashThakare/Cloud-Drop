@@ -8,6 +8,7 @@ export const bucketFunc = create((set,get)=>({
     fetchedBuckets:[],
     selectedBucket:(''),
     generatedUrl:(''),
+    usersBucket:{},
 
     addBucket:async(data)=>{
         try {
@@ -101,5 +102,19 @@ export const bucketFunc = create((set,get)=>({
             console.log(error);
             toast.error("error sending mail");
         }
+    },
+
+   userBucket:async(data)=>{
+    try {
+        const response = await axiosInstance.post("/userBucket", {
+          data
+        });
+        set(usersBucket(response.data))
+        toast.success("Bucket connected successfully");
+        console.log("Response from backend:", response.data);
+      } catch (error) {
+        toast.error("Failed to connect bucket");
+        console.error(error);
+      }
     }
 }))
