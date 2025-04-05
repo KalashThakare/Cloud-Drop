@@ -2,7 +2,12 @@
 import React from "react";
 
 export default function Step3({ accountId, bucketName, onNext }) {
-  const signedUrl = `https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?templateURL=https://example.com/cloudformation-template.yaml&accountId=${accountId}&bucketName=${bucketName}`;
+
+  const cloudFormationConsoleURL = `https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template` +
+  `?templateURL=${encodeURIComponent(signedUrl)}` +
+  `&accountId=${accountId}` +
+  `&bucketName=${bucketName}`;
+
 
   return (
     <div className="p-6 bg-gray-800 text-white rounded-lg">
@@ -12,7 +17,7 @@ export default function Step3({ accountId, bucketName, onNext }) {
         Console.
       </p>
       <a
-        href={signedUrl}
+        href={cloudFormationConsoleURL}
         target="_blank"
         rel="noopener noreferrer"
         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded inline-block"
