@@ -62,7 +62,7 @@ function Home() {
 
   useEffect(() => {
     if (authUser === null) {
-      router.push("/login");
+      router.push("/Auth");
     }
     fetchBucket();
   }, [authUser, router, fetchBucket]);
@@ -112,7 +112,7 @@ function Home() {
       ),
       onClick: () => {
         logout();
-        router.replace("/login");
+        router.replace("/Auth");
       },
       className:
         "hover:bg-red-500 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",

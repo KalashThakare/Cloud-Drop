@@ -6,7 +6,7 @@ import ScrollAnimation from "@/components/ScrollAnimation";
 export default function Home() {
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      <div className="absolute top-40 left-1/8 w-3/4 h-0 bg-cyan-500 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(6,150,212,0.75)]"></div>
+      <div className="absolute top-40 left-1/8 w-3/4 h-0.5 bg-cyan-500 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(6,150,212,0.75)]"></div>
 
       <header className="flex justify-between items-center px-8 py-6">
         <h1 className="text-2xl font-bold">
@@ -88,9 +88,8 @@ export default function Home() {
             </span>
         </button>
     </div>
-    </main>
 
-      <div className="flex justify-center mt-12">
+    <div className="flex justify-center mt-12">
         <a
           href="#learn-more"
           className="text-gray-400 hover:text-white transition"
@@ -114,7 +113,11 @@ export default function Home() {
         </a>
       </div>
 
+
       <ScrollAnimation />
+
+
+    </main>
 
       <footer className="absolute bottom-0 w-full bg-gray-800 py-4 text-center text-gray-400">
         <p>© 2025 Cobalt. All rights reserved.</p>
