@@ -26,6 +26,6 @@ export const sendUrl=async(email,url)=>{
         from: "your-email@gmail.com",
         to: email,
         subject: "Your Secure File Link",
-        text: `Here is your secure file link: ${url}`,
+        text: `Here is your secure file link:\n ${url}`,
     });
 }

@@ -257,7 +257,8 @@ function Home() {
               toast.error("Please fill in all fields");
               return;
             }
-           userBucket({accountId,bucketName});
+          //  userBucket({accountId,bucketName});
+           console.log(accountId,bucketName)
           }}
           className="w-full max-w-md p-6 rounded-2xl shadow-xl bg-black text-white border border-gray-700"
         >

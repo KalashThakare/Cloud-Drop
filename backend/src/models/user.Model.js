@@ -1,6 +1,29 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
+const activeBucketSchema=new mongoose.Schema({
+    bucketName:{
+        type:String,
+        required:true,
+    },
+    accessKeyId:{
+        type:String,
+        required:true
+    },
+    secretAccessKey:{
+        type:String,
+        required:true
+    },
+    sessionToken:{
+        type:String,
+        required:true
+    },
+    expirationTime:{
+        type:Number,
+    },
+
+})
+
 const ConfigSchema = new mongoose.Schema({
     bucketName: {
         type: String,
@@ -35,7 +58,8 @@ const UserModel = new mongoose.Schema({
         required:true,
         minLength:[4,'password must be atleast 4 characters long']
     },
-    buckets:[ConfigSchema]
+    buckets:[ConfigSchema],
+    ConnectedBucket:{activeBucketSchema}
 });
 
 UserModel.methods.generateAuthToken = function(){

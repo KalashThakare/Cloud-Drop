@@ -1,18 +1,19 @@
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getS3Client } from "../../lib/platformClient/s3";
 
 
 export const Upload=async (req,res)=>{
     try {
 
-        const {bucketName} = req.body
-        console.log("req-body",req.body);
-        console.log("req-file",req.file);
+        // const {bucketName} = req.body
+        // console.log("req-body",req.body);
+        // console.log("req-file",req.file);
 
 
-        if(!bucketName){
-            return res.status(400).json({message:"Please connect to bucket"});
-        }
+        // if(!bucketName){
+        //     return res.status(400).json({message:"Please connect to bucket"});
+        // }
 
         const file = req.file
 
@@ -20,7 +21,7 @@ export const Upload=async (req,res)=>{
             return res.status(400).json({message:"No file found"});
         }
 
-        const s3Client = req.app.locals.s3Clients?.[bucketName];
+        const s3Client = await getS3Client(platformS3);
 
         if (!s3Client) {
             return res.status(500).json({ message: "S3 Client not initialized. Please connect to the bucket again." });
@@ -29,7 +30,7 @@ export const Upload=async (req,res)=>{
         const body=req.file.buffer;
 
         const params = {
-            Bucket:bucketName,
+            Bucket:process.env.BUCKET_NAME,
             Key:req.file.originalname,
             Body:body,
             ContentType:req.file.mimetype
@@ -54,13 +55,15 @@ export const generateSignedUrl =async(req,res)=>{
 
     try {
 
-        const {fileName,expiration,bucketName} = req.body;
+        const {fileName,expiration} = req.body;
+
+        const bucketName = process.env.BUCKET_NAME;
 
         if(!bucketName){
             return res.status(400).json({message:"Please enter Bucket Name"});
         }
 
-        const s3Client = req.app.locals.s3Clients?.[bucketName];
+        const s3Client = await getS3Client(platformS3);
 
         if(!s3Client){
             return res.status(400).json({message:"S3 client not initialized"});

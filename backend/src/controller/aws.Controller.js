@@ -1,6 +1,6 @@
 import User from "../models/user.Model.js";
 import { encrypt,decrypt } from "../lib/AES.js";
-import { createS3Client } from "../lib/s3.js";
+import { createS3Client } from "../lib/platformClient/s3.js";
 import bcrypt from "bcrypt";
 import { ListObjectsV2Command } from '@aws-sdk/client-s3';
 
