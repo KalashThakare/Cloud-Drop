@@ -31,6 +31,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import FileSelector from "@/components/FileSelector";
 import SignedUrlGenerator from "@/components/SignedUrlGenerator";
+import Link from "next/link";
 
 function Home() {
   const [activeView, setActiveView] = useState("home");
@@ -215,7 +216,7 @@ function Home() {
                 animate={{ opacity: 1 }}
                 className="font-medium whitespace-pre"
               >
-                Add Bucket
+                Switch Bucket
               </motion.span>
             </div>
             <div className="mt-8 flex flex-col gap-2">
@@ -233,6 +234,7 @@ function Home() {
       </Sidebar>
       <Dashboard
         activeView={activeView}
+        setActiveView={setActiveView}
         fetchedBuckets={fetchedBuckets}
         selectedBucket={selectedBucket}
         connectingBucket={connectingBucket}
@@ -251,7 +253,7 @@ function Home() {
         submit={submit}
       />
       <div className="w-[30rem] max-w-full flex justify-center items-center h-full px-5">
-        <form
+        {/* <form
           onSubmit={async (e) => {
             e.preventDefault();
             if (!accountId || !bucketName) {
@@ -307,7 +309,7 @@ function Home() {
           >
             <Plug className="w-5 h-5" /> Connect Bucket
           </button>
-        </form>
+        </form> */}
       </div>
     </div>
   );
@@ -315,6 +317,7 @@ function Home() {
 
 const Dashboard = ({
   activeView,
+  setActiveView,
   fetchedBuckets,
   selectedBucket,
   connectingBucket,
@@ -340,91 +343,135 @@ const Dashboard = ({
         </div>
       )}
       {activeView === "add_bucket" && (
-        <div className="flex min-h-screen items-center justify-center">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-sm p-6 rounded-2xl shadow-xl text-white border border-cyan-300"
-          >
-            <h2 className="text-3xl font-bold text-center mb-6 text-blue-100 tracking-wide flex items-center justify-center gap-2">
-              <FolderPlus className="w-8 h-8 text-cyan-300" /> Add New Bucket
-            </h2>
+        // <div className="flex min-h-screen items-center justify-center">
+        //   <form
+        //     onSubmit={handleSubmit}
+        //     className="w-full max-w-sm p-6 rounded-2xl shadow-xl text-white border border-cyan-300"
+        //   >
+        //     <h2 className="text-3xl font-bold text-center mb-6 text-blue-100 tracking-wide flex items-center justify-center gap-2">
+        //       <FolderPlus className="w-8 h-8 text-cyan-300" /> Add New Bucket
+        //     </h2>
 
-            <div className="mb-4">
-              <label className="block text-gray-400 mb-1">Bucket Name</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="bucketName"
-                  placeholder="Enter bucket name"
-                  value={bucket.bucketName}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-                  required
-                />
-                <FolderPlus className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-              </div>
-            </div>
+        //     <div className="mb-4">
+        //       <label className="block text-gray-400 mb-1">Bucket Name</label>
+        //       <div className="relative">
+        //         <input
+        //           type="text"
+        //           name="bucketName"
+        //           placeholder="Enter bucket name"
+        //           value={bucket.bucketName}
+        //           onChange={handleChange}
+        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+        //           required
+        //         />
+        //         <FolderPlus className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+        //       </div>
+        //     </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-400 mb-1">Bucket Region</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="bucketRegion"
-                  placeholder="Enter bucket region"
-                  value={bucket.bucketRegion}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-                  required
-                />
-                <Globe className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-              </div>
-            </div>
+        //     <div className="mb-4">
+        //       <label className="block text-gray-400 mb-1">Bucket Region</label>
+        //       <div className="relative">
+        //         <input
+        //           type="text"
+        //           name="bucketRegion"
+        //           placeholder="Enter bucket region"
+        //           value={bucket.bucketRegion}
+        //           onChange={handleChange}
+        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+        //           required
+        //         />
+        //         <Globe className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+        //       </div>
+        //     </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-400 mb-1">
-                Bucket AccessKeyId
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="bucketKey"
-                  placeholder="Enter bucket key"
-                  value={bucket.bucketKey}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-                  required
-                />
-                <Key className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-              </div>
-            </div>
+        //     <div className="mb-4">
+        //       <label className="block text-gray-400 mb-1">
+        //         Bucket AccessKeyId
+        //       </label>
+        //       <div className="relative">
+        //         <input
+        //           type="text"
+        //           name="bucketKey"
+        //           placeholder="Enter bucket key"
+        //           value={bucket.bucketKey}
+        //           onChange={handleChange}
+        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+        //           required
+        //         />
+        //         <Key className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+        //       </div>
+        //     </div>
 
-            <div className="mb-6">
-              <label className="block text-gray-400 mb-1">
-                Bucket SecretAccessKey
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  name="bucketSecret"
-                  placeholder="Enter bucket secret"
-                  value={bucket.bucketSecret}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-                  required
-                />
-                <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-              </div>
-            </div>
+        //     <div className="mb-6">
+        //       <label className="block text-gray-400 mb-1">
+        //         Bucket SecretAccessKey
+        //       </label>
+        //       <div className="relative">
+        //         <input
+        //           type="password"
+        //           name="bucketSecret"
+        //           placeholder="Enter bucket secret"
+        //           value={bucket.bucketSecret}
+        //           onChange={handleChange}
+        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
+        //           required
+        //         />
+        //         <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+        //       </div>
+        //     </div>
 
-            <button
-              type="submit"
-              className="w-full p-3 bg-blue-600 text-white rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-green-600 active:scale-95 shadow-lg flex items-center justify-center gap-2"
+        //     <button
+        //       type="submit"
+        //       className="w-full p-3 bg-blue-600 text-white rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-green-600 active:scale-95 shadow-lg flex items-center justify-center gap-2"
+        //     >
+        //       <FolderPlus className="w-5 h-5" /> Add Bucket
+        //     </button>
+        //   </form>
+        // </div>
+
+        <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
+        {/* Use Free Bucket Button */}
+        
+        <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group"
+          onClick={() => setActiveView("home")}
+        >
+            
+            <span className="absolute inset-0 overflow-hidden rounded-full">
+            <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            </span>
+            <div className="w-full relative flex items-center justify-center space-x-2 z-10 rounded-full bg-zinc-950 py-2 px-4 ring-1 ring-white/10">
+            <span className="text-sm font-semibold text-white">Use Free Bucket</span>
+            <svg
+                fill="none"
+                height="16"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
             >
-              <FolderPlus className="w-5 h-5" /> Add Bucket
-            </button>
-          </form>
-        </div>
+                <path
+                d="M10.75 8.75L14.25 12L10.75 15.25"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                />
+            </svg>
+            </div>
+            <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-cyan-500/0 via-cyan-500/90 to-cyan-500/0 transition-opacity duration-500 group-hover:opacity-40" />
+            
+            
+        </button>
+
+        {/* Use your own Bucket Button */}
+        <Link href={"/Own"}>
+        <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+        <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFFF_0%,#007BFF_50%,#00FFFF_100%)]" />
+        <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+            Use your own Bucket
+            </span>
+        </button>
+        </Link>
+    </div>
       )}
       {activeView === "your_buckets" && (
         <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">

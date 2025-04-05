@@ -3,6 +3,7 @@ import React from "react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Link from "next/link";
+import SubscriptionPlans from "@/components/SubscriptionPlans";
 
 export default function Home() {
 
@@ -25,7 +26,7 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      <div className="absolute top-40 left-1/8 w-3/4 h-0.5 bg-cyan-500 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(6,150,212,0.75)]"></div>
+      <div className="absolute top-40 left-1/8 w-3/4 h-0.5 bg-cyan-400 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(6,150,212,0.75)]"></div>
 
       <header className="flex justify-between items-center px-8 py-6">
         <h1 className="text-2xl font-bold">
@@ -63,8 +64,8 @@ export default function Home() {
         </nav>
       </header>
 
-      <main className="flex flex-col items-center justify-center text-center px-6 py-20">
-        <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
+      <main className="flex flex-col items-center justify-center text-center px-6 py-20 mt-4">
+        <h2 className="text-5xl md:text-6xl font-extrabold mb-6 text-white opacity-100">
           Unleash the power of <br />
           <TypewriterEffectSmooth className={"text-center flex justify-center items-center"} words={words} />
         </h2>
@@ -75,7 +76,7 @@ export default function Home() {
     <div className="space-x-4">
         {/* Use Free Bucket Button */}
         <Link href={"/Auth"}>
-        <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group">
+        <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[2px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group">
             
             <span className="absolute inset-0 overflow-hidden rounded-full">
             <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -141,7 +142,7 @@ export default function Home() {
 
 
       <ScrollAnimation />
-
+      <SubscriptionPlans />
 
     </main>
 
