@@ -5,6 +5,8 @@ import { protectRoute } from "../../middleware/auth.middleware.js";
 import assumeRole from "../../lib/assumeRole.js";
 import { getS3Client } from "../../lib/userClient/s3client.js";
 import { uploadFileToS3 } from "../../controller/userBucketController/cloud.Controller.js";
+import { createS3Client } from "../../lib/platformClient/s3.js";
+import { getCloudFormationScript } from "../../controller/platformBucket/getCloudFormationScript.js";
 
 const router = Router();
 
@@ -16,6 +18,7 @@ const upload = multer({storage:storage})
 // router.get('/buckets',protectRoute,fetchBucket);
 // router.post('/delete',protectRoute,deleteBucket);
 
+router.get("/cloudformationScript",createS3Client,getCloudFormationScript);
 router.post("/connect", protectRoute, assumeRole);
 router.post("/connect/upload", protectRoute,
     (req, res, next) => {
