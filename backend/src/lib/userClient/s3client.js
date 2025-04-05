@@ -1,4 +1,4 @@
-import { S3 } from "aws-sdk";
+import AWS from "aws-sdk";
 
 let UserS3=null;
 
@@ -6,7 +6,7 @@ export const Creates3Client = async ({req,res, accessKeyId, secretAccessKey, ses
 
     try {
 
-        UserS3 = new S3({
+        UserS3 = new AWS.S3({
             accessKeyId: accessKeyId,
             secretAccessKey: secretAccessKey,
             sessionToken: sessionToken

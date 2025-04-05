@@ -1,6 +1,6 @@
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { getS3Client } from "../../lib/platformClient/s3";
+import { getS3Client } from "../../lib/platformClient/s3.js";
 
 
 export const Upload=async (req,res)=>{

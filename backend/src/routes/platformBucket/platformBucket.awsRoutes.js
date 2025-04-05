@@ -1,7 +1,7 @@
 import express from "express"
 import { protectRoute } from "../../middleware/auth.middleware.js";
 import { createS3Client } from "../../lib/platformClient/s3.js";
-import { Upload } from "../../controller/cloud.Controller.js";
+import { Upload } from "../../controller/platformBucket/cloud.Controller.js";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 
-import { Creates3Client } from "./s3client.js";
+import { Creates3Client } from "./userClient/s3client.js";
 
 const assumeRole = async (req, res) => {
 

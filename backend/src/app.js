@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js"
-import functionRoutes from "./routes/functionRoutes.js"
+// import functionRoutes from "./routes/functionRoutes.js"
 import userBucketawsRoutes from "./routes/userBucket/userBucket.awsRoutes.js"
 import platformBucketawsRoutes from "./routes/platformBucket/platformBucket.awsRoutes.js"
 import connectToDb from "./dataBase/db.js";
@@ -23,7 +23,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 
 app.use("/api/auth",authRoutes);
-app.use("/api/func",functionRoutes);
+// app.use("/api/func",functionRoutes);
 app.use("/api/use-platform-bucket",platformBucketawsRoutes);
 app.use("/api/start-user-bucket-session",userBucketawsRoutes);
 
