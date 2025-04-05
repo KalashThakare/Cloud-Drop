@@ -20,7 +20,7 @@ import {
   Sidebar,
   SidebarBody,
   SidebarLink,
-} from "../components/ui/sidebar.jsx";
+} from "@/components/ui/sidebar.jsx";
 import {
   IconArrowLeft,
   IconBrandTabler,
@@ -51,6 +51,7 @@ function Home() {
 
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
+  const isloggingin = useAuthStore((state) => state.isloggingin);
   const logout = useAuthStore((state) => state.logout);
   const fetchedBuckets = bucketFunc((state) => state.fetchedBuckets);
   const fetchBucket = bucketFunc((state) => state.fetchBucket);
@@ -61,11 +62,11 @@ function Home() {
   const userBucket = bucketFunc((state) => state.userBucket);
 
   useEffect(() => {
-    if (authUser === null) {
-      router.push("/Auth");
+    if (authUser === null && !isloggingin) {
+      router.push("/");
     }
     fetchBucket();
-  }, [authUser, router, fetchBucket]);
+  }, [authUser, router, fetchBucket, isloggingin]);
 
   const links = [
     {
@@ -112,7 +113,7 @@ function Home() {
       ),
       onClick: () => {
         logout();
-        router.replace("/Auth");
+        router.replace("/");
       },
       className:
         "hover:bg-red-500 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",

@@ -5,7 +5,7 @@ import Image from "next/image";
 
 function ScrollAnimation() {
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div id="Dashboard" className="flex flex-col overflow-hidden">
       <ContainerScroll
         titleComponent={
           <>

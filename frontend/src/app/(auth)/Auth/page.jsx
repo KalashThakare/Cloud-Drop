@@ -42,7 +42,7 @@ export default function Auth() {
     } else {
       const authUser = await login({ email, password });
       if (authUser) {
-        router.replace("/");
+        router.replace("/Main");
       }
     }
   };
