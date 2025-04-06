@@ -208,7 +208,7 @@ const SubscriptionPlans = () => {
                 <FeatureItem key={i}>{feature}</FeatureItem>
               ))}
             </FeatureList>
-            <SelectButton highlight={pkg.highlight ? true : undefined}>Select Now</SelectButton>
+            <SelectButton highlight={pkg.highlight ? "true" : undefined}>Select Now</SelectButton>
           </PackageCard>
         ))}
       </PackagesContainer>
