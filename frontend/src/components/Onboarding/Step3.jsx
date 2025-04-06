@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Step3({ accountId, bucketName, onNext }) {
-
+  const [signedUrl,setUrl] = useState("");
   const cloudFormationConsoleURL = `https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template` +
   `?templateURL=${encodeURIComponent(signedUrl)}` +
   `&accountId=${accountId}` +
