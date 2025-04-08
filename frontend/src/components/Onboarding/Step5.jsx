@@ -1,13 +1,19 @@
 "use client";
+import { bucketFunc } from "@/store/bucketFunc";
 import React, { useState } from "react";
 
 export default function Step5({ onComplete }) {
+
+  const connectBucket = bucketFunc((state)=>state.connectBucket);
+
   const [roleArn, setRoleArn] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (roleArn) {
-      onComplete(roleArn);
+    if(onComplete){
+      onComplete(roleArn)
+      console.log(roleArn)
+      connectBucket(roleArn);
     }
   };
 

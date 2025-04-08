@@ -36,7 +36,7 @@ export const bucketFunc = create((set,get)=>({
 
     connectBucket:async(data)=>{
         try {
-            const res = await axiosInstance.post("/aws/connect",data);
+            const res = await axiosInstance.post("/start-user-bucket-session/connect",data);
             set({bucket:res.data});
             set({selectedBucket:res.data});
             toast.success('Bucket connected');
@@ -128,5 +128,5 @@ export const bucketFunc = create((set,get)=>({
             toast.error("Failed to generate Url");
             console.error(error);
         }
-    }
+    },
 }))
