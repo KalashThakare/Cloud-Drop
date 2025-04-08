@@ -1,8 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import { bucketFunc } from "@/store/bucketFunc.js";
+import React, { useEffect, useState } from "react";
 
 export default function Step3({ accountId, bucketName, onNext }) {
+
+  const getCloudformationSignedUrl = bucketFunc((state)=>state.getCloudformationSignedUrl);
+  const cloudformationTemplateUrl = bucketFunc((state)=>state.cloudformationTemplateUrl);
+
   const [signedUrl,setUrl] = useState("");
+
+  useEffect(() => {
+    const fetchSignedUrl = async () => {
+      await getCloudformationSignedUrl(); 
+    };
+
+    fetchSignedUrl();
+  }, []);
+
+  useEffect(() => {
+    if (cloudformationTemplateUrl) {
+      setUrl(cloudformationTemplateUrl);
+    }
+  }, [cloudformationTemplateUrl]);
+
   const cloudFormationConsoleURL = `https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template` +
   `?templateURL=${encodeURIComponent(signedUrl)}` +
   `&accountId=${accountId}` +

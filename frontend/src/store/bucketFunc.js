@@ -9,6 +9,7 @@ export const bucketFunc = create((set,get)=>({
     selectedBucket:(''),
     generatedUrl:(''),
     usersBucket:{},
+    cloudFormationTemplateUrl:(''),
 
     addBucket:async(data)=>{
         try {
@@ -109,12 +110,23 @@ export const bucketFunc = create((set,get)=>({
         const response = await axiosInstance.post("/userBucket", {
           data
         });
-        set(usersBucket(response.data))
+        set({usersBucket:response.data})
         toast.success("Bucket connected successfully");
         console.log("Response from backend:", response.data);
       } catch (error) {
         toast.error("Failed to connect bucket");
         console.error(error);
       }
+    },
+
+    getCloudformationSignedUrl:async()=>{
+        try {
+            const res = await axiosInstance.get("/start-user-bucket-session/cloudformationScript");
+            console.log(res.data);
+            set({cloudFormationTemplateUrl:res.data});
+        } catch (error) {
+            toast.error("Failed to generate Url");
+            console.error(error);
+        }
     }
 }))
