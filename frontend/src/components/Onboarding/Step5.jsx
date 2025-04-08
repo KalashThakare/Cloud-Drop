@@ -2,7 +2,7 @@
 import { bucketFunc } from "@/store/bucketFunc";
 import React, { useState } from "react";
 
-export default function Step5({ onComplete }) {
+export default function Step5({ bucketName, onComplete }) {
 
   const connectBucket = bucketFunc((state)=>state.connectBucket);
 
@@ -10,6 +10,7 @@ export default function Step5({ onComplete }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(bucketName);
     if(onComplete){
       onComplete(roleArn)
       console.log(roleArn)

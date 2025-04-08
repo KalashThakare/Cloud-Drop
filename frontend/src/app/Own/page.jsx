@@ -36,7 +36,7 @@ export default function OnboardingFlow() {
         />
       )}
       {step === 4 && <Step4 onNext={() => handleNext()} />}
-      {step === 5 && <Step5 onComplete={handleComplete} />}
+      {step === 5 && <Step5 bucketName={data.bucketName} onComplete={handleComplete} />}
     </div>
   );
 }
