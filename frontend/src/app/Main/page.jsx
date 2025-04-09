@@ -74,7 +74,7 @@ function Home() {
     if (isloggingin) return;
 
     if (authUser === null) {
-      router.replace("/"); 
+      router.replace("/Auth"); 
     } else {
       fetchBucket(); 
     }
