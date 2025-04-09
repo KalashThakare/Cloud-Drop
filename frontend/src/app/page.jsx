@@ -6,7 +6,6 @@ import Link from "next/link";
 import SubscriptionPlans from "@/components/SubscriptionPlans";
 
 export default function Home() {
-
   const words = [
     {
       text: "AWS",
@@ -22,7 +21,7 @@ export default function Home() {
       text: "SecureShare",
       className: "text-cyan-500 dark:text-cyan-500",
     },
-  ]
+  ];
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
@@ -75,7 +74,7 @@ export default function Home() {
         </p>
     <div className="space-x-4">
         {/* Use Free Bucket Button */}
-        <Link href={"/Auth"}>
+        <Link href={{ pathname: "/Main", query: { useDefault: "true" } }}>
         <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[2px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group">
             
             <span className="absolute inset-0 overflow-hidden rounded-full">
@@ -106,7 +105,7 @@ export default function Home() {
         </Link>
 
         {/* Use your own Bucket Button */}
-        <Link href={"/Own"}>
+        <Link href={{ pathname: "/Own", query: { useDefault: "false" } }}>
         <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
         <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFFF_0%,#007BFF_50%,#00FFFF_100%)]" />
         <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">

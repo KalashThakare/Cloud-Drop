@@ -8,6 +8,7 @@ let platformS3 = null
 export const createS3Client = async (req, res) => {
 
     try {
+        const bucketName = process.env.BUCKET_NAME;
 
         const bucket_Region = process.env.BUCKET_REGION;
         const key = process.env.accessKeyId;
@@ -22,7 +23,7 @@ export const createS3Client = async (req, res) => {
             }
         });
 
-        res.status(200).json({ message: "S3 client created" });
+        res.status(200).json({ message: "S3 client created" , bucketName:bucketName});
 
     } catch (error) {
 

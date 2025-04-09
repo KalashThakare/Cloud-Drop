@@ -1,16 +1,11 @@
 "use client";
-
 import { axiosInstance } from "@/lib/axios";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter , useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   LogOut,
   FilePlus2,
-  FolderPlus,
-  Globe,
-  Key,
-  Lock,
   Plug,
   Trash2,
 } from "lucide-react";
@@ -33,7 +28,9 @@ import FileSelector from "@/components/FileSelector";
 import SignedUrlGenerator from "@/components/SignedUrlGenerator";
 import Link from "next/link";
 
-function Home() {
+function Main() {
+  const searchParams = useSearchParams();
+  const useDefault = searchParams.get("useDefault") === "true";
   const [activeView, setActiveView] = useState("home");
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState();
@@ -47,9 +44,6 @@ function Home() {
     bucketSecret: "",
   });
 
-  const [accountId, setAccountId] = useState("");
-  const [bucketName, setBucketName] = useState("");
-
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
   const checkAuth = useAuthStore((state)=>state.checkAuth);
@@ -57,11 +51,10 @@ function Home() {
   const logout = useAuthStore((state) => state.logout);
   const fetchedBuckets = bucketFunc((state) => state.fetchedBuckets);
   const fetchBucket = bucketFunc((state) => state.fetchBucket);
-  const connectBucket = bucketFunc((state) => state.connectBucket);
+  const connectPlatformBucket = bucketFunc((state) => state.connectPlatformBucket);
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const deleteBucket = bucketFunc((state) => state.deleteBucket);
   const addBucket = bucketFunc((state) => state.addBucket);
-  const userBucket = bucketFunc((state) => state.userBucket);
 
   useEffect(()=>{
     checkAuth();
@@ -76,10 +69,12 @@ function Home() {
     if (authUser === null) {
       router.replace("/Auth"); 
     } else {
+      if (useDefault === true) {
+        connectPlatformBucket()
+      }
       fetchBucket(); 
     }
-  }, [authUser, router, fetchBucket, isloggingin]);
-
+  }, [authUser, router, fetchBucket, isloggingin,connectPlatformBucket]);
   if (isloggingin)
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
@@ -278,65 +273,6 @@ function Home() {
         setCaption={setCaption}
         submit={submit}
       />
-      <div className="w-[30rem] max-w-full flex justify-center items-center h-full px-5">
-        {/* <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            if (!accountId || !bucketName) {
-              toast.error("Please fill in all fields");
-              return;
-            }
-          //  userBucket({accountId,bucketName});
-           console.log(accountId,bucketName)
-          }}
-          className="w-full max-w-md p-6 rounded-2xl shadow-xl bg-black text-white border border-gray-700"
-        >
-          <h2 className="text-3xl font-bold text-center mb-6 text-cyan-300 tracking-wide flex items-center justify-center gap-2">
-            <Plug className="w-8 h-8 text-cyan-300" /> Connect Bucket
-          </h2>
-
-          <div className="mb-4">
-            <label className="block text-gray-400 mb-1">
-              Enter your Account Id
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
-                placeholder="Enter Account Id"
-                className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-                required
-              />
-              <Key className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-gray-400 mb-1">
-              Enter your Bucket Name
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={bucketName}
-                onChange={(e) => setBucketName(e.target.value)}
-                placeholder="Enter Bucket Name"
-                className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-                required
-              />
-              <FolderPlus className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full p-3 bg-blue-600 text-white rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-green-600 active:scale-95 shadow-lg flex items-center justify-center gap-2"
-          >
-            <Plug className="w-5 h-5" /> Connect Bucket
-          </button>
-        </form> */}
-      </div>
     </div>
   );
 }
@@ -352,10 +288,6 @@ const Dashboard = ({
   handleConnectClick,
   connectToBucket,
   deleteBucketId,
-  bucket,
-  handleChange,
-  handleSubmit,
-  file,
   setFile,
   caption,
   setCaption,
@@ -369,92 +301,6 @@ const Dashboard = ({
         </div>
       )}
       {activeView === "add_bucket" && (
-        // <div className="flex min-h-screen items-center justify-center">
-        //   <form
-        //     onSubmit={handleSubmit}
-        //     className="w-full max-w-sm p-6 rounded-2xl shadow-xl text-white border border-cyan-300"
-        //   >
-        //     <h2 className="text-3xl font-bold text-center mb-6 text-blue-100 tracking-wide flex items-center justify-center gap-2">
-        //       <FolderPlus className="w-8 h-8 text-cyan-300" /> Add New Bucket
-        //     </h2>
-
-        //     <div className="mb-4">
-        //       <label className="block text-gray-400 mb-1">Bucket Name</label>
-        //       <div className="relative">
-        //         <input
-        //           type="text"
-        //           name="bucketName"
-        //           placeholder="Enter bucket name"
-        //           value={bucket.bucketName}
-        //           onChange={handleChange}
-        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-        //           required
-        //         />
-        //         <FolderPlus className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-        //       </div>
-        //     </div>
-
-        //     <div className="mb-4">
-        //       <label className="block text-gray-400 mb-1">Bucket Region</label>
-        //       <div className="relative">
-        //         <input
-        //           type="text"
-        //           name="bucketRegion"
-        //           placeholder="Enter bucket region"
-        //           value={bucket.bucketRegion}
-        //           onChange={handleChange}
-        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-        //           required
-        //         />
-        //         <Globe className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-        //       </div>
-        //     </div>
-
-        //     <div className="mb-4">
-        //       <label className="block text-gray-400 mb-1">
-        //         Bucket AccessKeyId
-        //       </label>
-        //       <div className="relative">
-        //         <input
-        //           type="text"
-        //           name="bucketKey"
-        //           placeholder="Enter bucket key"
-        //           value={bucket.bucketKey}
-        //           onChange={handleChange}
-        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-        //           required
-        //         />
-        //         <Key className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-        //       </div>
-        //     </div>
-
-        //     <div className="mb-6">
-        //       <label className="block text-gray-400 mb-1">
-        //         Bucket SecretAccessKey
-        //       </label>
-        //       <div className="relative">
-        //         <input
-        //           type="password"
-        //           name="bucketSecret"
-        //           placeholder="Enter bucket secret"
-        //           value={bucket.bucketSecret}
-        //           onChange={handleChange}
-        //           className="w-full p-3 border border-gray-700 bg-gray-800 text-white rounded-lg outline-none focus:border-cyan-400 transition-all pl-10"
-        //           required
-        //         />
-        //         <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-        //       </div>
-        //     </div>
-
-        //     <button
-        //       type="submit"
-        //       className="w-full p-3 bg-blue-600 text-white rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-green-600 active:scale-95 shadow-lg flex items-center justify-center gap-2"
-        //     >
-        //       <FolderPlus className="w-5 h-5" /> Add Bucket
-        //     </button>
-        //   </form>
-        // </div>
-
         <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
         {/* Use Free Bucket Button */}
         
@@ -623,4 +469,4 @@ const Dashboard = ({
   );
 };
 
-export default Home;
+export default Main;

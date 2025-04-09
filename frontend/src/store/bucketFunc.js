@@ -34,11 +34,13 @@ export const bucketFunc = create((set,get)=>({
         }
     },
 
-    connectBucket:async(data)=>{
+    connectPlatformBucket:async()=>{
         try {
-            const res = await axiosInstance.post("/start-user-bucket-session/connect",data);
-            set({bucket:res.data});
-            set({selectedBucket:res.data});
+            const res = await axiosInstance.post("/use-platform-bucket/s3client");
+            console.log("data",res.data)
+            console.log("bucketNAme=",res.data.bucketName)
+            set({bucket:res.data.bucketName});
+            set({selectedBucket:res.data.bucketName});
             toast.success('Bucket connected');
         } catch (error) {
             set({bucket:null});
