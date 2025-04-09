@@ -88,7 +88,18 @@ function Main() {
   
   
 
-  if (!authUser) return <div>User not logged in</div>;
+    if (!authUser) {
+      return (
+        <div className="flex items-center justify-center h-screen bg-black">
+          <div className="bg-zinc-900 text-white p-8 rounded-2xl shadow-xl border-2 border-cyan-300 max-w-md text-center">
+            <h2 className="text-2xl font-bold mb-3 text-cyan-300">Access Denied</h2>
+            <p className="text-base text-gray-300">Please log in to continue.</p>
+          </div>
+        </div>
+      );
+    }
+    
+  
 
   const links = [
     {
