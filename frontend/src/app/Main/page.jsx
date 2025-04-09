@@ -52,6 +52,7 @@ function Home() {
 
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
+  const checkAuth = useAuthStore((state)=>state.checkAuth);
   const isloggingin = useAuthStore((state) => state.isloggingin);
   const logout = useAuthStore((state) => state.logout);
   const fetchedBuckets = bucketFunc((state) => state.fetchedBuckets);
@@ -62,12 +63,37 @@ function Home() {
   const addBucket = bucketFunc((state) => state.addBucket);
   const userBucket = bucketFunc((state) => state.userBucket);
 
+  useEffect(()=>{
+    checkAuth();
+  },[checkAuth]);
+
+   
+
   useEffect(() => {
-    if (authUser === null && !isloggingin) {
-      router.push("/");
+
+    if (isloggingin) return;
+
+    if (authUser === null) {
+      router.replace("/"); 
+    } else {
+      fetchBucket(); 
     }
-    fetchBucket();
   }, [authUser, router, fetchBucket, isloggingin]);
+
+  if (isloggingin)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        <div className="flex items-center space-x-3">
+          <div className="animate-spin h-6 w-6 rounded-full border-2 border-cyan-300 border-t-transparent" />
+          <span className="text-lg font-semibold">Loading your dashboard...</span>
+        </div>
+      </div>
+    );
+  
+  
+  
+
+  if (!authUser) return <div>User not logged in</div>;
 
   const links = [
     {

@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "framer-motion": "^12.6.3",
     "gsap": "^3.12.7",
     "locomotive-scroll": "^4.1.4",
     "lucide-react": "^0.479.0",

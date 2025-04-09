@@ -1,56 +1,94 @@
+// useAuthStore.js - improved implementation
 import { axiosInstance } from "@/lib/axios.js";
 import { create } from "zustand";
-import {toast} from "sonner";
+import { persist } from "zustand/middleware"; // You may need to install this
+import { toast } from "sonner";
 
-export const useAuthStore = create((set)=>({
-    authUser:null,
-    isloggingin:false,
-
-    checkAuth:async()=>{
+export const useAuthStore = create(
+  persist(
+    (set) => ({
+      authUser: null,
+      isloggingin: true, // Start with true to prevent premature redirects
+      
+      checkAuth: async() => {
+        set({ isloggingin: true });
         try {
-            const res=await axiosInstance.get("/auth/check");
-            set({authUser:res.data})
+          // Get token from localStorage
+          const token = localStorage.getItem("authToken");
+          
+          if (!token) {
+            set({authUser: null, isloggingin: false});
+            return;
+          }
+          
+          const res = await axiosInstance.get("/auth/check", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (res.data) {
+            set(state => ({authUser: res.data, isloggingin: false}));
+          } else {
+            set({authUser: null, isloggingin: false});
+          }
         } catch (error) {
-            console.log(error);
-            set({authUser:null});
+          localStorage.removeItem("authToken"); // Clear invalid token
+          set({authUser: null, isloggingin: false});
         }
-    },
+      },
 
-    login:async(data)=>{
-        set({isloggingin:true})
+      login: async(data) => {
+        set({isloggingin: true});
         try {
-            const res=await axiosInstance.post("/auth/login",data)
-            set({authUser:res.data});
-            toast.success('logged in successfully');
-            return res.data;
+          const res = await axiosInstance.post("/auth/login", data);
+          if (res.data && res.data.token) {
+            localStorage.setItem("authToken", res.data.token);
+          }
+          set({authUser: res.data, isloggingin: false});
+          toast.success('Logged in successfully');
+          return res.data;
         } catch (error) {
-            set({authUser:null});
-            toast.error("Invalid credentials")
-            console.log(error.message)
-            return null;
-        }finally{
-            set({isloggingin:false})
+          set({authUser: null, isloggingin: false});
+          toast.error("Invalid credentials");
+          return null;
         }
-    },
+      },
 
-    logout:async()=>{
+      logout: async() => {
+        set({isloggingin: true});
         try {
-            const res=await axiosInstance.post("/auth/logout");
-            set({authUser:null});
-            toast.success('logged out successfully');
+          await axiosInstance.post("/auth/logout");
+          localStorage.removeItem("authToken");
+          set({authUser: null, isloggingin: false});
+          toast.success('Logged out successfully');
         } catch (error) {
-            toast.error('Error');
+          localStorage.removeItem("authToken"); 
+          set({authUser: null, isloggingin: false});
+          toast.error('Error during logout');
         }
-    },
+      },
 
-    signup:async(data)=>{
+      signup: async(data) => {
+        set({isloggingin: true});
         try {
-            const res = await axiosInstance.post("/auth/signup",data);
-            set({authUser:res.data});
-            toast.success('Signed up Successfully');
-            return 1;
+          const res = await axiosInstance.post("/auth/signup", data);
+          if (res.data && res.data.token) {
+            localStorage.setItem("authToken", res.data.token);
+          }
+          set({authUser: res.data, isloggingin: false});
+          toast.success('Signed up Successfully');
+          return 1;
         } catch (error) {
-            toast.error('Error');
+          set({isloggingin: false});
+          toast.error('Error during signup');
+          return 0;
         }
+      }
+    }),
+    {
+      name: "auth-storage", 
+      partialize: (state) => ({ 
+        authUser: state.authUser, 
+      }),
     }
-}))
+  )
+);
