@@ -212,12 +212,19 @@ function Main() {
     }
 
     const formData = new FormData();
-    formData.append("bucketName", selectedBucket.bucketName);
+    console.log(selectedBucket)
+    formData.append("bucketName", selectedBucket);
     formData.append("image", file);
     formData.append("caption", caption);
 
+    console.log("✅ Selected File:", file);
+  console.log("✅ FormData Entries:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
     try {
-      await axiosInstance.post("/func/upload", formData, {
+      await axiosInstance.post("/use-platform-bucket/s3client/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("File uploaded successfully");
