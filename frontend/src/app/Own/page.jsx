@@ -23,7 +23,7 @@ export default function OnboardingFlow() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-[100vw] h-[100vh] flex justify-center items-center mx-auto">
       {step === 1 && <Step1 onNext={handleNext} />}
       {step === 2 && (
         <Step2 accountId={data.accountId} onNext={() => handleNext()} />
