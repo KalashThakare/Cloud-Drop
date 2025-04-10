@@ -1,16 +1,20 @@
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getS3Client } from "../../lib/platformClient/s3.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 
 export const Upload=async (req,res)=>{
     try {
 
-        // const {bucketName} = req.body
-        // console.log("req-body",req.body);
-        // console.log("req-file",req.file);
+        const s3Client = await getS3Client(req);
 
+        console.log("req-body",req.body);
+        console.log("req-file",req.file);
 
+        const {bucketName} = req.body;
         // if(!bucketName){
         //     return res.status(400).json({message:"Please connect to bucket"});
         // }
@@ -21,16 +25,12 @@ export const Upload=async (req,res)=>{
             return res.status(400).json({message:"No file found"});
         }
 
-        const s3Client = await getS3Client(platformS3);
-
-        if (!s3Client) {
-            return res.status(500).json({ message: "S3 Client not initialized. Please connect to the bucket again." });
-        }
+        
         
         const body=req.file.buffer;
 
         const params = {
-            Bucket:process.env.BUCKET_NAME,
+            Bucket:bucketName,
             Key:req.file.originalname,
             Body:body,
             ContentType:req.file.mimetype
@@ -63,7 +63,7 @@ export const generateSignedUrl =async(req,res)=>{
             return res.status(400).json({message:"Please enter Bucket Name"});
         }
 
-        const s3Client = await getS3Client(platformS3);
+        const s3Client = await getS3Client();
 
         if(!s3Client){
             return res.status(400).json({message:"S3 client not initialized"});

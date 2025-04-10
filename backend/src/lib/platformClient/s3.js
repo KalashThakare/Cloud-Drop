@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-let platformS3 = null
 
 export const createS3Client = async (req, res) => {
 
@@ -11,17 +10,19 @@ export const createS3Client = async (req, res) => {
         const bucketName = process.env.BUCKET_NAME;
 
         const bucket_Region = process.env.BUCKET_REGION;
-        const key = process.env.accessKeyId;
-        const secret = process.env.secretAccessKey;
+        const key = process.env.IAM_ACCESS_KEY;
+        const secret = process.env.IAM_SECRET_KEY;
 
 
-        platformS3 = new S3Client({
+        const platformS3 = new S3Client({
             region: bucket_Region,
             credentials: {
                 accessKeyId: key,
                 secretAccessKey: secret
             }
         });
+
+        req.app.locals.platformS3 = platformS3;
 
         res.status(200).json({ message: "S3 client created" , bucketName:bucketName});
 
@@ -34,9 +35,10 @@ export const createS3Client = async (req, res) => {
 
 };
 
-export const getS3Client = () => {
-    if (!platformS3) {
+export const getS3Client = (req,res) => {
+    const s3 = req.app.locals.platformS3;
+    if (!s3) {
         throw new Error("S3 client has not been initialized yet.");
     }
-    return platformS3;
+    return s3;
 };
