@@ -59,11 +59,7 @@ export const generateSignedUrl =async(req,res)=>{
 
         const bucketName = process.env.BUCKET_NAME;
 
-        if(!bucketName){
-            return res.status(400).json({message:"Please enter Bucket Name"});
-        }
-
-        const s3Client = await getS3Client();
+        const s3Client = await getS3Client(req);
 
         if(!s3Client){
             return res.status(400).json({message:"S3 client not initialized"});
