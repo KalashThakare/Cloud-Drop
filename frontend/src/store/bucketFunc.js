@@ -38,9 +38,10 @@ export const bucketFunc = create((set,get)=>({
         try {
             const res = await axiosInstance.post("/use-platform-bucket/s3client");
             console.log("data",res.data)
-            console.log("bucketNAme=",res.data.bucketName)
+            console.log("bucketName=",res.data.bucketName)
             set({bucket:res.data.bucketName});
             set({selectedBucket:res.data.bucketName});
+            
             toast.success('Bucket connected');
         } catch (error) {
             set({bucket:null});
@@ -62,10 +63,34 @@ export const bucketFunc = create((set,get)=>({
         }
     },
 
-    generateUrl:async(fileName,expiration)=>{
+    generateDefaultBucketUrl:async(fileName,expiration)=>{
         try {
 
-            const bucketName = get().selectedBucket.bucketName; 
+            const bucketName = get().selectedBucket; 
+
+            if (!bucketName) {
+                toast.error("No bucket selected. Please connect a bucket first.");
+                return;
+            }
+            const res = await axiosInstance.post("/use-platform-bucket/getUrl",{
+                fileName,
+                expiration,
+                bucketName
+            });
+
+            set({generatedUrl:res.data});
+
+            
+        } catch (error) {
+            console.log(error);
+            toast.error('error generating signed Url');
+        }
+    },
+
+    generateUserBucketUrl:async(fileName,expiration)=>{
+        try {
+
+            const bucketName = get().selectedBucket; 
 
             if (!bucketName) {
                 toast.error("No bucket selected. Please connect a bucket first.");

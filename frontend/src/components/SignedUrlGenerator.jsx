@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { bucketFunc } from "@/store/bucketFunc.js";
 import { Clipboard, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 
 export default function SignedUrlGenerator() {
+
+  const searchParams = useSearchParams();
+  const useDefault = searchParams.get("useDefault") === "true";
+
+
   const [fileName, setFileName] = useState("");
   const [expiration, setExpiration] = useState(60);
   const [viewOnce, setViewOnce] = useState(false);
@@ -12,7 +18,7 @@ export default function SignedUrlGenerator() {
   const [signedUrl, setSignedUrl] = useState("");
   const [recipients, setRecipient] = useState("");
 
-  const generateUrl = bucketFunc((state) => state.generateUrl);
+  const generateDefaultBucketUrl = bucketFunc((state) => state.generateDefaultBucketUrl);
   const generatedUrl = bucketFunc((state) => state.generatedUrl);
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const sendMail = bucketFunc((state)=>state.sendMail);
@@ -23,7 +29,13 @@ export default function SignedUrlGenerator() {
       return;
     }
 
-    generateUrl(fileName, expiration);
+    if(useDefault === true){
+      generateDefaultBucketUrl(fileName, expiration);
+    }else{
+      
+    }
+
+    
   };
 
   const sendEmail = async () => {
