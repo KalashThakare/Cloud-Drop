@@ -41,8 +41,7 @@ export const bucketFunc = create((set,get)=>({
             console.log("bucketName=",res.data.bucketName)
             set({bucket:res.data.bucketName});
             set({selectedBucket:res.data.bucketName});
-            
-            toast.success('Bucket connected');
+    
         } catch (error) {
             set({bucket:null});
             set({selectedBucket:null});

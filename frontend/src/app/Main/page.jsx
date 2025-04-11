@@ -67,6 +67,9 @@ function Main() {
     if (isloggingin) return;
 
     if (authUser === null) {
+      if (useDefault) {
+        localStorage.setItem("useDefaultAfterLogin", "true");
+      }
       router.replace("/Auth"); 
     } else {
       if (useDefault === true) {
@@ -75,6 +78,8 @@ function Main() {
       fetchBucket(); 
     }
   }, [authUser, router, fetchBucket, isloggingin,connectPlatformBucket]);
+
+
   if (isloggingin)
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
