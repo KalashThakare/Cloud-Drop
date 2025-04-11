@@ -2,6 +2,7 @@ import express from "express"
 import { protectRoute } from "../../middleware/auth.middleware.js";
 import { createS3Client } from "../../lib/platformClient/s3.js";
 import { generateSignedUrl, Upload } from "../../controller/platformBucket/cloud.Controller.js";
+import mailRoute from "../mail/mailFunction.routes.js"
 import multer from "multer";
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.post("/s3client/upload", (req, res, next) => {
 },upload.single("image"), Upload);
 
 router.post("/getUrl",protectRoute,generateSignedUrl)
+
+router.use("/sendMail",mailRoute)
 
 export default router;

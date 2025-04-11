@@ -1,8 +1,6 @@
 import { generateVerificationToken,mailVerification } from "../services/verifyService.js";
 
 
-
-
 export const reqAccess = async(req,res)=>{
     try {
         const {recipient,bucketName,expiration,fileName} = req.body;
