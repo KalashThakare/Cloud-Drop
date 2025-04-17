@@ -3,6 +3,9 @@ import { axiosInstance } from "@/lib/axios.js";
 import { create } from "zustand";
 import { persist } from "zustand/middleware"; // You may need to install this
 import { toast } from "sonner";
+import router from "next/router";
+
+
 
 export const useAuthStore = create(
   persist(
@@ -18,6 +21,7 @@ export const useAuthStore = create(
           
           if (!token) {
             set({authUser: null, isloggingin: false});
+            router.push("/Auth");
             return;
           }
           
@@ -33,6 +37,8 @@ export const useAuthStore = create(
         } catch (error) {
           localStorage.removeItem("authToken"); // Clear invalid token
           set({authUser: null, isloggingin: false});
+          localStorage.removeItem("useDefaultAfterLogin");
+          router.push("/Auth");
         }
       },
 

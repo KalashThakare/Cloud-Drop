@@ -70,7 +70,7 @@ function Main() {
       if (useDefault) {
         localStorage.setItem("useDefaultAfterLogin", "true");
       }
-      router.replace("/Auth"); 
+      router.push("/Auth"); 
     } else {
       if (useDefault === true) {
         connectPlatformBucket()
@@ -89,6 +89,7 @@ function Main() {
         </div>
       </div>
     );
+    
   
   
   
