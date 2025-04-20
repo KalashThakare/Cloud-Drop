@@ -1,71 +1,67 @@
-import GroupMembers from "../../models/group-member.Model.js";
 import Group from "../../models/group.Model.js";
 import Message from "../../models/messages.Model.js";
 
 export const sendMessage = async (req, res) => {
 
-    try {
+  try {
 
-        const { image, text } = req.body;
-        const senderId = req.user._id;
-        const groupId = req.params; // point to note how to send this groupId
-        const fileLink = req.body;
+    const { image, text } = req.body;
+    const senderId = req.user._id;
+    const groupId = req.params; // point to note how to send this groupId
+    const fileLink = req.body;
 
-        const newMessage = new Message({
-            senderId,
-            groupId,
-            text,
-            fileLink
-        });
+    const newMessage = new Message({
+      senderId,
+      groupId,
+      text,
+      fileLink
+    });
 
-        await newMessage.save();
+    await newMessage.save();
 
-        res.status(200).json(newMessage);
+    res.status(200).json(newMessage);
 
-    } catch (error) {
+  } catch (error) {
 
-        console.log("Error sending message");
-        res.status(500).json({error:"Internal server error"});
-    }
+    console.log("Error sending message");
+    res.status(500).json({ error: "Internal server error" });
+  }
 
 }
 
 export const getMessages = async (req, res) => {
-    try {
-      const { groupId } = req.params;  // Group ID from URL
-  
-      const messages = await Message.find({ groupId }) 
-        .sort({ createdAt: 1 })                         // Sort
-  
-      res.status(200).json(messages);
-  
-    } catch (error) {
-      console.error("Error in getGroupMessages controller:", error.message);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
+  try {
+    const { groupId } = req.params;  // Group ID from URL
 
-  export const getGroups = async (req, res) => {
-    try {
-      const userId = req.user._id; 
-  
-      const createdGroups = await Group.find({ createdBy: userId });
-  
-      const memberGroups = await GroupMembers.find({ userId })
-        .populate("groupId")
-        .then((memberships) =>
-          memberships
-            .map((m) => m.groupId)
-            .filter((Group) => Group.createdBy.toString() !== userId.toString())
-        );
-  
-      return res.status(200).json({
-        createdGroups,
-        memberGroups
-      });
-    } catch (err) {
-      console.error("Error in getGroups:", err);
-      return res.status(500).json({ message: "Server error" });
-    }
-  };
-  
+    const messages = await Message.find({ groupId })
+      .sort({ createdAt: 1 })                         // Sort
+
+    res.status(200).json(messages);
+
+  } catch (error) {
+    console.error("Error in getGroupMessages controller:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getGroups = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+
+    const createdGroups = await Group.find({ createdBy: userId });
+
+    const memberGroups = await Group.find({
+      "members.userId": userId,
+      createdBy: { $ne: userId }
+    });
+
+    return res.status(200).json({
+      createdGroups,
+      memberGroups
+    });
+
+  } catch (err) {
+    console.error("Error in getGroups:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
