@@ -6,6 +6,6 @@ const router  = express.Router();
 
 router.post("/create",protectRoute,createGroup);
 
-router.post("/addMember",protectRoute,addMembersByEmail);
+router.post("/:groupId/add-member",protectRoute,addMembersByEmail);
 
 export default router;

@@ -1,5 +1,5 @@
 import GroupMembers from "../../models/group-member.Model.js";
-import group from "../../models/group.Model.js";
+import Group from "../../models/group.Model.js";
 import Message from "../../models/messages.Model.js";
 
 export const sendMessage = async (req, res) => {
@@ -49,14 +49,14 @@ export const getMessages = async (req, res) => {
     try {
       const userId = req.user._id; 
   
-      const createdGroups = await group.find({ createdBy: userId });
+      const createdGroups = await Group.find({ createdBy: userId });
   
       const memberGroups = await GroupMembers.find({ userId })
         .populate("groupId")
         .then((memberships) =>
           memberships
             .map((m) => m.groupId)
-            .filter((group) => group.createdBy.toString() !== userId.toString())
+            .filter((Group) => Group.createdBy.toString() !== userId.toString())
         );
   
       return res.status(200).json({

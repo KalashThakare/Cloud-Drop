@@ -1,5 +1,5 @@
 import GroupMembers from "../../models/group-member.Model.js";
-import group from "../../models/group.Model.js";
+import Group from "../../models/group.Model.js";
 import User from "../../models/user.Model.js"
 
 export const createGroup = async (req, res) => {
@@ -18,7 +18,7 @@ export const createGroup = async (req, res) => {
             return res.status(404).json({ message: "cannot find user" });
         }
 
-        const newGroup = new group({
+        const newGroup = new Group({
             groupName,
             createdBy:userId
         });
@@ -38,13 +38,17 @@ export const addMembersByEmail = async (req, res) => {
     try {
 
         const { groupId } = req.params;
-        const { emails } = req.body;
+        let { emails } = req.body;
+
+        if (typeof emails === "string") {
+            emails = [emails];
+          }
 
         if (!emails || !Array.isArray(emails)) {
             return res.status(400).json({ message: "emails must be an array" });
         }
 
-        const group = await group.findById(groupId);
+        const group = await Group.findById(groupId);
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
