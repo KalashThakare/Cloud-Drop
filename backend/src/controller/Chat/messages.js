@@ -1,6 +1,6 @@
-import GroupMembers from "../../models/group-member.Model";
-import group from "../../models/group.Model";
-import Message from "../../models/messages.Model";
+import GroupMembers from "../../models/group-member.Model.js";
+import group from "../../models/group.Model.js";
+import Message from "../../models/messages.Model.js";
 
 export const sendMessage = async (req, res) => {
 

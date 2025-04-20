@@ -1,32 +1,36 @@
-import GroupMembers from "../../models/group-member.Model";
-import group from "../../models/group.Model";
+import GroupMembers from "../../models/group-member.Model.js";
+import group from "../../models/group.Model.js";
 import User from "../../models/user.Model.js"
 
 export const createGroup = async (req, res) => {
     try {
 
         const {groupName} = req.body;
-        const {userId} = req.user._id;
+        const userId = req.user._id;
+
+        console.log(req.user._id);
 
         if (!groupName) {
-            res.status(404).json({ message: "groupName is undefined" });
-            return;
+            return res.status(404).json({ message: "groupName is undefined" });
         }
 
         if (!userId) {
-            res.status(404).json({ message: "cannot find user" });
-            return;
+            return res.status(404).json({ message: "cannot find user" });
         }
 
         const newGroup = new group({
             groupName,
-            userId
+            createdBy:userId
         });
 
         await newGroup.save();
 
-    } catch (error) {
+        res.status(200).json({message:"Group created successfully",group:newGroup});
 
+
+    } catch (error) {
+        console.error("Error creating group",err);
+        res.status(500).json({message:"Internal server error"});
     }
 }
 

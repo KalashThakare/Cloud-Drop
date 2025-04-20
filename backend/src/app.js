@@ -7,6 +7,7 @@ import connectToDb from "./dataBase/db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser"
 import messageRoute from "./routes/Chat/message.Route.js";
+import groupRoute from "./routes/Chat/group.Route.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use("/api/auth",authRoutes);
 app.use("/api/use-platform-bucket",platformBucketawsRoutes);
 app.use("/api/start-user-bucket-session",userBucketawsRoutes);
-app.use("/api/messages",messageRoute)
+app.use("/api/messages",messageRoute);
+app.use("/api/group",groupRoute);
 
 export default app;
