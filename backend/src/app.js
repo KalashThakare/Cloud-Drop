@@ -6,6 +6,7 @@ import platformBucketawsRoutes from "./routes/platformBucket/platformBucket.awsR
 import connectToDb from "./dataBase/db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser"
+import messageRoute from "./routes/Chat/message.Route.js";
 
 dotenv.config();
 
@@ -24,6 +25,6 @@ app.use(cookieParser());
 app.use("/api/auth",authRoutes);
 app.use("/api/use-platform-bucket",platformBucketawsRoutes);
 app.use("/api/start-user-bucket-session",userBucketawsRoutes);
-
+app.use("/api/messages",messageRoute)
 
 export default app;
