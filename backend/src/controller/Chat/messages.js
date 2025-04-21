@@ -7,8 +7,8 @@ export const sendMessage = async (req, res) => {
 
     const { image, text } = req.body;
     const senderId = req.user._id;
-    const groupId = req.params; // point to note how to send this groupId
-    const fileLink = req.body;
+    const {groupId} = req.params; // point to note how to send this groupId
+    const {fileLink} = req.body;
 
     const newMessage = new Message({
       senderId,
@@ -23,7 +23,7 @@ export const sendMessage = async (req, res) => {
 
   } catch (error) {
 
-    console.log("Error sending message");
+    console.log("Error sending message",error);
     res.status(500).json({ error: "Internal server error" });
   }
 
