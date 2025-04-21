@@ -159,4 +159,34 @@ export const exitGroup = async(req,res) =>{
         res.status(500).json({message:"Internal server error"});
         
     }
+};
+
+export const terminateGroup = async(req,res) =>{
+    try {
+
+        const userId = req.user._id;
+        const {groupId} = req.params;
+
+        const group = await Group.findById(groupId);
+
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+          }
+
+        if(userId.toString() === group.createdBy.toString()){
+            
+            await Group.findByIdAndDelete(groupId);
+            return res.status(200).json({message:"Project terminated successfully"});
+
+        }else{
+            return res.status(404).json({message:"Only group admin can terminate the group"});
+        }
+        
+
+    } catch (error) {
+
+        console.error("Error in terminateGroup:", error);
+        res.status(500).json({ message: "Internal server error" });
+        
+    }
 }
