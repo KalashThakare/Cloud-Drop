@@ -123,3 +123,40 @@ export const removeMember = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+export const exitGroup = async(req,res) =>{
+    try {
+        
+        const userId = req.user._id;
+        const {groupId} = req.params;
+
+        if(!userId){
+            return res.status(404).json({message:"Unauthorised"});
+        }
+
+        const group = await Group.findById(groupId);
+
+        if(!group){
+            return res.status(404).json({message:"Group not found"});
+        }
+
+        const originalCount = group.members.length;
+
+        group.members = group.members.filter(member=>member.userId.toString() !== userId.toString());
+
+        if(group.members.length === originalCount){
+            return res.status(404).json({message:"Member not found in group"});
+        }
+
+        await group.save();
+
+        res.status(200).json({message:"Exit successfull"})
+
+
+    } catch (error) {
+
+        console.error("error in exit group controoler:",error);
+        res.status(500).json({message:"Internal server error"});
+        
+    }
+}
