@@ -21,12 +21,14 @@ import {
   IconBrandTabler,
   IconSettings,
   IconUserBolt,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import FileSelector from "@/components/FileSelector";
 import SignedUrlGenerator from "@/components/SignedUrlGenerator";
 import Link from "next/link";
+import ChatPage from "@/components/Chat/page";
 
 function Main() {
   const searchParams = useSearchParams();
@@ -142,6 +144,15 @@ function Main() {
         <IconArrowLeft className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       onClick: () => setActiveView("signed_url"),
+      className: "px-4 py-2 text-md",
+    },
+    {
+      label: "Chat Room",
+      href: "#",
+      icon: (
+        <IconUsersGroup className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      onClick: () => setActiveView("Chat_Room"),
       className: "px-4 py-2 text-md",
     },
     {
@@ -483,6 +494,7 @@ const Dashboard = ({
       )}
       {activeView === "file_upload" && <FileSelector />}
       {activeView === "signed_url" && <SignedUrlGenerator />}
+      {activeView === "Chat_Room" && <ChatPage />}
     </div>
   );
 };
