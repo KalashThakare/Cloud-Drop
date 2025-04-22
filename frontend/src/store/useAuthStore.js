@@ -1,7 +1,6 @@
-// useAuthStore.js - improved implementation
 import { axiosInstance } from "@/lib/axios.js";
 import { create } from "zustand";
-import { persist } from "zustand/middleware"; // You may need to install this
+import { persist } from "zustand/middleware"; 
 import { toast } from "sonner";
 import router from "next/router";
 
@@ -11,12 +10,12 @@ export const useAuthStore = create(
   persist(
     (set) => ({
       authUser: null,
-      isloggingin: true, // Start with true to prevent premature redirects
+      isloggingin: true, 
       
       checkAuth: async() => {
         set({ isloggingin: true });
         try {
-          // Get token from localStorage
+         
           const token = localStorage.getItem("authToken");
           
           if (!token) {
@@ -35,7 +34,7 @@ export const useAuthStore = create(
             set({authUser: null, isloggingin: false});
           }
         } catch (error) {
-          localStorage.removeItem("authToken"); // Clear invalid token
+          localStorage.removeItem("authToken"); 
           set({authUser: null, isloggingin: false});
           localStorage.removeItem("useDefaultAfterLogin");
           router.push("/Auth");

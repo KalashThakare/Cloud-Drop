@@ -1,7 +1,8 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {IconLink,IconSend} from "@tabler/icons-react"
+import { chatFunc } from '@/store/chatStore';
 
 const mockGroups = {
     created: ['Dev Room', 'Design Hub'],
@@ -46,6 +47,12 @@ const ChatLayout = () => {
     const [selectedGroup, setSelectedGroup] = useState('Dev Room');
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState(groupMessages[selectedGroup]);
+
+    const getGroups = chatFunc((state)=>state.getGroups);
+
+    useEffect(()=>{
+        getGroups();
+    },[getGroups])
 
     const handleGroupClick = (groupName) => {
         setSelectedGroup(groupName);
