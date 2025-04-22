@@ -17,10 +17,10 @@ import {
   SidebarLink,
 } from "@/components/ui/sidebar.jsx";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
-  IconSettings,
-  IconUserBolt,
+  IconShieldHalfFilled,
+  IconBucket,
+  IconFile,
+  IconCloudUp,
   IconUsersGroup,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
@@ -114,7 +114,7 @@ function Main() {
       label: "Your Buckets",
       href: "#",
       icon: (
-        <IconBrandTabler className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconBucket className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       onClick: () => setActiveView("your_buckets"),
       className: "px-4 py-2 text-md",
@@ -123,7 +123,7 @@ function Main() {
       label: "Cloud Drop",
       href: "#",
       icon: (
-        <IconUserBolt className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconCloudUp className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       onClick: () => setActiveView("cloud_drop"),
       className: "px-4 py-2 text-md",
@@ -132,7 +132,7 @@ function Main() {
       label: "File Upload",
       href: "#",
       icon: (
-        <IconSettings className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconFile className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       onClick: () => setActiveView("file_upload"),
       className: "px-4 py-2 text-md",
@@ -141,7 +141,7 @@ function Main() {
       label: "Signed URL",
       href: "#",
       icon: (
-        <IconArrowLeft className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconShieldHalfFilled className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       onClick: () => setActiveView("signed_url"),
       className: "px-4 py-2 text-md",
