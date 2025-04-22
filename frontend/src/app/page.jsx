@@ -1,11 +1,27 @@
 "use client";
 import React from "react";
+import { useEffect } from "react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Link from "next/link";
 import SubscriptionPlans from "@/components/SubscriptionPlans";
+import { useRouter } from "next/navigation";
+import { isTokenValid } from "../lib/utils.js";
+import { useAuthStore } from "@/store/useAuthStore.js";
 
 export default function Home() {
+
+  const router = useRouter();
+  const checkAuth = useAuthStore(state => state.checkAuth);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token && isTokenValid(token)) {
+      checkAuth(); // sets authUser if valid
+      router.push("/Main"); // redirect if token valid
+    }
+  }, []);
+
   const words = [
     {
       text: "AWS",
