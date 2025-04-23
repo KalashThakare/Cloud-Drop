@@ -12,6 +12,6 @@ router.post("/:groupId/remove-member",protectRoute,removeMember);
 
 router.post("/:groupId/exit",protectRoute,exitGroup);
 
-router.delete("/terminate",protectRoute,terminateGroup);
+router.post("/terminate",protectRoute,terminateGroup);
 
 export default router;

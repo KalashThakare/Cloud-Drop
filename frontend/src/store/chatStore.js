@@ -66,7 +66,9 @@ export const groupFunc = create((set,get)=>({
     deleteGroup:async(groupId)=>{
         try {
 
-            const res = await axiosInstance.delete("/group/terminate",groupId);
+            const res = await axiosInstance.post("/group/terminate",{
+                groupId: groupId
+              });
             toast.success("Group deleted");
 
         } catch (error) {
