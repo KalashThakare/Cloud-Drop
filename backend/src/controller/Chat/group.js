@@ -34,8 +34,8 @@ export const createGroup = async (req, res) => {
 
 export const addMembersByEmail = async (req, res) => {
     try {
-        const { groupId } = req.params;
-        let { emails } = req.body;
+        const  {groupId}  = req.body;
+        let  {emails } = req.body;
 
         if (typeof emails === "string") {
             emails = [emails];

@@ -50,6 +50,7 @@ const ChatLayout = () => {
     const memberGroups = groupFunc((state) => state.memberGroups);
     const createGroup = groupFunc((state) => state.createGroup);
     const deleteGroup = groupFunc((state) => state.deleteGroup);
+    const addMember = groupFunc((state) => state.addMember);
 
     useEffect(() => {
         getGroups();
@@ -61,6 +62,9 @@ const ChatLayout = () => {
     const [showInput, setShowInput] = useState(false);
     const [groupName, setGroupName] = useState("");
     const [showConfirm, setShowConfirm] = useState(false);
+    const [showAddMember, setShowAddMember] = useState(false);
+    const [memberEmail, setMemberEmail] = useState('');
+
 
     // Dummy group creation (replace with your real logic/store)
     const handleCreateGroup = () => {
@@ -85,6 +89,13 @@ const ChatLayout = () => {
         deleteGroup(selectedGroup._id);
         setShowConfirm(false);
     };
+
+    const handleAddMember = () => {
+
+        const groupId = selectedGroup._id
+        addMember({ groupId, memberEmail });
+
+    }
 
 
 
@@ -183,7 +194,7 @@ const ChatLayout = () => {
                                     onClick={() => handleGroupClick(group)}
                                 >
                                     <span className="text-green-400 text-sm mr-2">👥</span>
-                                    <span className="text-white text-sm">{group}</span>
+                                    <span className="text-white text-sm">{group.groupName}</span>
                                 </div>
                             ))}
                         </div>
@@ -204,17 +215,26 @@ const ChatLayout = () => {
                                 <div className="text-sm text-zinc-400">
                                     {selectedGroup.members?.length} members • Created on{' '}
                                     {new Date(selectedGroup.createdAt).toLocaleDateString()}
-                                    {selectedGroup.createdBy !== 'You' && (
-                                        <> • Created by {selectedGroup.createdBy}</>
+                                    {selectedGroup.createdBy !== 'You' && selectedGroup.members?.length > 0 && (
+                                        <> • Created by {selectedGroup.members[0].email}</>
                                     )}
+
                                 </div>
                             </div>
                             <button
+                                onClick={() => setShowAddMember(true)}
+                                className="text-emerald-500 text-sm border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-600 hover:text-white transition"
+                            >
+                                Add Member
+                            </button>
+
+                            <button
                                 onClick={handleDeleteClick}
-                                className="text-red-500 text-sm border border-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
+                                className="text-red-600 text-sm border border-red-700 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
                             >
                                 Delete Group
                             </button>
+
                         </div>
                     </div>
                 )}
@@ -242,6 +262,36 @@ const ChatLayout = () => {
                         </div>
                     </div>
                 )}
+
+                {showAddMember && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-zinc-900 text-white p-6 rounded-lg shadow-xl max-w-sm w-full border border-zinc-700">
+                            <h2 className="text-lg font-bold mb-3">Add Member</h2>
+                            <input
+                                type="email"
+                                placeholder="Enter member's email"
+                                className="w-full p-2 mb-4 rounded bg-zinc-800 border border-zinc-600 text-white"
+                                value={memberEmail}
+                                onChange={(e) => setMemberEmail(e.target.value)}
+                            />
+                            <div className="flex justify-end space-x-3">
+                                <button
+                                    onClick={() => setShowAddMember(false)}
+                                    className="px-4 py-2 bg-zinc-700 rounded hover:bg-zinc-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleAddMember}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
 
 
 

@@ -77,6 +77,26 @@ export const groupFunc = create((set,get)=>({
             toast.error("Error deleting group");
             
         }
+    },
+
+    addMember:async({groupId,memberEmail})=>{
+
+        try {
+
+            // console.log(groupId,memberEmail);
+
+            const res = await axiosInstance.post("/group/add-member",{
+                groupId,
+                emails:memberEmail
+            });
+            toast.success("Added member");
+            
+        } catch (error) {
+
+            console.error("Error in adding member",error);
+            toast.error("Error adding Member");
+            
+        }
     }
 
 }))

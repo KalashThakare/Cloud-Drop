@@ -6,7 +6,7 @@ const router  = express.Router();
 
 router.post("/create",protectRoute,createGroup);
 
-router.post("/:groupId/add-member",protectRoute,addMembersByEmail);
+router.post("/add-member",protectRoute,addMembersByEmail);
 
 router.post("/:groupId/remove-member",protectRoute,removeMember);
 
