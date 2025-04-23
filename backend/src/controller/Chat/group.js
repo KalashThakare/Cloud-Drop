@@ -165,7 +165,7 @@ export const terminateGroup = async(req,res) =>{
     try {
 
         const userId = req.user._id;
-        const {groupId} = req.params;
+        const {groupId} = req.body;
 
         const group = await Group.findById(groupId);
 

@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState,useEffect } from 'react';
-import {IconLink,IconSend} from "@tabler/icons-react"
-import { chatFunc } from '@/store/chatStore';
+import React, { useState, useEffect } from 'react';
+import { IconLink, IconSend, IconPlus } from "@tabler/icons-react"
+import { chatFunc, groupFunc } from '@/store/chatStore';
 
 const mockGroups = {
     created: ['Dev Room', 'Design Hub'],
@@ -44,19 +44,42 @@ const groupMessages = {
 };
 
 const ChatLayout = () => {
+
+    const getGroups = groupFunc((state) => state.getGroups);
+    const createdGroups = groupFunc((state) => state.createdGroups);
+    const memberGroups = groupFunc((state) => state.memberGroups);
+    const createGroup = groupFunc((state) => state.createGroup);
+
+    useEffect(() => {
+        getGroups();
+    }, [getGroups])
+
     const [selectedGroup, setSelectedGroup] = useState('Dev Room');
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState(groupMessages[selectedGroup]);
+    const [showInput, setShowInput] = useState(false);
+    const [groupName, setGroupName] = useState("");
 
-    const getGroups = chatFunc((state)=>state.getGroups);
+    // Dummy group creation (replace with your real logic/store)
+    const handleCreateGroup = () => {
+        if (!groupName.trim()) return;
 
-    useEffect(()=>{
-        getGroups();
-    },[getGroups])
+        createGroup({ groupName });
+        console.log("Create group:", groupName);
 
-    const handleGroupClick = (groupName) => {
+        createdGroups.push(groupName); // Ideally update via store
         setSelectedGroup(groupName);
-        setMessages(groupMessages[groupName] || []);
+        setMessages([]);
+        setGroupName('');
+        setShowInput(false);
+    };
+
+
+
+
+    const handleGroupClick = (group) => {
+        setSelectedGroup(group);
+        setMessages(groupMessages[group.groupName] || []);
     };
 
     const handleSend = () => {
@@ -72,16 +95,55 @@ const ChatLayout = () => {
         <div className="flex h-screen w-full text-white">
             {/* Sidebar */}
             <div className="w-72 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col">
-                <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Your Groups</h2>
+                <h2 className="text-xl font-bold text-white mb-4 tracking-tight">Your Groups</h2>
 
+                {/* Create Group UI */}
+                <div className="mb-4">
+                    {!showInput ? (
+                        <button
+                            onClick={() => setShowInput(true)}
+                            className="w-full bg-cyan-700 hover:bg-cyan-600 text-white py-2 rounded-lg transition flex justify-center items-center gap-2"
+                        >
+                            <span><IconPlus size={30} /></span> New Group
+                        </button>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="text"
+                                placeholder="Group name"
+                                className="bg-zinc-800 border border-cyan-500 text-white px-3 py-2 rounded-lg focus:outline-none"
+                                value={groupName}
+                                onChange={(e) => setGroupName(e.target.value)}
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCreateGroup}
+                                    className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-lg transition"
+                                >
+                                    Create
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setGroupName('');
+                                        setShowInput(false);
+                                    }}
+                                    className="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-2 rounded-lg transition"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Created Groups */}
                 <div className="flex-1 overflow-y-auto pr-2 custom-scroll">
-                    {/* Created Groups */}
                     <div className="mb-6">
                         <h4 className="text-sm text-zinc-400 mb-2 uppercase tracking-widest">Created By You</h4>
                         <div className="space-y-1">
-                            {mockGroups.created.map(group => (
+                            {createdGroups.map(group => (
                                 <div
-                                    key={group}
+                                    key={group._id}
                                     className={`flex items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 ${selectedGroup === group
                                         ? 'bg-zinc-800 border-l-4 border-sky-400 shadow'
                                         : 'hover:bg-zinc-800'
@@ -89,17 +151,17 @@ const ChatLayout = () => {
                                     onClick={() => handleGroupClick(group)}
                                 >
                                     <span className="text-blue-400 text-sm mr-2">📁</span>
-                                    <span className="text-white text-sm">{group}</span>
+                                    <span className="text-white text-sm">{group.groupName}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Member Of Groups */}
+                    {/* Member Groups */}
                     <div>
                         <h4 className="text-sm text-zinc-400 mb-2 uppercase tracking-widest">Member Of</h4>
                         <div className="space-y-1">
-                            {mockGroups.memberOf.map(group => (
+                            {memberGroups.map(group => (
                                 <div
                                     key={group}
                                     className={`flex items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 ${selectedGroup === group
@@ -118,19 +180,23 @@ const ChatLayout = () => {
             </div>
 
 
+
             {/* Chat Area */}
             <div className="flex flex-col flex-1 bg-zinc-950 p-6">
                 {/* Header */}
-                <div className="mb-4 border-b border-zinc-800 pb-3">
-                    <div className="text-xl font-semibold">{selectedGroup}</div>
-                    <div className="text-sm text-zinc-400">
-                        {groupDetails[selectedGroup]?.members.length} members • Created on{' '}
-                        {groupDetails[selectedGroup]?.createdOn}
-                        {groupDetails[selectedGroup]?.createdBy !== 'You' && (
-                            <> • Created by {groupDetails[selectedGroup]?.createdBy}</>
-                        )}
+                {selectedGroup && (
+                    <div className="mb-4 border-b border-zinc-800 pb-3">
+                        <div className="text-xl font-semibold">{selectedGroup.groupName}</div>
+                        <div className="text-sm text-zinc-400">
+                            {selectedGroup.members?.length} members • Created on{' '}
+                            {new Date(selectedGroup.createdAt).toLocaleDateString()}
+                            {selectedGroup.createdBy !== 'You' && (
+                                <> • Created by {selectedGroup.createdBy}</>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
+
 
 
                 {/* Chat messages */}
@@ -155,7 +221,7 @@ const ChatLayout = () => {
                         );
                     })}
                 </div>
-
+                    
 
                 {/* Message Input */}
                 <div className="mt-4 flex items-center gap-2 border-t border-zinc-800 pt-4">
@@ -194,7 +260,7 @@ const ChatLayout = () => {
                         onClick={handleSend}
                         className="bg-cyan-700 hover:bg-cyan-400 text-white px-4 py-2 rounded-lg"
                     >
-                        <IconSend size={23}/>
+                        <IconSend size={23} />
                     </button>
                 </div>
 
