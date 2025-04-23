@@ -1,7 +1,7 @@
 "use client";
 import { axiosInstance } from "@/lib/axios";
 import React, { useEffect, useState } from "react";
-import { useRouter , useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   LogOut,
@@ -48,7 +48,7 @@ function Main() {
 
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
-  const checkAuth = useAuthStore((state)=>state.checkAuth);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
   const isloggingin = useAuthStore((state) => state.isloggingin);
   const logout = useAuthStore((state) => state.logout);
   const fetchedBuckets = bucketFunc((state) => state.fetchedBuckets);
@@ -58,11 +58,11 @@ function Main() {
   const deleteBucket = bucketFunc((state) => state.deleteBucket);
   const addBucket = bucketFunc((state) => state.addBucket);
 
-  useEffect(()=>{
+  useEffect(() => {
     checkAuth();
-  },[checkAuth]);
+  }, [checkAuth]);
 
-   
+
 
   useEffect(() => {
 
@@ -72,14 +72,14 @@ function Main() {
       if (useDefault) {
         localStorage.setItem("useDefaultAfterLogin", "true");
       }
-      router.push("/Auth"); 
+      router.push("/Auth");
     } else {
       if (useDefault === true) {
         connectPlatformBucket()
       }
-      fetchBucket(); 
+      fetchBucket();
     }
-  }, [authUser, router, fetchBucket, isloggingin,connectPlatformBucket]);
+  }, [authUser, router, fetchBucket, isloggingin, connectPlatformBucket]);
 
 
   if (isloggingin)
@@ -91,23 +91,23 @@ function Main() {
         </div>
       </div>
     );
-    
-  
-  
-  
 
-    if (!authUser) {
-      return (
-        <div className="flex items-center justify-center h-screen bg-black">
-          <div className="bg-zinc-900 text-white p-8 rounded-2xl shadow-xl border-2 border-cyan-300 max-w-md text-center">
-            <h2 className="text-2xl font-bold mb-3 text-cyan-300">Access Denied</h2>
-            <p className="text-base text-gray-300">Please log in to continue.</p>
-          </div>
+
+
+
+
+  if (!authUser) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black">
+        <div className="bg-zinc-900 text-white p-8 rounded-2xl shadow-xl border-2 border-cyan-300 max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-3 text-cyan-300">Access Denied</h2>
+          <p className="text-base text-gray-300">Please log in to continue.</p>
         </div>
-      );
-    }
-    
-  
+      </div>
+    );
+  }
+
+
 
   const links = [
     {
@@ -325,54 +325,118 @@ const Dashboard = ({
   return (
     <div className="flex justify-center border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
       {activeView === "home" && (
-        <div id="Home">
-          <h1>Welcome to Cloud Drop</h1>
+        <div
+          id="Home"
+          className="relative h-full w-full px-10 pt-14 font-sans text-white overflow-hidden"
+        >
+          {/* Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-zinc-900 opacity-90 -z-10" />
+
+          {/* Intro */}
+          <div className="text-center mb-16">
+            <h1 className="text-5xl font-bold tracking-tight text-cyan-400 drop-shadow">
+              Welcome to <span className="text-white">Cloud Drop</span>
+            </h1>
+            <p className="text-lg text-zinc-400 mt-4 max-w-2xl mx-auto leading-relaxed">
+              Seamlessly manage files, collaborate with your team, and securely share data — all from one intuitive cloud workspace.
+            </p>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 hover:shadow-cyan-500/20 transition-all">
+              <div className="text-3xl mb-4 text-cyan-400">
+                <i className="lucide lucide-database"></i>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Switch Buckets</h3>
+              <p className="text-sm text-zinc-400">
+                Use our secure platform bucket or connect your own S3 bucket for more control and visibility.
+              </p>
+            </div>
+
+            <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 hover:shadow-cyan-500/20 transition-all">
+              <div className="text-3xl mb-4 text-blue-400">
+                <i className="lucide lucide-link-2"></i>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Secure File Sharing</h3>
+              <p className="text-sm text-zinc-400">
+                Upload files, generate signed URLs, set expiration and access filters with full control.
+              </p>
+            </div>
+
+            <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 hover:shadow-cyan-500/20 transition-all">
+              <div className="text-3xl mb-4 text-green-400">
+                <i className="lucide lucide-message-square-dots"></i>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Collaborate with Teams</h3>
+              <p className="text-sm text-zinc-400">
+                Join group chats, share project files, and discuss tasks with built-in team messaging.
+              </p>
+            </div>
+          </div>
+
+          {/* Getting Started */}
+          <div className="mt-20 max-w-4xl mx-auto bg-zinc-800 border border-zinc-700 p-6 rounded-xl">
+            <h4 className="text-lg text-cyan-300 font-semibold mb-3 flex items-center gap-2">
+              <i className="lucide lucide-rocket" /> Getting Started
+            </h4>
+            <ul className="list-disc pl-5 text-zinc-400 text-sm space-y-1">
+              <li>Go to <strong>File Upload</strong> to start uploading your files.</li>
+              <li>Use <strong>Signed URL</strong> to generate secure, temporary links.</li>
+              <li>Switch between <strong>Platform</strong> and <strong>Personal Buckets</strong>.</li>
+              <li>Head into <strong>Chat Rooms</strong> and collaborate with your team.</li>
+            </ul>
+          </div>
         </div>
       )}
+
+
+
+
       {activeView === "add_bucket" && (
         <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
-        {/* Use Free Bucket Button */}
-        
-        <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group"
-          onClick={() => setActiveView("home")}
-        >
-            
+          {/* Use Free Bucket Button */}
+
+          <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group"
+            onClick={() => setActiveView("home")}
+          >
+
             <span className="absolute inset-0 overflow-hidden rounded-full">
-            <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
             </span>
             <div className="w-full relative flex items-center justify-center space-x-2 z-10 rounded-full bg-zinc-950 py-2 px-4 ring-1 ring-white/10">
-            <span className="text-sm font-semibold text-white">Use Free Bucket</span>
-            <svg
+              <span className="text-sm font-semibold text-white">Use Free Bucket</span>
+              <svg
                 fill="none"
                 height="16"
                 viewBox="0 0 24 24"
                 width="16"
                 xmlns="http://www.w3.org/2000/svg"
-            >
+              >
                 <path
-                d="M10.75 8.75L14.25 12L10.75 15.25"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.5"
+                  d="M10.75 8.75L14.25 12L10.75 15.25"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
                 />
-            </svg>
+              </svg>
             </div>
             <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-cyan-500/0 via-cyan-500/90 to-cyan-500/0 transition-opacity duration-500 group-hover:opacity-40" />
-            
-            
-        </button>
 
-        {/* Use your own Bucket Button */}
-        <Link href={"/Own"}>
-        <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-        <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFFF_0%,#007BFF_50%,#00FFFF_100%)]" />
-        <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
-            Use your own Bucket
-            </span>
-        </button>
-        </Link>
-    </div>
+
+          </button>
+
+          {/* Use your own Bucket Button */}
+          <Link href={"/Own"}>
+            <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+              <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFFF_0%,#007BFF_50%,#00FFFF_100%)]" />
+              <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+                Use your own Bucket
+              </span>
+            </button>
+          </Link>
+        </div>
       )}
       {activeView === "your_buckets" && (
         <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
@@ -391,10 +455,9 @@ const Dashboard = ({
                 <li
                   key={bucket.bucketName}
                   className={`items-center p-3 border-b border-gray-600 
-                    ${
-                      selectedBucket?.bucketName === bucket.bucketName
-                        ? "bg-green-900 text-cyan-300"
-                        : ""
+                    ${selectedBucket?.bucketName === bucket.bucketName
+                      ? "bg-green-900 text-cyan-300"
+                      : ""
                     }`}
                 >
                   <div className="flex flex-col">
@@ -417,10 +480,9 @@ const Dashboard = ({
                               selectedBucket?.bucketName === bucket.bucketName
                             }
                             className={`p-2 rounded-lg transition-all 
-                              ${
-                                selectedBucket?.bucketName === bucket.bucketName
-                                  ? "bg-gray-500 cursor-not-allowed"
-                                  : "bg-green-600 hover:bg-green-500"
+                              ${selectedBucket?.bucketName === bucket.bucketName
+                                ? "bg-gray-500 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-500"
                               }`}
                           >
                             <Plug size={16} />
