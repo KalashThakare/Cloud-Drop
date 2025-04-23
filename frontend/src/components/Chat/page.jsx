@@ -56,7 +56,7 @@ const ChatLayout = () => {
         getGroups();
     }, [getGroups])
 
-    const [selectedGroup, setSelectedGroup] = useState('Dev Room');
+    const [selectedGroup, setSelectedGroup] = useState('');
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState(groupMessages[selectedGroup]);
     const [showInput, setShowInput] = useState(false);
@@ -66,14 +66,14 @@ const ChatLayout = () => {
     const [memberEmail, setMemberEmail] = useState('');
 
 
-    
+
     const handleCreateGroup = () => {
         if (!groupName.trim()) return;
 
         createGroup({ groupName });
         console.log("Create group:", groupName);
 
-        createdGroups.push(groupName); 
+        createdGroups.push(groupName);
         setSelectedGroup(groupName);
         setMessages([]);
         setGroupName('');
@@ -206,6 +206,38 @@ const ChatLayout = () => {
 
             {/* Chat Area */}
             <div className="flex flex-col flex-1 bg-zinc-950 p-6">
+                {!selectedGroup && (
+                    <div className="flex flex-col items-center justify-center text-center text-white h-full px-6 sm:px-10 py-12">
+                        <div className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                            Welcome to SecureChat
+                        </div>
+                        <div className="text-base sm:text-lg text-zinc-400 max-w-2xl mb-12">
+                            Create secure team spaces, collaborate efficiently, and share files safely — with AI-enhanced productivity.
+                        </div>
+
+                        <div className="grid gap-6 sm:grid-cols-3 w-full max-w-5xl">
+                            {/* Team Creation */}
+                            <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 transition hover:border-cyan-500 hover:shadow-md">
+                                <h3 className="text-lg font-semibold text-cyan-300 mb-2">Team Creation</h3>
+                                <p className="text-sm text-zinc-400">Set up a new workspace for your team to collaborate and innovate effortlessly.</p>
+                            </div>
+
+                            {/* Secure File Sharing */}
+                            <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 transition hover:border-emerald-400 hover:shadow-md">
+                                <h3 className="text-lg font-semibold text-emerald-300 mb-2">Secure File Sharing</h3>
+                                <p className="text-sm text-zinc-400">Share files with time-limited secure links and granular access controls.</p>
+                            </div>
+
+                            {/* AI Summaries */}
+                            <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 transition hover:border-purple-400 hover:shadow-md">
+                                <h3 className="text-lg font-semibold text-purple-300 mb-2">AI-Powered Summaries</h3>
+                                <p className="text-sm text-zinc-400">Let AI extract key insights from your documents — stay focused, act faster.</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
                 {/* Header */}
                 {selectedGroup && (
                     <div className="mb-4 border-b border-zinc-800 pb-3">
@@ -297,68 +329,77 @@ const ChatLayout = () => {
 
                 {/* Chat messages */}
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                    {messages.map((msg, idx) => {
-                        const showSender =
-                            idx === 0 || messages[idx - 1].sender !== msg.sender;
+                    {selectedGroup ? (
+                        messages.map((msg, idx) => {
+                            const showSender =
+                                idx === 0 || messages[idx - 1].sender !== msg.sender;
 
-                        return (
-                            <div key={idx} className={`flex flex-col ${msg.fromUser ? 'items-end' : 'items-start'}`}>
-                                {!msg.fromUser && showSender && (
-                                    <span className="text-xs text-zinc-400 mb-1">{msg.sender}</span>
-                                )}
+                            return (
+                                <div key={idx} className={`flex flex-col ${msg.fromUser ? 'items-end' : 'items-start'}`}>
+                                    {!msg.fromUser && showSender && (
+                                        <span className="text-xs text-zinc-400 mb-1">{msg.sender}</span>
+                                    )}
 
-                                <div
-                                    className={`max-w-sm px-4 py-2 rounded-lg ${msg.fromUser ? 'bg-gray-500 text-white' : 'bg-zinc-800 text-white'
-                                        }`}
-                                >
-                                    <div className="text-sm">{msg.content}</div>
+                                    <div
+                                        className={`max-w-sm px-4 py-2 rounded-lg ${msg.fromUser ? 'bg-gray-500 text-white' : 'bg-zinc-800 text-white'}`}
+                                    >
+                                        <div className="text-sm">{msg.content}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })
+                    ) : (
+                        <div className="h-full w-full flex items-center justify-center text-zinc-500 text-sm">
+                            Select a group to start chatting.
+                        </div>
+                    )}
                 </div>
+
 
 
                 {/* Message Input */}
-                <div className="mt-4 flex items-center gap-2 border-t border-zinc-800 pt-4">
-                    {/* File Upload */}
-                    <label htmlFor="file" className="cursor-pointer text-xl text-zinc-400 hover:text-white">
-                        <IconLink size={34} />
-                    </label>
-                    <input
-                        type="file"
-                        id="file"
-                        className="hidden"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                handleSend(`[File Uploaded: ${file.name}]`);
-                            }
-                        }}
-                    />
+                {selectedGroup && (
+                    <div className="mt-4 flex items-center gap-2 border-t border-zinc-800 pt-4">
+                        {/* File Upload */}
+                        <label htmlFor="file" className="cursor-pointer text-xl text-zinc-400 hover:text-white">
+                            <IconLink size={34} />
+                        </label>
+                        <input
+                            type="file"
+                            id="file"
+                            className="hidden"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    handleSend(`[File Uploaded: ${file.name}]`);
+                                }
+                            }}
+                        />
 
-                    {/* Textarea without scrollbars or border highlight */}
-                    <textarea
-                        className="flex-1 bg-zinc-800 text-white px-4 py-2 rounded-lg h-12 resize-none overflow-hidden focus:outline-none"
-                        placeholder={`Message ${selectedGroup}`}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSend();
-                            }
-                        }}
-                    />
+                        {/* Textarea */}
+                        <textarea
+                            className="flex-1 bg-zinc-800 text-white px-4 py-2 rounded-lg h-12 resize-none overflow-hidden focus:outline-none"
+                            placeholder={`Message ${selectedGroup.groupName}`}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
+                        />
 
-                    {/* Send Button */}
-                    <button
-                        onClick={handleSend}
-                        className="bg-cyan-700 hover:bg-cyan-400 text-white px-4 py-2 rounded-lg"
-                    >
-                        <IconSend size={23} />
-                    </button>
-                </div>
+                        {/* Send Button */}
+                        <button
+                            onClick={handleSend}
+                            className="bg-cyan-700 hover:bg-cyan-400 text-white px-4 py-2 rounded-lg"
+                        >
+                            <IconSend size={23} />
+                        </button>
+                    </div>
+                )}
+
 
 
 
