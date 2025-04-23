@@ -66,14 +66,14 @@ const ChatLayout = () => {
     const [memberEmail, setMemberEmail] = useState('');
 
 
-    // Dummy group creation (replace with your real logic/store)
+    
     const handleCreateGroup = () => {
         if (!groupName.trim()) return;
 
         createGroup({ groupName });
         console.log("Create group:", groupName);
 
-        createdGroups.push(groupName); // Ideally update via store
+        createdGroups.push(groupName); 
         setSelectedGroup(groupName);
         setMessages([]);
         setGroupName('');
