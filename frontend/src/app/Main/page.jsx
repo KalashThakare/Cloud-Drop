@@ -30,6 +30,7 @@ import SignedUrlGenerator from "@/components/SignedUrlGenerator";
 import Link from "next/link";
 import ChatPage from "@/components/Chat/page";
 import DashboardLanding from "@/components/ui/DashboardLanding.jsx";
+import UploadForm from "@/components/CloudDrop.jsx";
 
 function Main() {
   const searchParams = useSearchParams();
@@ -222,32 +223,6 @@ function Main() {
     }
   };
 
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!selectedBucket) {
-      toast.error("Please select bucket first");
-      return;
-    }
-
-    const formData = new FormData();
-
-    formData.append("bucketName", selectedBucket);
-    formData.append("image", file);
-    formData.append("caption", caption);
-
-    try {
-      await axiosInstance.post("/use-platform-bucket/s3client/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("File uploaded successfully");
-      setFile(null);
-      setCaption("");
-    } catch (error) {
-      toast.error("Upload failed");
-      console.error(error);
-    }
-  };
-
   return (
     <div
       className={cn(
@@ -301,7 +276,6 @@ function Main() {
         setFile={setFile}
         caption={caption}
         setCaption={setCaption}
-        submit={submit}
       />
     </div>
   );
@@ -462,44 +436,7 @@ const Dashboard = ({
           </ul>
         </div>
       )}
-      {activeView === "cloud_drop" && (
-        <form
-  onSubmit={submit}
-  className="w-full max-w-md p-6 rounded-2xl bg-zinc-900 shadow-xl flex flex-col gap-5 border border-zinc-700"
->
-  {/* Heading */}
-  <h1 className="text-2xl font-semibold text-white text-center">📤 Cloud-drop</h1>
-
-  {/* File Input */}
-  <label className="w-full text-sm text-zinc-400">
-    Upload Image
-    <input
-      onChange={(e) => setFile(e.target.files[0])}
-      type="file"
-      accept="image/*"
-      className="mt-2 w-full p-4 bg-zinc-800 text-white border border-dashed border-zinc-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:border-cyan-400 hover:bg-zinc-800 transition-all"
-    />
-  </label>
-
-  {/* Caption Input */}
-  <input
-    value={caption}
-    onChange={(e) => setCaption(e.target.value)}
-    type="text"
-    placeholder="Write a caption..."
-    className="w-full p-3 rounded-lg text-sm bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
-  />
-
-  {/* Upload Button */}
-  <button
-    type="submit"
-    className="w-full py-3 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-500 transition-all"
-  >
-    Upload
-  </button>
-</form>
-
-      )}
+      {activeView === "cloud_drop" && <UploadForm />}
       {activeView === "file_upload" && <FileSelector />}
       {activeView === "signed_url" && <SignedUrlGenerator />}
       {activeView === "Chat_Room" && <ChatPage />}
