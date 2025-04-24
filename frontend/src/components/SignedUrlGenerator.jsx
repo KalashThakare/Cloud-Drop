@@ -21,7 +21,7 @@ export default function SignedUrlGenerator() {
   const generateDefaultBucketUrl = bucketFunc((state) => state.generateDefaultBucketUrl);
   const generatedUrl = bucketFunc((state) => state.generatedUrl);
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
-  const sendMail = bucketFunc((state)=>state.sendMail);
+  const sendMail = bucketFunc((state) => state.sendMail);
 
   const generateSignedUrl = async () => {
     if (!fileName || !expiration) {
@@ -29,13 +29,13 @@ export default function SignedUrlGenerator() {
       return;
     }
 
-    if(useDefault === true){
+    if (useDefault === true) {
       generateDefaultBucketUrl(fileName, expiration);
-    }else{
-      
+    } else {
+
     }
 
-    
+
   };
 
   const sendEmail = async () => {
@@ -46,10 +46,10 @@ export default function SignedUrlGenerator() {
 
     const emailArray = recipients.split(",").map((email) => email.trim());
 
-    const recipient=emailArray
+    const recipient = emailArray
 
-    await sendMail(fileName,expiration,recipient);
-  }  
+    await sendMail(fileName, expiration, recipient);
+  }
 
   useEffect(() => {
     if (generatedUrl) {
@@ -65,119 +65,122 @@ export default function SignedUrlGenerator() {
   };
 
   return (
-    <div className="flex items-center justify-between gap-5 bg-black p-6 rounded-2xl border-[0.5px] border-cyan-300 shadow-lg w-[50vw] max-w-3xl mx-auto">
-{/* Left Side: Signed URL Display */}
-      <div className="w-[60%] p-4">
-        <h2 className="text-xl font-semibold text-white mb-2">Signed URL</h2>
-        <div className="mt-7 p-3 bg-gray-800 text-cyan-300 border-2 border-cyan-300 rounded-md min-h-[80px] break-all flex items-center justify-between">
-          <span className="truncate">
-            {signedUrl ? signedUrl : "URL will appear here..."}
-          </span>
-        </div>
+    <div className="w-full h-full flex justify-center items-center px-4 py-6 overflow-y-auto bg-zinc-950">
+      <div className="w-full max-w-5xl bg-zinc-900 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col md:flex-row gap-6">
 
-
-{/* Copy Link Button */}
-        <div
-          className="mt-7 bg-gray-900/50 backdrop-blur-md shadow-lg transition-all duration-300"
-          onClick={signedUrl ? copyToClipboard : undefined}
-        >
-          {signedUrl && (
-            <div className="flex justify-center w-full px-4 py-2 cursor-pointer rounded-lg border border-purple-500 text-purple-400 hover:bg-gray-800 hover:border-orange-400 hover:text-orange-400">
-              <Clipboard className="w-5 h-5 transition-colors duration-300" />
-              <span className="ml-2 font-medium text-sm transition-colors duration-300">
-                Copy Link
-              </span>
+        {/* Left Panel */}
+        <div className="w-full md:w-1/2 flex flex-col gap-6">
+          {/* Signed URL */}
+          <div className="space-y-3">
+            <h2 className="text-lg text-white font-semibold">Signed URL</h2>
+            <div className="bg-zinc-800 border border-zinc-700 p-4 rounded-lg min-h-[80px] text-sm text-zinc-300 break-all">
+              {signedUrl ? signedUrl : "Your signed URL will appear here..."}
             </div>
-          )}
-        </div>
+            {signedUrl && (
+              <button
+                onClick={copyToClipboard}
+                className="flex items-center justify-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white py-2 rounded-lg transition-all text-sm"
+              >
+                <Clipboard className="w-4 h-4" />
+                Copy Link
+              </button>
+            )}
+          </div>
 
-        <div className="w-[full] h-0.5 mt-8 bg-cyan-300"></div>
+          {/* Divider */}
+          <div className="border-t border-zinc-700" />
 
-{/* Add Email Recipients and Send Link Button */}
-        <div className="mt-8">
-          <textarea
-            placeholder="Enter recipient emails (comma-separated)..."
-            value={recipients}
-            onChange={(e) => setRecipient(e.target.value)}
-            className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
-          />
-
-          <div
-            className="mt-7 bg-gray-900/50 backdrop-blur-md shadow-lg transition-all duration-300"
-            onClick={sendEmail}
-          >
-              <div className="flex justify-center w-full px-4 py-2 cursor-pointer rounded-lg border border-purple-500 text-purple-400 hover:bg-gray-800 hover:border-orange-400 hover:text-orange-400">
-                <Mail className="w-5 h-5 transition-colors duration-300" />
-                <span className="ml-2 font-medium text-sm transition-colors duration-300">
-                  Send Link via Email
-                </span>
-              </div>
+          {/* Email Sharing */}
+          <div className="space-y-3">
+            <label className="text-sm text-zinc-400">Send Link via Email</label>
+            <textarea
+              value={recipients}
+              onChange={(e) => setRecipient(e.target.value)}
+              placeholder="Enter emails separated by commas..."
+              className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-sm text-white resize-none"
+              rows={3}
+            />
+            <button
+              onClick={sendEmail}
+              className="flex items-center justify-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white py-2 rounded-lg transition-all text-sm"
+            >
+              <Mail className="w-4 h-4" />
+              Send Email
+            </button>
           </div>
         </div>
 
-      </div>
+        {/* Right Panel */}
+        <div className="w-full md:w-1/2 flex flex-col gap-5">
+          {/* File Name */}
+          <div className="space-y-2">
+            <label className="text-sm text-zinc-400">File Name</label>
+            <input
+              type="text"
+              placeholder="example.pdf"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-sm text-white"
+            />
+          </div>
 
-  <div className="w-0.5 h-full my-52 bg-cyan-300"></div>
+          {/* Expiration Time */}
+          <div className="space-y-2">
+            <label className="text-sm text-zinc-400">Expiration Time (minutes)</label>
+            <input
+              type="number"
+              value={expiration}
+              onChange={(e) => setExpiration(e.target.value)}
+              className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-sm text-white"
+            />
+          </div>
 
-{/* Right Side: Actions & Inputs */}
-  <div className="w-1/2 p-4 flex flex-col space-y-3">
-        <label className="text-white text-sm">Enter File Name:</label>
-        <input
-          type="text"
-          placeholder="Enter file name..."
-          value={fileName}
-          onChange={(e) => setFileName(e.target.value)}
-          className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
-        />
+          {/* Max Uses */}
+          <div className="space-y-2">
+            <label className="text-sm text-zinc-400">Max Uses</label>
+            <input
+              type="number"
+              value={maxUses}
+              onChange={(e) => setMaxUses(e.target.value)}
+              disabled={viewOnce}
+              className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-sm text-white disabled:opacity-50"
+            />
+          </div>
 
-        <label className="text-white text-sm">Expiration Time (minutes):</label>
-        <input
-          type="number"
-          value={expiration}
-          onChange={(e) => setExpiration(e.target.value)}
-          className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
-        />
+          {/* Options */}
+          <div className="flex flex-col gap-3 mt-2">
+            <label className="flex items-center gap-3 text-sm text-white">
+              <input
+                type="checkbox"
+                checked={allowDownload}
+                onChange={() => setAllowDownload(!allowDownload)}
+                className="accent-cyan-400"
+              />
+              Allow Download
+            </label>
+            <label className="flex items-center gap-3 text-sm text-white">
+              <input
+                type="checkbox"
+                checked={viewOnce}
+                onChange={() => setViewOnce(!viewOnce)}
+                className="accent-cyan-400"
+              />
+              Allow View Only Once
+            </label>
+          </div>
 
-        
-
-        <label className="text-white text-sm">Max Uses:</label>
-        <input
-          type="number"
-          value={maxUses}
-          onChange={(e) => setMaxUses(e.target.value)}
-          className="w-full p-2 bg-gray-900 text-white border-2 border-cyan-300 rounded"
-          disabled={viewOnce}
-        />
-
-        <div className="flex items-center space-x-2 mt-1">
-          <input
-            type="checkbox"
-            checked={allowDownload}
-            onChange={() => setAllowDownload(!allowDownload)}
-            className="accent-cyan-300"
-          />
-          <span className="text-white text-sm">Allow Download</span>
+          {/* Generate URL */}
+          <button
+            onClick={generateSignedUrl}
+            className="mt-4 bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-lg font-semibold transition-all"
+          >
+            Generate Signed URL
+          </button>
         </div>
-
-
-        <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={viewOnce}
-                    onChange={() => setViewOnce(!viewOnce)}
-                    className="accent-cyan-300"
-                  />
-                  <span className="text-white text-sm">Allow View Only Once</span>
-        </div>
-
-
-        <button
-          onClick={generateSignedUrl}
-          className="w-full bg-blue-600 text-white p-2 rounded-2xl border-2 border-cyan-300 hover:bg-blue-700"
-        >
-          Generate URL
-        </button>
       </div>
     </div>
+
+
+
   );
 }
