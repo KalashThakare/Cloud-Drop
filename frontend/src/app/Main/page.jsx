@@ -464,30 +464,41 @@ const Dashboard = ({
       )}
       {activeView === "cloud_drop" && (
         <form
-          onSubmit={submit}
-          className="w-96 p-6 rounded-xl bg-black shadow-lg flex flex-col gap-4 text-center border border-gray-700"
-        >
-          <h1 className="text-2xl font-bold mb-2 text-cyan-300">Cloud-drop</h1>
-          <input
-            onChange={(e) => setFile(e.target.files[0])}
-            type="file"
-            accept="image/*"
-            className="p-5 border-2 border-dashed border-gray-600 rounded-xl bg-gray-900 cursor-pointer text-white transition-all hover:border-blue-400 hover:bg-gray-800"
-          />
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            type="text"
-            placeholder="Caption"
-            className="p-3 border border-gray-600 rounded-lg text-lg text-white bg-gray-900 focus:border-blue-400 focus:outline-none transition-all"
-          />
-          <button
-            type="submit"
-            className="p-3 bg-blue-600 text-white rounded-lg text-lg cursor-pointer transition-all hover:bg-blue-500 active:translate-y-0"
-          >
-            Upload
-          </button>
-        </form>
+  onSubmit={submit}
+  className="w-full max-w-md p-6 rounded-2xl bg-zinc-900 shadow-xl flex flex-col gap-5 border border-zinc-700"
+>
+  {/* Heading */}
+  <h1 className="text-2xl font-semibold text-white text-center">📤 Cloud-drop</h1>
+
+  {/* File Input */}
+  <label className="w-full text-sm text-zinc-400">
+    Upload Image
+    <input
+      onChange={(e) => setFile(e.target.files[0])}
+      type="file"
+      accept="image/*"
+      className="mt-2 w-full p-4 bg-zinc-800 text-white border border-dashed border-zinc-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:border-cyan-400 hover:bg-zinc-800 transition-all"
+    />
+  </label>
+
+  {/* Caption Input */}
+  <input
+    value={caption}
+    onChange={(e) => setCaption(e.target.value)}
+    type="text"
+    placeholder="Write a caption..."
+    className="w-full p-3 rounded-lg text-sm bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+  />
+
+  {/* Upload Button */}
+  <button
+    type="submit"
+    className="w-full py-3 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-500 transition-all"
+  >
+    Upload
+  </button>
+</form>
+
       )}
       {activeView === "file_upload" && <FileSelector />}
       {activeView === "signed_url" && <SignedUrlGenerator />}
