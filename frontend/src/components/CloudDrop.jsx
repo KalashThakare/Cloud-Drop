@@ -131,14 +131,31 @@ function UploadForm() {
                         placeholder="Rename file before uploading (optional)"
                         className="w-full p-3 rounded-lg text-sm bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
                     />
-                    <p className="text-xs text-zinc-500 mt-1">
+                    <p className="text-xs text-zinc-500 mt-5">
                         This name will be used in the signed URL. If left empty, the original filename is used.
                     </p>
                     {file && (
-                        <p className="text-sm text-cyan-400 font-mono mt-2">
-                            🗂️ File will be saved as: <span className="font-bold">{getFinalFilename()}</span>
-                        </p>
+                        <div className="mt-5 space-y-3 text-sm text-zinc-300 leading-relaxed">
+                            <div>
+                                <span className="text-zinc-400">📂 File Name:</span>{' '}
+                                <span className="text-white font-medium">{file.name}</span>
+                            </div>
+                            <div>
+                                <span className="text-cyan-400 font-semibold">🗂️ Save as:</span>{' '}
+                                <span className="font-medium text-white">{getFinalFilename()}</span>
+                            </div>
+                            <div>
+                                <span className="text-zinc-400">📏 File Size:</span>{' '}
+                                <span className="text-white font-medium">{(file.size / 1024).toFixed(2)} KB</span>
+                            </div>
+                            <div>
+                                <span className="text-zinc-400">🖼️ File Type:</span>{' '}
+                                <span className="text-white font-medium">{file.type}</span>
+                            </div>
+                        </div>
                     )}
+
+
                 </div>
 
                 <div>
