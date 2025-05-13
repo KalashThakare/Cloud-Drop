@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { IconLink, IconSend, IconPlus } from "@tabler/icons-react"
 import { chatFunc, groupFunc } from '@/store/chatStore';
+import MemberDrawer from '../MemberDrawer.jsx';
 
 const mockGroups = {
     created: ['Dev Room', 'Design Hub'],
@@ -64,6 +65,7 @@ const ChatLayout = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [showAddMember, setShowAddMember] = useState(false);
     const [memberEmail, setMemberEmail] = useState('');
+    const [drawerOpen, setDrawerOpen] = useState(false)
 
 
 
@@ -97,12 +99,17 @@ const ChatLayout = () => {
 
     }
 
+    const onRemoveMember = () => {
+
+    }
+
 
 
 
     const handleGroupClick = (group) => {
         setSelectedGroup(group);
         setMessages(groupMessages[group.groupName] || []);
+        console.log(selectedGroup.members)
     };
 
     const handleSend = () => {
@@ -127,7 +134,7 @@ const ChatLayout = () => {
                             onClick={() => setShowInput(true)}
                             className="w-full bg-cyan-700 hover:bg-cyan-600 text-white py-2 rounded-lg transition flex justify-center items-center gap-2"
                         >
-                            <span><IconPlus size={30} /></span> New Group
+                            <span><IconPlus size={25} /></span> New Group
                         </button>
                     ) : (
                         <div className="flex flex-col gap-2">
@@ -239,37 +246,50 @@ const ChatLayout = () => {
 
 
                 {/* Header */}
-                {selectedGroup && (
-                    <div className="mb-4 border-b border-zinc-800 pb-3">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <div className="text-xl font-semibold">{selectedGroup.groupName}</div>
-                                <div className="text-sm text-zinc-400">
-                                    {selectedGroup.members?.length} members • Created on{' '}
-                                    {new Date(selectedGroup.createdAt).toLocaleDateString()}
-                                    {selectedGroup.createdBy !== 'You' && selectedGroup.members?.length > 0 && (
-                                        <> • Created by {selectedGroup.members[0].email}</>
-                                    )}
+                {/* Header */}
+{selectedGroup && (
+  <>
+    <div className="mb-4 border-b border-zinc-800 pb-3">
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="text-xl font-semibold">{selectedGroup.groupName}</div>
+          <div className="text-sm text-zinc-400">
+            {selectedGroup.members?.length} members • Created on{' '}
+            {new Date(selectedGroup.createdAt).toLocaleDateString()}
+            {selectedGroup.createdBy !== 'You' && selectedGroup.members?.length > 0 && (
+              <> • Created by {selectedGroup.members[0].email}</>
+            )}
+          </div>
+        </div>
 
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setShowAddMember(true)}
-                                className="text-emerald-500 text-sm border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-600 hover:text-white transition"
-                            >
-                                Add Member
-                            </button>
+        <button
+          onClick={() => setShowAddMember(true)}
+          className="text-emerald-500 text-sm border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-600 hover:text-white transition"
+        >
+          Add Member
+        </button>
 
-                            <button
-                                onClick={handleDeleteClick}
-                                className="text-red-600 text-sm border border-red-700 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
-                            >
-                                Delete Group
-                            </button>
+        <button
+          onClick={handleDeleteClick}
+          className="text-red-600 text-sm border border-red-700 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
+        >
+          Delete Group
+        </button>
+      </div>
+    </div>
 
-                        </div>
-                    </div>
-                )}
+    {/* Move this outside the flex container */}
+    <MemberDrawer
+      isOpen={drawerOpen}
+      onClose={() => setDrawerOpen(false)}
+      members={selectedGroup.members}
+      onRemove={onRemoveMember}
+    />
+  </>
+)}
+
+
+
 
                 {/* Confirm Delete Modal */}
                 {showConfirm && (
