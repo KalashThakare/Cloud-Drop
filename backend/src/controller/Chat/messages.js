@@ -1,5 +1,6 @@
 import Group from "../../models/group.Model.js";
 import Message from "../../models/messages.Model.js";
+import { getReciverSocketId, io } from "../../lib/socket.js";
 
 export const sendMessage = async (req, res) => {
 
@@ -7,7 +8,7 @@ export const sendMessage = async (req, res) => {
 
     const { image, text } = req.body;
     const senderId = req.user._id;
-    const {groupId} = req.params; // point to note how to send this groupId
+    const {groupId} = req.body; 
     const {fileLink} = req.body;
 
     const newMessage = new Message({
@@ -18,6 +19,9 @@ export const sendMessage = async (req, res) => {
     });
 
     await newMessage.save();
+
+    io.emit("newMessage", newMessage); // simple global broadcast
+
 
     res.status(200).json(newMessage);
 

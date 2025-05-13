@@ -4,17 +4,29 @@ import { create } from "zustand";
 
 export const chatFunc = create((set,get) =>({
 
+    selectedGroup:null,
+    messages:[],
     
 
-    sendMessage:async(data)=>{
+    sendMessage:async({groupId,text})=>{
+        const {messages,set} = get();
         try {
 
-            const res = await axiosInstance.post()
+            console.log(groupId,text)
+
+            const res = await axiosInstance.post(`messages/send`,{
+                groupId,
+                text
+            });
+
+            console.log(res.data);
             
+            set({messages:[...messages,res.data]})
 
 
         } catch (error) {
-            
+            toast.error("Error sending message");
+            console.log("Error in sendMessage",error);
         }
     }
 

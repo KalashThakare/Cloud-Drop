@@ -53,6 +53,8 @@ const ChatLayout = () => {
     const deleteGroup = groupFunc((state) => state.deleteGroup);
     const addMember = groupFunc((state) => state.addMember);
 
+    const sendMessage = chatFunc((state)=>state.sendMessage);
+
     useEffect(() => {
         getGroups();
     }, [getGroups])
@@ -119,6 +121,10 @@ const ChatLayout = () => {
         setMessages(updated);
         groupMessages[selectedGroup] = updated;
         setInput('');
+
+        const groupId = selectedGroup._id
+
+        sendMessage({groupId,text:input})
     };
 
     return (
@@ -247,46 +253,46 @@ const ChatLayout = () => {
 
                 {/* Header */}
                 {/* Header */}
-{selectedGroup && (
-  <>
-    <div className="mb-4 border-b border-zinc-800 pb-3">
-      <div className="flex justify-between items-start">
-        <div>
-          <div className="text-xl font-semibold">{selectedGroup.groupName}</div>
-          <div className="text-sm text-zinc-400">
-            {selectedGroup.members?.length} members • Created on{' '}
-            {new Date(selectedGroup.createdAt).toLocaleDateString()}
-            {selectedGroup.createdBy !== 'You' && selectedGroup.members?.length > 0 && (
-              <> • Created by {selectedGroup.members[0].email}</>
-            )}
-          </div>
-        </div>
+                {selectedGroup && (
+                    <>
+                        <div className="mb-4 border-b border-zinc-800 pb-3">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <div className="text-xl font-semibold">{selectedGroup.groupName}</div>
+                                    <div className="text-sm text-zinc-400">
+                                        {selectedGroup.members?.length} members • Created on{' '}
+                                        {new Date(selectedGroup.createdAt).toLocaleDateString()}
+                                        {selectedGroup.createdBy !== 'You' && selectedGroup.members?.length > 0 && (
+                                            <> • Created by {selectedGroup.members[0].email}</>
+                                        )}
+                                    </div>
+                                </div>
 
-        <button
-          onClick={() => setShowAddMember(true)}
-          className="text-emerald-500 text-sm border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-600 hover:text-white transition"
-        >
-          Add Member
-        </button>
+                                <button
+                                    onClick={() => setShowAddMember(true)}
+                                    className="text-emerald-500 text-sm border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-600 hover:text-white transition"
+                                >
+                                    Add Member
+                                </button>
 
-        <button
-          onClick={handleDeleteClick}
-          className="text-red-600 text-sm border border-red-700 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
-        >
-          Delete Group
-        </button>
-      </div>
-    </div>
+                                <button
+                                    onClick={handleDeleteClick}
+                                    className="text-red-600 text-sm border border-red-700 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
+                                >
+                                    Delete Group
+                                </button>
+                            </div>
+                        </div>
 
-    {/* Move this outside the flex container */}
-    <MemberDrawer
-      isOpen={drawerOpen}
-      onClose={() => setDrawerOpen(false)}
-      members={selectedGroup.members}
-      onRemove={onRemoveMember}
-    />
-  </>
-)}
+                        {/* Move this outside the flex container */}
+                        <MemberDrawer
+                            isOpen={drawerOpen}
+                            onClose={() => setDrawerOpen(false)}
+                            members={selectedGroup.members}
+                            onRemove={onRemoveMember}
+                        />
+                    </>
+                )}
 
 
 
@@ -379,10 +385,10 @@ const ChatLayout = () => {
 
                 {/* Message Input */}
                 {selectedGroup && (
-                    <div className="mt-4 flex items-center gap-2 border-t border-zinc-800 pt-4">
+                    <div className="mt-4 flex items-center justify-center gap-2 border-t border-zinc-800 pt-4">
                         {/* File Upload */}
                         <label htmlFor="file" className="cursor-pointer text-xl text-zinc-400 hover:text-white">
-                            <IconLink size={34} />
+                            <IconLink size={30} />
                         </label>
                         <input
                             type="file"
@@ -398,7 +404,7 @@ const ChatLayout = () => {
 
                         {/* Textarea */}
                         <textarea
-                            className="flex-1 bg-zinc-800 text-white px-4 py-2 rounded-lg h-12 resize-none overflow-hidden focus:outline-none"
+                            className="flex-1 bg-zinc-800 text-white px-4 py-1 rounded-lg h-10 resize-none overflow-hidden focus:outline-none"
                             placeholder={`Message ${selectedGroup.groupName}`}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}

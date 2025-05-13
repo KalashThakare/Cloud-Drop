@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/rooms",protectRoute,getGroups);
 
-router.post("/send/:groupId",protectRoute,sendMessage);
+router.post("/send",protectRoute,sendMessage);
 
 router.get("/:groupId",protectRoute,getMessages);
 

@@ -8,12 +8,12 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser"
 import messageRoute from "./routes/Chat/message.Route.js";
 import groupRoute from "./routes/Chat/group.Route.js";
+import {app} from "../src/lib/socket.js";
 
 dotenv.config();
 
 connectToDb();
 
-const app =express();
 
 app.use(cors({
     origin:"http://localhost:3000",
