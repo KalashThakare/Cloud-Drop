@@ -9,7 +9,7 @@ export const chatFunc = create((set,get) =>({
     
 
     sendMessage:async({groupId,text})=>{
-        const {messages,set} = get();
+        const {messages} = get();
         try {
 
             console.log(groupId,text)
@@ -28,8 +28,21 @@ export const chatFunc = create((set,get) =>({
             toast.error("Error sending message");
             console.log("Error in sendMessage",error);
         }
-    }
+    },
 
+    getMessages: async (groupId) => {
+    console.log(groupId)
+    try {
+        const res = await axiosInstance.post(`/messages/getMessages`,{groupId});
+        console.log("Fetched from server:", res.data);
+        set({ messages: res.data });
+        return res.data;
+    } catch (error) {
+        toast.error("Failed loading messages");
+        console.error("Error in getMessages:", error);
+        return []; 
+    }
+}
 }))
 
 export const groupFunc = create((set,get)=>({

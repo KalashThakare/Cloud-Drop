@@ -8,7 +8,7 @@ router.get("/rooms",protectRoute,getGroups);
 
 router.post("/send",protectRoute,sendMessage);
 
-router.get("/:groupId",protectRoute,getMessages);
+router.post("/getMessages",protectRoute,getMessages);
 
 
 export default router;

@@ -8,8 +8,8 @@ export const sendMessage = async (req, res) => {
 
     const { image, text } = req.body;
     const senderId = req.user._id;
-    const {groupId} = req.body; 
-    const {fileLink} = req.body;
+    const { groupId } = req.body;
+    const { fileLink } = req.body;
 
     const newMessage = new Message({
       senderId,
@@ -27,7 +27,7 @@ export const sendMessage = async (req, res) => {
 
   } catch (error) {
 
-    console.log("Error sending message",error);
+    console.log("Error sending message", error);
     res.status(500).json({ error: "Internal server error" });
   }
 
@@ -35,7 +35,11 @@ export const sendMessage = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   try {
-    const { groupId } = req.params;  // Group ID from URL
+    const { groupId } = req.body;  // Group ID from URL
+
+    if(!groupId){
+      console.log("GroupId is required")
+    }
 
     const messages = await Message.find({ groupId })
       .sort({ createdAt: 1 })                         // Sort
