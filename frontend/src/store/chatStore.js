@@ -1,6 +1,7 @@
 import { axiosInstance } from "@/lib/axios";
 import { toast } from "sonner";
 import { create } from "zustand";
+import { useSocketEventStore } from "./socketEvents";
 
 export const chatFunc = create((set, get) => ({
 
@@ -42,6 +43,12 @@ export const chatFunc = create((set, get) => ({
             console.error("Error in getMessages:", error);
             return [];
         }
+    },
+
+    selectGroup: async (group) => {
+        set({ selectedGroup: group });
+        await get().getMessages(group._id);
+        useSocketEventStore.getState().subscribeToMessages();
     },
 
     addMessage: (newMessage) => {

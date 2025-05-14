@@ -12,7 +12,7 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
 
                         return (
                             <div
-                                key={msg._id || idx}
+                                key={`${msg._id}-${idx}`}
                                 className={`flex flex-col ${
                                     fromUser ? "items-end" : "items-start"
                                 }`}
