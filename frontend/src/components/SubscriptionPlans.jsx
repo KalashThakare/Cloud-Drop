@@ -15,36 +15,59 @@ const pulse = keyframes`
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 1rem;
   font-family: "Inter", sans-serif;
+
+  @media (max-width: 1024px) {
+    padding: 2rem 0.5rem;
+  }
+  @media (max-width: 600px) {
+    padding: 1rem 0.25rem;
+  }
 `;
 
 const Title = styled.h2`
   color: white;
   text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 3rem;
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+
+  @media (max-width: 900px) {
+    font-size: 2rem;
+  }
+  @media (max-width: 600px) {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const PackagesContainer = styled.div`
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  flex-wrap: wrap;
+  justify-content: center;
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
+  @media (max-width: 1200px) {
+    gap: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 `;
 
 const PackageCard = styled.div`
   background: #1a1a1a;
   border-radius: 16px;
-  padding: 2rem;
-  width: 300px;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  min-width: 0;
   transition: all 0.3s ease;
   animation: ${fadeIn} 0.5s ease forwards;
   animation-delay: ${(props) => props.delay * 0.1}s;
@@ -69,21 +92,32 @@ const PackageCard = styled.div`
     border-top: 2px solid rgba(0, 255, 255, 0.5);
     border-bottom: 2px solid rgba(0, 255, 255, 0.5);
   }
+
+  @media (max-width: 900px) {
+    padding: 1.5rem 1rem;
+  }
+  @media (max-width: 600px) {
+    padding: 1rem 0.5rem;
+  }
 `;
 
 const PackageTitle = styled.h3`
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-bottom: 1rem;
   text-align: center;
+
+  @media (max-width: 600px) {
+    font-size: 1.1rem;
+  }
 `;
 
 const Price = styled.div`
   color: #00ffff;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: bold;
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 1.2rem 0;
   position: relative;
 
   &::after {
@@ -92,12 +126,20 @@ const Price = styled.div`
     color: #888;
     margin-left: 5px;
   }
+
+  @media (max-width: 600px) {
+    font-size: 1.3rem;
+  }
 `;
 
 const FeatureList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
+
+  @media (max-width: 600px) {
+    margin: 1rem 0;
+  }
 `;
 
 const FeatureItem = styled.li`
@@ -107,12 +149,18 @@ const FeatureItem = styled.li`
   padding-left: 2rem;
   display: flex;
   align-items: center;
+  font-size: 1rem;
 
   &::before {
     content: "✔";
     color: #00ffff;
     font-size: 1.2rem;
     margin-right: 0.5rem;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
   }
 `;
 
@@ -130,6 +178,7 @@ const SelectButton = styled.button`
   letter-spacing: 1px;
   position: relative;
   overflow: hidden;
+  font-size: 1rem;
 
   &:hover {
     background: #00ffff;
@@ -165,6 +214,11 @@ const SelectButton = styled.button`
       opacity: 0;
     }
   }
+
+  @media (max-width: 600px) {
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+  }
 `;
 
 const SubscriptionPlans = () => {
@@ -197,23 +251,26 @@ const SubscriptionPlans = () => {
 
   return (
     <section id="pricing">
-    <Container>
-      <Title>Subscription Plans</Title>
-      <PackagesContainer>
-        {packages.map((pkg, index) => (
-          <PackageCard key={index} delay={index}>
-            <PackageTitle>{pkg.title}</PackageTitle>
-            <Price>{pkg.price}</Price>
-            <FeatureList>
-              {pkg.features.map((feature, i) => (
-                <FeatureItem key={i}>{feature}</FeatureItem>
-              ))}
-            </FeatureList>
-            <SelectButton highlight={pkg.highlight ? "true" : undefined}>Select Now</SelectButton>
-          </PackageCard>
-        ))}
-      </PackagesContainer>
-    </Container></section>
+      <Container>
+        <Title>Subscription Plans</Title>
+        <PackagesContainer>
+          {packages.map((pkg, index) => (
+            <PackageCard key={index} delay={index}>
+              <PackageTitle>{pkg.title}</PackageTitle>
+              <Price>{pkg.price}</Price>
+              <FeatureList>
+                {pkg.features.map((feature, i) => (
+                  <FeatureItem key={i}>{feature}</FeatureItem>
+                ))}
+              </FeatureList>
+              <SelectButton highlight={pkg.highlight ? "true" : undefined}>
+                Select Now
+              </SelectButton>
+            </PackageCard>
+          ))}
+        </PackagesContainer>
+      </Container>
+    </section>
   );
 };
 
