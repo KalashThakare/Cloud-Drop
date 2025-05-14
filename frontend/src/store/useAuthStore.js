@@ -3,7 +3,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware"; 
 import { toast } from "sonner";
 import { io } from "socket.io-client";
-import router from "next/router";
+// import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export const useAuthStore = create(
   persist(
@@ -45,7 +46,7 @@ export const useAuthStore = create(
       },
 
       // 🔐 Check Auth
-      checkAuth: async () => {
+      checkAuth: async (router) => {
         set({ isloggingin: true });
         try {
           const token = localStorage.getItem("authToken");

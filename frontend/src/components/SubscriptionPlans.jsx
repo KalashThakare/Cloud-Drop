@@ -196,6 +196,7 @@ const SubscriptionPlans = () => {
   ];
 
   return (
+    <section id="pricing">
     <Container>
       <Title>Subscription Plans</Title>
       <PackagesContainer>
@@ -212,7 +213,7 @@ const SubscriptionPlans = () => {
           </PackageCard>
         ))}
       </PackagesContainer>
-    </Container>
+    </Container></section>
   );
 };
 
