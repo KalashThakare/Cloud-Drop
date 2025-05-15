@@ -1,7 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import { toast } from "sonner";
 import { create } from "zustand";
-import { useSocketEventStore } from "./socketEvents";
 
 export const chatFunc = create((set, get) => ({
 
@@ -48,7 +47,7 @@ export const chatFunc = create((set, get) => ({
     selectGroup: async (group) => {
         set({ selectedGroup: group });
         await get().getMessages(group._id);
-        
+
     },
 
     addMessage: (newMessage) => {
@@ -123,9 +122,13 @@ export const groupFunc = create((set, get) => ({
 
         } catch (error) {
 
-            console.error("error in deleting group", error);
-            toast.error("Error deleting group");
-            return null;
+            const status = error?.response?.status;
+
+            if (status === 404) {
+                toast.warning("You dont have permission to deleted the group");
+            }else{
+                toast.error("Internal server error")
+            }
 
         }
     },
@@ -269,13 +272,13 @@ export const groupFunc = create((set, get) => ({
         }
     },
 
-    assignRole:async({groupId,memberId,role})=>{
+    assignRole: async ({ groupId, memberId, role }) => {
 
         try {
 
-            console.log({groupId,memberId,role})
-            
-            const res = await axiosInstance.post("/group/roles",{
+            console.log({ groupId, memberId, role })
+
+            const res = await axiosInstance.post("/group/roles", {
                 groupId,
                 memberId,
                 role
@@ -284,8 +287,15 @@ export const groupFunc = create((set, get) => ({
             toast.success("Role assigned");
 
         } catch (error) {
-            console.error("Error assigning role",error);
-            toast.error("Error occured");
+
+            const status = error?.response?.status
+            const message = error?.response?.data?.error
+
+            if(status === 403){
+                toast.warning("You don't have permission to assign roles")
+            }else{
+                toast.error("Internal server error")
+            }
         }
     }
 
