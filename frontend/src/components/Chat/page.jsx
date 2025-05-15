@@ -89,10 +89,10 @@ const ChatLayout = () => {
         subscribeToUserEvents({ groupId, userId: currentUserId })
     };
 
-    const onRemoveMember = () => {
-        const userId = currentUserId;
+    const onRemoveMember = (member) => {
         const groupId = selectedGroup._id;
-        removeUserFromGroup({ groupId, userId, memberEmail });
+        const memberId = member._id;
+        removeUserFromGroup({ groupId, memberId });
     };
 
     const handleGroupClick = (group) => {

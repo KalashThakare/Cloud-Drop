@@ -227,12 +227,13 @@ export const groupFunc = create((set, get) => ({
         });
     },
 
-    removeUserFromGroup: async ({groupId, userId, email}) => {
+    removeUserFromGroup: async ({groupId, memberId}) => {
 
         try {
-            console.log({groupId, userId, email})
-            const res = await axiosInstance.post(`/group/${groupId}/remove-member`, {
-                email
+            console.log({groupId, memberId})
+            const res = await axiosInstance.post(`/group/remove-member`, {
+                groupId,
+                memberId
             });
 
             toast.success("User removed from group");

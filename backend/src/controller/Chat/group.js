@@ -95,11 +95,11 @@ export const addMembersByEmail = async (req, res) => {
 
 export const removeMember = async (req, res) => {
     try {
-        const { email } = req.body;
-        const { groupId } = req.params;
+        const { memberId, groupId } = req.body;
+        const userId = req.user._id;
 
-        if (!email) {
-            return res.status(400).json({ message: "Please provide email of the member to remove" });
+        if (!memberId) {
+            return res.status(400).json({ message: "Please provide member Id" });
         }
 
         const group = await Group.findById(groupId);
@@ -109,7 +109,7 @@ export const removeMember = async (req, res) => {
 
         const originalCount = group.members.length;
 
-        group.members = group.members.filter(member => member.email !== email);
+        group.members = group.members.filter(member => member._id !== memberId);
 
         if (group.members.length === originalCount) {
             return res.status(404).json({ message: "Member not found in group" });

@@ -8,7 +8,7 @@ router.post("/create",protectRoute,createGroup);
 
 router.post("/add-member",protectRoute,addMembersByEmail);
 
-router.post("/:groupId/remove-member",protectRoute,removeMember);
+router.post("/remove-member",protectRoute,removeMember);
 
 router.post("/roles",protectRoute,assignRole);
 
