@@ -16,6 +16,9 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: ""
     },
+    senderRole:{
+      type:String
+    },
     image: {
       type: String,
       default: ""

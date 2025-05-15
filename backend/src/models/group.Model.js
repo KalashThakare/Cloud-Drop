@@ -10,6 +10,9 @@ const groupMemberModel = new mongoose.Schema({
         ref:'User',
         required:true
     },
+    role:{
+        type:String,
+    },
     joinedAt:{
         type:Date,
         default:Date.now()

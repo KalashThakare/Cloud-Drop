@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { IconMessageReport } from "@tabler/icons-react"
+import { IconMessageReport, IconPercentage100 } from "@tabler/icons-react"
 
 const MessageList = ({ messages, currentUserId, selectedGroup }) => {
   const scrollRef = useRef(null);
@@ -44,7 +44,7 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
               >
                 {!fromUser && showSender && (
                   <span className="text-xs text-zinc-400 mb-1">
-                    {msg.senderId}
+                    {msg.senderRole}
                   </span>
                 )}
 

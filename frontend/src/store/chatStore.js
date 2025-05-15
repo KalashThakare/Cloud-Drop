@@ -48,7 +48,7 @@ export const chatFunc = create((set, get) => ({
     selectGroup: async (group) => {
         set({ selectedGroup: group });
         await get().getMessages(group._id);
-        useSocketEventStore.getState().subscribeToMessages();
+        
     },
 
     addMessage: (newMessage) => {

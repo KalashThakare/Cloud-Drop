@@ -34,8 +34,8 @@ export const createGroup = async (req, res) => {
 
 export const addMembersByEmail = async (req, res) => {
     try {
-        const  {groupId}  = req.body;
-        let  {emails } = req.body;
+        const { groupId } = req.body;
+        let { emails } = req.body;
 
         if (typeof emails === "string") {
             emails = [emails];
@@ -124,70 +124,132 @@ export const removeMember = async (req, res) => {
     }
 };
 
-export const exitGroup = async(req,res) =>{
-    try {
-        
-        const userId = req.user._id;
-        const {groupId} = req.params;
+export const assignRole = async (req, res) => {
 
-        if(!userId){
-            return res.status(404).json({message:"Unauthorised"});
+    try {
+
+        const { role, groupId, memberId } = req.body;
+        const userId = req.user._id;
+
+        if (!role) {
+            res.status(404).json({ message: "Role that is to assign is required" });
+        }
+        if (!groupId) {
+            res.status(404).json({ message: "GroupID is required" });
+        }
+        if (!userId) {
+            res.status(404).json({ message: "UserID is required" });
+        }
+        if (!memberId) {
+            res.status(404).json({ message: "memberID is required" });
         }
 
         const group = await Group.findById(groupId);
 
-        if(!group){
-            return res.status(404).json({message:"Group not found"});
+        if (!group) {
+            res.status(404).json({ message: "No group found" });
         }
 
-        const originalCount = group.members.length;
-
-        group.members = group.members.filter(member=>member.userId.toString() !== userId.toString());
-
-        if(group.members.length === originalCount){
-            return res.status(404).json({message:"Member not found in group"});
+        if (group.createdBy.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "You don't have permission to assign roles" });
         }
 
-        await group.save();
+        const memberIndex = group.members.findIndex(
+            member => member._id.toString() === memberId
+        );
 
-        res.status(200).json({message:"Exit successfull"})
+        if (memberIndex === -1) {
+            res.status(404).json({ message: "No member found" })
+        };
+
+        group.members[memberIndex].role = role;
+
+        await group.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Role assigned successfully",
+            updatedMember: group.members[memberIndex]
+        });
 
 
     } catch (error) {
 
-        console.error("error in exit group controoler:",error);
-        res.status(500).json({message:"Internal server error"});
-        
-    }
-};
+        console.error("Error in assignRole:", error);
+        return res.status(500).json({
+            message: "An error occurred while assigning the role",
+            error: error.message
+        });
 
-export const terminateGroup = async(req,res) =>{
+    }
+
+}
+
+export const exitGroup = async (req, res) => {
+
     try {
 
         const userId = req.user._id;
-        const {groupId} = req.body;
+        const { groupId } = req.params;
+
+        if (!userId) {
+            return res.status(404).json({ message: "Unauthorised" });
+        }
 
         const group = await Group.findById(groupId);
 
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
-          }
-
-        if(userId.toString() === group.createdBy.toString()){
-            
-            await Group.findByIdAndDelete(groupId);
-            return res.status(200).json({message:"Project terminated successfully"});
-
-        }else{
-            return res.status(404).json({message:"Only group admin can terminate the group"});
         }
-        
+
+        const originalCount = group.members.length;
+
+        group.members = group.members.filter(member => member.userId.toString() !== userId.toString());
+
+        if (group.members.length === originalCount) {
+            return res.status(404).json({ message: "Member not found in group" });
+        }
+
+        await group.save();
+
+        res.status(200).json({ message: "Exit successfull" })
+
+
+    } catch (error) {
+
+        console.error("error in exit group controoler:", error);
+        res.status(500).json({ message: "Internal server error" });
+
+    }
+};
+
+export const terminateGroup = async (req, res) => {
+    try {
+
+        const userId = req.user._id;
+        const { groupId } = req.body;
+
+        const group = await Group.findById(groupId);
+
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        if (userId.toString() === group.createdBy.toString()) {
+
+            await Group.findByIdAndDelete(groupId);
+            return res.status(200).json({ message: "Project terminated successfully" });
+
+        } else {
+            return res.status(404).json({ message: "Only group admin can terminate the group" });
+        }
+
 
     } catch (error) {
 
         console.error("Error in terminateGroup:", error);
         res.status(500).json({ message: "Internal server error" });
-        
+
     }
 }
 
