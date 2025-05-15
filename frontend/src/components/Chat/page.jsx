@@ -17,7 +17,7 @@ const ChatLayout = () => {
     const createGroup = groupFunc((state) => state.createGroup);
     const deleteGroup = groupFunc((state) => state.deleteGroup);
     const addMember = groupFunc((state) => state.addMember);
-    const updateMemberRole = groupFunc((state) => state.updateMemberRole);
+    const assignRole = groupFunc((state) => state.assignRole);
 
     const authUser = useAuthStore((state) => state.authUser);
     const currentUserId = authUser?._id;
@@ -54,7 +54,7 @@ const ChatLayout = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [showGroupInfo, setShowGroupInfo] = useState(false);
     const [memberRoles, setMemberRoles] = useState({});
-    const [isTyping, setIsTyping] = useState(false);
+   
 
     const handleCreateGroup = () => {
   if (!groupName.trim()) return;
@@ -144,16 +144,13 @@ const ChatLayout = () => {
     };
 
     const saveRole = async (memberId) => {
-        try {
-            await updateMemberRole({
-                groupId: selectedGroup._id,
-                memberId,
-                role: memberRoles[memberId]
-            });
-            // Optionally show success message
-        } catch (error) {
-            console.error("Failed to update role:", error);
-        }
+        
+        await assignRole({
+            groupId: selectedGroup._id,
+            memberId,
+            role: memberRoles[memberId]
+        });
+        
     };
 
     const toggleGroupInfo = () => {

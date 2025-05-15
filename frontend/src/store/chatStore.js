@@ -254,6 +254,26 @@ export const groupFunc = create((set, get) => ({
             createdGroups: updatedCreatedGroups,
             memberGroups: updatedMemberGroups
         });
+    },
+
+    assignRole:async({groupId,memberId,role})=>{
+
+        try {
+
+            console.log({groupId,memberId,role})
+            
+            const res = await axiosInstance.post("/group/roles",{
+                groupId,
+                memberId,
+                role
+            });
+
+            toast.success("Role assigned");
+
+        } catch (error) {
+            console.error("Error assigning role",error);
+            toast.error("Error occured");
+        }
     }
 
 }))
