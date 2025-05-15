@@ -18,6 +18,7 @@ const ChatLayout = () => {
     const deleteGroup = groupFunc((state) => state.deleteGroup);
     const addMember = groupFunc((state) => state.addMember);
     const assignRole = groupFunc((state) => state.assignRole);
+    const removeUserFromGroup = groupFunc((state) => state.removeUserFromGroup);
 
     const authUser = useAuthStore((state) => state.authUser);
     const currentUserId = authUser?._id;
@@ -89,7 +90,9 @@ const ChatLayout = () => {
     };
 
     const onRemoveMember = () => {
-        
+        const userId = currentUserId;
+        const groupId = selectedGroup._id;
+        removeUserFromGroup({ groupId, userId, memberEmail });
     };
 
     const handleGroupClick = (group) => {
@@ -185,6 +188,7 @@ const ChatLayout = () => {
                 memberRoles={memberRoles}
                 handleRoleChange={handleRoleChange}
                 saveRole={saveRole}
+                onRemoveMember={onRemoveMember}
             />
 
             <MemberDrawer

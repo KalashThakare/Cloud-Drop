@@ -224,9 +224,16 @@ export const groupFunc = create((set, get) => ({
         });
     },
 
-    removeUserFromGroup: (groupId, userId) => {
+    removeUserFromGroup: async ({groupId, userId, email}) => {
 
-        const { createdGroups, memberGroups } = get();
+        try {
+            console.log({groupId, userId, email})
+            const res = await axiosInstance.post(`/group/${groupId}/remove-member`, {
+                email
+            });
+
+            toast.success("User removed from group");
+            const { createdGroups, memberGroups } = get();
 
         const updatedCreatedGroups = createdGroups.map(group => {
             if (group._id === groupId) {
@@ -254,6 +261,12 @@ export const groupFunc = create((set, get) => ({
             createdGroups: updatedCreatedGroups,
             memberGroups: updatedMemberGroups
         });
+        return res.data;
+        } catch (error) {
+            console.error("Error removing user from group", error);
+            toast.error("Error removing user");
+            return null;
+        }
     },
 
     assignRole:async({groupId,memberId,role})=>{

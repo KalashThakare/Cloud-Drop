@@ -6,7 +6,8 @@ const GroupInfoPanel = ({
     toggleGroupInfo,
     memberRoles,
     handleRoleChange,
-    saveRole
+    saveRole,
+    onRemoveMember,
 }) => {
     return (
         <div className="relative text-center rounded-2xl h-full w-full inset-0 bg-zinc-900 border-l border-zinc-700 z-50 p-6 overflow-y-auto">
@@ -16,7 +17,7 @@ const GroupInfoPanel = ({
                 className="text-zinc-400 hover:text-white absolute right-2 top-2 p-2 rounded-full transition-all duration-200"
                 aria-label="Close"
             >
-                <IconX size={24} />
+                <IconX size={24}/>
             </button>
 
             {/* Group Info Content */}
@@ -68,7 +69,7 @@ const GroupInfoPanel = ({
 
                             {/* Assign Role Input */}
                             {member._id !== selectedGroup.createdBy && (
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-row items-center gap-2">
                                     <input
                                         type="text"
                                         value={memberRoles[member._id] || ""}
@@ -83,7 +84,16 @@ const GroupInfoPanel = ({
                                         className="text-green-500 hover:text-green-400"
                                         title="Save role"
                                     >
-                                        <IconCheck size={16} />
+                                        <IconCheck size={18} />
+
+                                    </button>
+                                    <button
+                                        onClick={() => onRemoveMember(member)}
+                                        className="text-green-500 hover:text-green-400"
+                                        title="Delete Member"
+                                    >
+                                        <IconX size={18} className='text-red-700'/>
+
                                     </button>
                                 </div>
                             )}

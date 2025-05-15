@@ -112,15 +112,15 @@ function Main() {
 
 
   const links = [
-    {
-      label: "Your Buckets",
-      href: "#",
-      icon: (
-        <IconBucket className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      onClick: () => setActiveView("your_buckets"),
-      className: "px-4 py-2 text-md",
-    },
+    // {
+    //   label: "Your Buckets",
+    //   href: "#",
+    //   icon: (
+    //     <IconBucket className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   onClick: () => setActiveView("your_buckets"),
+    //   className: "px-4 py-2 text-md",
+    // },
     {
       label: "Cloud Drop",
       href: "#",
@@ -130,15 +130,15 @@ function Main() {
       onClick: () => setActiveView("cloud_drop"),
       className: "px-4 py-2 text-md",
     },
-    {
-      label: "File Upload",
-      href: "#",
-      icon: (
-        <IconFile className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      onClick: () => setActiveView("file_upload"),
-      className: "px-4 py-2 text-md",
-    },
+    // {
+    //   label: "File Upload",
+    //   href: "#",
+    //   icon: (
+    //     <IconFile className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   onClick: () => setActiveView("file_upload"),
+    //   className: "px-4 py-2 text-md",
+    // },
     {
       label: "Signed URL",
       href: "#",
@@ -168,7 +168,7 @@ function Main() {
         router.replace("/");
       },
       className:
-        "hover:bg-red-500 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",
+        "hover:bg-zinc-900 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",
     },
   ];
 
@@ -232,7 +232,7 @@ function Main() {
       <Sidebar open={open} setOpen={setOpen} animate={true} className="w-2/9">
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-            <div
+            {/* <div
               onClick={() => setActiveView("add_bucket")}
               className="relative z-20 flex items-center space-x-2 text-md font-normal text-black dark:text-white hover:bg-green-400 hover:text-black rounded-full w-fit hover:px-5 hover:py-3 px-4 py-2 cursor-pointer"
             >
@@ -244,7 +244,7 @@ function Main() {
               >
                 Switch Bucket
               </motion.span>
-            </div>
+            </div> */}
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink

@@ -18,7 +18,8 @@ const ChatArea = ({
     setShowAddMember,
     memberRoles,
     handleRoleChange,
-    saveRole
+    saveRole,
+    onRemoveMember,
 }) => {
     return (
         <div className="flex flex-col flex-1 bg-zinc-950 p-6">
@@ -40,6 +41,7 @@ const ChatArea = ({
                             memberRoles={memberRoles}
                             handleRoleChange={handleRoleChange}
                             saveRole={saveRole}
+                            onRemoveMember={onRemoveMember}
                         />
                     )}
 
