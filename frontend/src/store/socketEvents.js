@@ -6,6 +6,9 @@ export const useSocketEventStore = create((set, get) => ({
 
     activeGroupId: null,
     activeUserId: null,
+    notifications: [],
+    hasUnreadNotification: false,
+
 
     setActiveChat: (type, id) => {
         if (type === 'group') {
@@ -45,18 +48,18 @@ export const useSocketEventStore = create((set, get) => ({
 
     },
 
-    subscribeToMessages: () => {
+    // subscribeToMessages: () => {
 
-        const { activeGroupId } = get();
-        const socket = useAuthStore.getState().socket;
-        if (!socket) return;
+    //     const { activeGroupId } = get();
+    //     const socket = useAuthStore.getState().socket;
+    //     if (!socket) return;
 
-        socket.on('newMessage', (newMessage) => {
-            if (activeGroupId && newMessage.groupId === activeGroupId) {
-                chatFunc.getState().addMessage(newMessage);
-            }
-        })
-    },
+    //     socket.on('newMessage', (newMessage) => {
+    //         if (activeGroupId && newMessage.groupId === activeGroupId) {
+    //             chatFunc.getState().addMessage(newMessage);
+    //         }
+    //     })
+    // },
 
     unsubscribeFromMessages: () => {
 
@@ -155,6 +158,33 @@ export const useSocketEventStore = create((set, get) => ({
             socket.off("connect");
             socket.off("disconnect");
         }
-    }
+    },
+
+    addNotification: (notification) => set((state) => ({
+        notifications: [notification, ...state.notifications],
+        hasUnreadNotification: true,
+    })),
+    clearNotifications: () => set({ hasUnreadNotification: false }),
+
+    subscribeToMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+
+    // Always remove previous listener to avoid duplicates
+    socket.off('newMessage');
+
+    socket.on('newMessage', (newMessage) => {
+        const { activeGroupId } = get();
+        if (activeGroupId && newMessage.groupId === activeGroupId) {
+            chatFunc.getState().addMessage(newMessage);
+        } else {
+            get().addNotification({
+                type: 'message',
+                text: `New message in group: ${newMessage.groupName || newMessage.groupId}`,
+                time: new Date().toISOString(),
+            });
+        }
+    });
+    },
 
 }))

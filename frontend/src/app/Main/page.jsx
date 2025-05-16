@@ -31,6 +31,8 @@ import Link from "next/link";
 import ChatPage from "@/components/Chat/page";
 import DashboardLanding from "@/components/ui/DashboardLanding.jsx";
 import UploadForm from "@/components/CloudDrop.jsx";
+import { useSocketEventStore } from "@/store/socketEvents";
+import Notification from "@/components/Notification";
 
 function Main() {
   const searchParams = useSearchParams();
@@ -47,6 +49,7 @@ function Main() {
     bucketKey: "",
     bucketSecret: "",
   });
+  const hasUnreadNotification = useSocketEventStore((s) => s.hasUnreadNotification);
 
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
@@ -59,9 +62,11 @@ function Main() {
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const deleteBucket = bucketFunc((state) => state.deleteBucket);
   const addBucket = bucketFunc((state) => state.addBucket);
-
+  const activeGroupId = useSocketEventStore((s) => s.activeGroupId);
   useEffect(() => {
     checkAuth();
+    useSocketEventStore.getState().initSocketEvents();
+  return () => useSocketEventStore.getState().cleanup();
   }, [checkAuth]);
 
 
@@ -155,6 +160,27 @@ function Main() {
         <IconUsersGroup className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       onClick: () => setActiveView("Chat_Room"),
+      className: "px-4 py-2 text-md",
+    },
+    {
+      label: (
+        <span className="relative">
+          Notification
+          {hasUnreadNotification && (
+            <span className="absolute -top-1 -right-3 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+          )}
+        </span>
+      ),
+      href: "#",
+      icon: (
+        <svg className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" fill="none" viewBox="0 0 24 24">
+          <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" stroke="currentColor" strokeWidth="1.5"/>
+        </svg>
+      ),
+      onClick: () => {
+        setActiveView("notification");
+        useSocketEventStore.getState().clearNotifications();
+      },
       className: "px-4 py-2 text-md",
     },
     {
@@ -297,14 +323,15 @@ const Dashboard = ({
   setCaption,
   submit,
 }) => {
+  
   return (
     <div className="flex justify-center border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
 
       {activeView === "home" && <DashboardLanding /> }
 
-      {activeView === "add_bucket" && (
+      {/* {activeView === "add_bucket" && (
         <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
-          {/* Use Free Bucket Button */}
+           
 
           <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] shadow-2xl shadow-zinc-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group"
             onClick={() => setActiveView("home")}
@@ -336,7 +363,6 @@ const Dashboard = ({
 
           </button>
 
-          {/* Use your own Bucket Button */}
           <Link href={"/Own"}>
             <button className="relative inline-flex h-12 w-48 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
               <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFFF_0%,#007BFF_50%,#00FFFF_100%)]" />
@@ -346,8 +372,9 @@ const Dashboard = ({
             </button>
           </Link>
         </div>
-      )}
-      {activeView === "your_buckets" && (
+      )} 
+      */}
+      {/* {activeView === "your_buckets" && (
         <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
           <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">
             Your Buckets
@@ -435,11 +462,12 @@ const Dashboard = ({
             )}
           </ul>
         </div>
-      )}
+      )} */}
       {activeView === "cloud_drop" && <UploadForm />}
       {activeView === "file_upload" && <FileSelector />}
       {activeView === "signed_url" && <SignedUrlGenerator />}
       {activeView === "Chat_Room" && <ChatPage />}
+      {activeView === "notification" && <Notification />}
     </div>
   );
 };
