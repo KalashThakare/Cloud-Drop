@@ -14,7 +14,7 @@ router.post("/s3client", protectRoute, createS3Client);
 router.post("/s3client/upload", (req, res, next) => {
     console.log("Raw incoming request body:", req.body);
     next();
-},upload.single("image"), Upload);
+},upload.array("images"), Upload);
 
 router.post("/getUrl",protectRoute,generateSignedUrl)
 

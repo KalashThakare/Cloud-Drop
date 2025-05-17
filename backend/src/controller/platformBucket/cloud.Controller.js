@@ -12,33 +12,37 @@ export const Upload=async (req,res)=>{
         const s3Client = await getS3Client(req);
 
         console.log("req-body",req.body);
-        console.log("req-file",req.file);
+        console.log("req-file",req.files);
 
         const {bucketName} = req.body;
         // if(!bucketName){
         //     return res.status(400).json({message:"Please connect to bucket"});
         // }
 
-        const file = req.file
+        const files = req.files
 
-        if(!file){
+        console.log(files)
+
+        if(!files || files.length === 0){
             return res.status(400).json({message:"No file found"});
         }
 
+        const uploadResults = [];
         
-        
-        const body=req.file.buffer;
 
-        const params = {
-            Bucket:bucketName,
-            Key:req.file.originalname,
-            Body:body,
-            ContentType:req.file.mimetype
-        }
+        for (const file of files) {
+            const params = {
+                Bucket: bucketName,
+                Key: file.originalname,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            };
+            
 
-        const command = new PutObjectCommand(params);
-
-        await s3Client.send(command);
+            const command = new PutObjectCommand(params);
+            await s3Client.send(command);
+            uploadResults.push({ filename: file.originalname, status: "uploaded" });
+        };
 
         res.status(200).json({message:"File uploaded successfully"});
         console.log("Success");
