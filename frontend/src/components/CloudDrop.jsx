@@ -100,7 +100,7 @@ function UploadForm() {
       >
         <div className="flex flex-col md:flex-row gap-4">
         {/* Left: Image Upload and Preview */}
-        <div className="w-full md:w-1/2 flex flex-col gap-2 sm:gap-3">
+        <div className="w-full flex flex-col gap-2 sm:gap-3">
           <label className="text-sm sm:text-base text-zinc-400 font-medium">
             Upload Image
             <input
@@ -112,11 +112,11 @@ function UploadForm() {
               className="mt-2 w-full p-3 sm:p-4 bg-zinc-800 text-white border border-dashed border-zinc-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:border-cyan-400 hover:bg-zinc-800 transition-all text-xs sm:text-sm"
             />
           </label>
-            <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+            <p className="text-xs sm:text-sm text-zinc-500 mt-1 text-center">
               Supported formats: JPG, PNG, GIF · Max size: 5MB
             </p>
           {files.length > 0 && (
-            <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                 {files.map((file, index) => (
                   <div className="relative" key={index}>
                     <img
@@ -153,14 +153,12 @@ function UploadForm() {
         </div>
 
         {/* Right: Filename + Upload + Progress */}
-        <div className="w-full md:w-1/2 flex flex-col justify-between gap-3 sm:gap-4">
-          <div>
+        <div className={`${files.length === 0 ? "w-0" : "w-full"} flex flex-col justify-between gap-3 sm:gap-4`}>
+            {files.length > 0 && (<div>
             <p className="text-xs sm:text-sm text-zinc-500 mt-3 md:mt-5">
               This name will be used in the signed URL. If left empty, a default
               name is generated.
             </p>
-
-            {files.length > 0 && (
               <div className="mt-3 md:mt-5 space-y-3 md:space-y-5">
                 {files.map((file, index) => (
                   <div
@@ -202,8 +200,9 @@ function UploadForm() {
                   </div>
                 ))}
               </div>
+              </div>
             )}
-          </div>
+          
 
           <div>
             {progress > 0 && (
