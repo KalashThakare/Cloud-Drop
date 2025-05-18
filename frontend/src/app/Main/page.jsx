@@ -276,7 +276,10 @@ function Main() {
                 <SidebarLink
                   key={idx}
                   link={link}
-                  onClick={link.onClick}
+                  onClick={(e) => {
+                    if (link.onClick) link.onClick(e);
+                    setOpen(false); // <-- This ensures the sidebar closes on mobile
+                  }}
                   className={link.className}
                 />
               ))}
