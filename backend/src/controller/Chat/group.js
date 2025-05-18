@@ -109,7 +109,7 @@ export const removeMember = async (req, res) => {
 
         const originalCount = group.members.length;
 
-        group.members = group.members.filter(member => member._id !== memberId);
+        group.members = group.members.filter(member => member._id.toString() !== memberId.toString());
 
         if (group.members.length === originalCount) {
             return res.status(404).json({ message: "Member not found in group" });

@@ -15,9 +15,6 @@ export const Upload=async (req,res)=>{
         console.log("req-file",req.files);
 
         const {bucketName} = req.body;
-        // if(!bucketName){
-        //     return res.status(400).json({message:"Please connect to bucket"});
-        // }
 
         const files = req.files
 

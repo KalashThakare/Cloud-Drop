@@ -243,7 +243,7 @@ export const groupFunc = create((set, get) => ({
             if (group._id === groupId) {
                 return {
                     ...group,
-                    members: group.members.filter(member => member._id !== userId)
+                    members: group.members.filter(member => member._id !== memberId)
                 };
             }
 
@@ -254,7 +254,7 @@ export const groupFunc = create((set, get) => ({
             if (group._id === groupId) {
                 return {
                     ...group,
-                    members: group.members.filter(member => member._id !== userId)
+                    members: group.members.filter(member => member._id !== memberId)
                 };
             }
 
