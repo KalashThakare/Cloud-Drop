@@ -48,6 +48,8 @@ const PackagesContainer = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   justify-content: center;
+  align-content: center;
+  justify-items: center;
 
   @media (max-width: 1200px) {
     gap: 1.5rem;
@@ -66,7 +68,7 @@ const PackageCard = styled.div`
   background: #1a1a1a;
   border-radius: 16px;
   padding: 2rem 1.5rem;
-  width: 100%;
+  width: 90%;
   min-width: 0;
   transition: all 0.3s ease;
   animation: ${fadeIn} 0.5s ease forwards;
