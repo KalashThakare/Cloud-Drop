@@ -62,7 +62,7 @@ export const bucketFunc = create((set,get)=>({
         }
     },
 
-    generateDefaultBucketUrl:async(fileName,expiration)=>{
+    generateDefaultBucketUrl:async(fileName,expiration,userId)=>{
         try {
 
             const bucketName = get().selectedBucket; 
@@ -74,7 +74,8 @@ export const bucketFunc = create((set,get)=>({
             const res = await axiosInstance.post("/use-platform-bucket/getUrl",{
                 fileName,
                 expiration,
-                bucketName
+                bucketName,
+                userId
             });
 
             set({generatedUrl:res.data});

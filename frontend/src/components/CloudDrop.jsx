@@ -5,6 +5,7 @@ import { axiosInstance } from "@/lib/axios";
 import { bucketFunc } from "@/store/bucketFunc";
 import { toast } from "sonner";
 import { FiX } from "react-icons/fi";
+import { useAuthStore } from "@/store/useAuthStore.js";
 
 function UploadForm() {
   const [files, setFiles] = useState([]);
@@ -15,6 +16,8 @@ function UploadForm() {
   const [selectedFileIndex, setSelectedFileIndex] = useState(null); // NEW: Track selected file for info panel
 
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
+  const authUser = useAuthStore((state) => state.authUser);
+  const currentUserId = authUser?._id;
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -56,7 +59,7 @@ function UploadForm() {
 
     const formData = new FormData();
     formData.append("bucketName", selectedBucket);
-
+    formData.append("userId",currentUserId);
     files.forEach((file, index) => {
       const renamedFile = new File([file], getFinalFilename(file, index), {
         type: file.type,

@@ -14,7 +14,7 @@ export const Upload=async (req,res)=>{
         console.log("req-body",req.body);
         console.log("req-file",req.files);
 
-        const {bucketName} = req.body;
+        const {bucketName,userId} = req.body;
 
         const files = req.files
 
@@ -30,7 +30,7 @@ export const Upload=async (req,res)=>{
         for (const file of files) {
             const params = {
                 Bucket: bucketName,
-                Key: file.originalname,
+                Key: `userUploads/${userId}/${file.originalname}`,
                 Body: file.buffer,
                 ContentType: file.mimetype,
             };
@@ -56,7 +56,7 @@ export const generateSignedUrl =async(req,res)=>{
 
     try {
 
-        const {fileName,expiration} = req.body;
+        const {fileName,expiration,userId} = req.body;
 
         const bucketName = process.env.BUCKET_NAME;
 
@@ -70,7 +70,7 @@ export const generateSignedUrl =async(req,res)=>{
             s3Client,
             new GetObjectCommand({
                 Bucket:bucketName,
-                Key:fileName
+                Key:`userUploads/${userId}/${fileName}`
             }),
             {expiresIn:`${expiration}`*60}
         )

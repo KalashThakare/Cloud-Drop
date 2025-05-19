@@ -192,6 +192,7 @@ import { Clipboard, Mail, ArrowLeftCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import "@/app/globals.css";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SignedUrlGenerator() {
   const searchParams = useSearchParams();
@@ -213,6 +214,9 @@ export default function SignedUrlGenerator() {
   const generatedUrl = bucketFunc((state) => state.generatedUrl);
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const sendMail = bucketFunc((state) => state.sendMail);
+  
+  const authUser = useAuthStore((state) => state.authUser);
+  const userId = authUser?._id;
 
   const generateSignedUrl = async () => {
     if (!fileName || !expiration) {
@@ -221,7 +225,7 @@ export default function SignedUrlGenerator() {
     }
 
     if (useDefault === true) {
-      generateDefaultBucketUrl(fileName, expiration);
+      generateDefaultBucketUrl(fileName, expiration,userId);
     } else {
       // Add your custom bucket logic here if needed
     }
