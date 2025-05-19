@@ -82,8 +82,15 @@ export const bucketFunc = create((set,get)=>({
 
             
         } catch (error) {
-            console.log(error);
-            toast.error('error generating signed Url');
+
+            const status = error?.response?.status
+            const message = error?.response?.data?.error
+
+            if(status === 404){
+                toast.warning("No such file found. Please try uploading again.")
+            }else{
+                toast.error("Internal server error")
+            }
         }
     },
 
