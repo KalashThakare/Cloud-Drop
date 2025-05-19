@@ -8,13 +8,18 @@ import multer from "multer";
 const router = express.Router();
 
 const storage = multer.memoryStorage()
-const upload = multer({storage:storage})
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB limit (increase for video support)
+  }
+});
 
 router.post("/s3client", protectRoute, createS3Client);
 router.post("/s3client/upload", (req, res, next) => {
     console.log("Raw incoming request body:", req.body);
     next();
-},upload.array("images"), Upload);
+},upload.array("images",6), Upload);
 
 router.post("/getUrl",protectRoute,generateSignedUrl)
 

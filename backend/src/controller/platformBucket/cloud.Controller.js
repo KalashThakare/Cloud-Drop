@@ -26,20 +26,43 @@ export const Upload = async (req, res) => {
 
         const uploadResults = [];
 
+        for (const file of req.files) {
+            const fileType = file.mimetype;
+            let fileCategory;
 
-        for (const file of files) {
-            const params = {
-                Bucket: bucketName,
-                Key: `userUploads/${userId}/${file.originalname}`,
-                Body: file.buffer,
-                ContentType: file.mimetype,
+            if (fileType.startsWith('image/')) {
+                fileCategory = 'images';
+            } else if (fileType.startsWith('video/')) {
+                fileCategory = 'videos';
+            } else {
+                fileCategory = 'other';
+            }
+
+
+            const filePath = `users/${userId}/${fileCategory}/${file.originalname}`;
+
+            for (const file of files) {
+                const params = {
+                    Bucket: bucketName,
+                    Key: filePath,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                };
+
+
+                const command = new PutObjectCommand(params);
+                await s3Client.send(command);
+
+                uploadResults.push({
+                    originalName: file.originalname,
+                    storedPath: filePath,
+                    fileType: fileCategory,
+                });
             };
 
+        }
 
-            const command = new PutObjectCommand(params);
-            await s3Client.send(command);
-            uploadResults.push({ filename: file.originalname, status: "uploaded" });
-        };
+
 
         res.status(200).json({ message: "File uploaded successfully" });
         console.log("Success");
@@ -66,11 +89,13 @@ export const generateSignedUrl = async (req, res) => {
             return res.status(400).json({ message: "S3 client not initialized" });
         }
 
+        const filePath = `users/${userId}/${fileCategory}/${fileName}`;
+
         try {
 
             const headCommand = new HeadObjectCommand({
                 Bucket: bucketName,
-                Key: `userUploads/${userId}/${fileName}`
+                Key: filePath
             })
 
             await s3Client.send(headCommand);
@@ -79,7 +104,7 @@ export const generateSignedUrl = async (req, res) => {
                 s3Client,
                 new GetObjectCommand({
                     Bucket: bucketName,
-                    Key: `userUploads/${userId}/${fileName}`
+                    Key: filePath
                 }),
                 { expiresIn: `${expiration}` * 60 }
             )
@@ -89,8 +114,8 @@ export const generateSignedUrl = async (req, res) => {
             }
 
             res.status(200).json({ message: "Success", Url });
-            
-        } catch(error) {
+
+        } catch (error) {
 
             if (error.name === 'NotFound' || error.code === 'NoSuchKey' || error.$metadata?.httpStatusCode === 404) {
                 return res.status(404).json({ message: "No such file found. Please try uploading again." });

@@ -156,7 +156,7 @@ function UploadForm() {
               ref={fileInputRef}
               onChange={handleFileChange}
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               multiple
               className="mt-2 w-full p-3 sm:p-4 bg-zinc-800 text-white border border-dashed border-zinc-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:border-cyan-400 hover:bg-zinc-800 transition-all text-xs sm:text-sm"
             />
