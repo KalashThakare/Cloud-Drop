@@ -3,14 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import { chatFunc, groupFunc } from '../../store/chatStore.js';
 import { useAuthStore } from '../../store/useAuthStore.js';
-import { useSocketEventStore } from '../../store/socketEvents.js'; 
+import { useSocketEventStore } from '../../store/socketEvents.js';
 import Sidebar from './Sidebar.jsx';
 import ChatArea from './ChatArea.jsx';
 import MemberDrawer from './MemberDrawer.jsx';
 import ConfirmDeleteModal from './ConfirmDeleteModal.jsx';
 import AddMemberModal from './AddMember.jsx';
+import { useSearchParams } from "next/navigation";
+import { bucketFunc } from '@/store/bucketFunc.js';
 
 const ChatLayout = () => {
+
+    const searchParams = useSearchParams();
+    const useDefault = searchParams.get("useDefault") === "true";
+
+
     const getGroups = groupFunc((state) => state.getGroups);
     const createdGroups = groupFunc((state) => state.createdGroups);
     const memberGroups = groupFunc((state) => state.memberGroups);
@@ -33,7 +40,12 @@ const ChatLayout = () => {
 
     const sendMessage = chatFunc((state) => state.sendMessage);
     const getMessages = chatFunc((state) => state.getMessages);
-    const messages = chatFunc((state) => state.messages); 
+    const messages = chatFunc((state) => state.messages);
+
+    const generateDefaultBucketUrl = bucketFunc(
+        (state) => state.generateDefaultBucketUrl
+      );
+    const generatedUrl = bucketFunc((state) => state.generatedUrl);
 
     useEffect(() => {
         getGroups();
@@ -55,23 +67,23 @@ const ChatLayout = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [showGroupInfo, setShowGroupInfo] = useState(false);
     const [memberRoles, setMemberRoles] = useState({});
-   
+
 
     const handleCreateGroup = () => {
-  if (!groupName.trim()) return;
+        if (!groupName.trim()) return;
 
-  
-  createGroup({ groupName }, () => {
-    
-    getGroups();
-    
-    cleanup();
-    initSocketEvents();
-  });
-  
-  setGroupName('');
-  setShowInput(false);
-};
+
+        createGroup({ groupName }, () => {
+
+            getGroups();
+
+            cleanup();
+            initSocketEvents();
+        });
+
+        setGroupName('');
+        setShowInput(false);
+    };
 
     const handleDeleteClick = () => {
         setShowConfirm(true);
@@ -96,9 +108,9 @@ const ChatLayout = () => {
     };
 
     const handleGroupClick = (group) => {
-        
+
         setSelectedGroup(group);
-        setShowGroupInfo(false); 
+        setShowGroupInfo(false);
 
         chatFunc.getState().selectGroup(group);
 
@@ -107,20 +119,74 @@ const ChatLayout = () => {
         subscribeToEvents();
     };
 
-    const handleSend = () => {
+    const handleSend = async () => {
+
         if (!input.trim()) return;
 
-        setInput('');
-
-        if (selectedGroup && selectedGroup._id) {
-            chatFunc.getState().sendMessage({
-                groupId: selectedGroup._id,
-                text: input
-            });
+        if (input.startsWith("/signedUrl")) {
+            handleSignedUrlCommand(input);
         } else {
-            console.error("No group selected");
+
+            setInput('');
+
+            if (selectedGroup && selectedGroup._id) {
+                chatFunc.getState().sendMessage({
+                    groupId: selectedGroup._id,
+                    text: input
+                });
+            } else {
+                console.error("No group selected");
+            }
+
         }
+
+
     };
+
+    const handleSignedUrlCommand=(input)=>{
+
+        try {
+
+            const parts = input.split(' ').filter(part=>part.trim());
+
+            if(parts.length<2){
+                sendMessage({
+                    groupId:selectedGroup._id,
+                    text: "Usage: /signedUrl filename [expiration in minutes]"
+                });
+                
+                return;
+            }
+
+            const fileName = parts[1];
+
+            const expiration = parts[2] ? parseInt(parts[2]) : 60;
+
+            if(useDefault === true){
+                generateDefaultBucketUrl({fileName, expiration, currentUserId});
+            }
+
+            sendMessage({
+                groupId:selectedGroup._id,
+                text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${generatedUrl.Url}`
+            })
+
+            console.log(generatedUrl)
+
+            setInput('');
+            
+            
+        } catch (error) {
+
+            console.error('Error generating signed URL:', error);
+
+            sendMessage({
+                groupId:selectedGroup._id,
+                text:`Error generating signed URL: ${error.message}`
+            })
+            
+        }
+    }
 
     useEffect(() => {
         if (selectedGroup?.members) {
@@ -147,13 +213,13 @@ const ChatLayout = () => {
     };
 
     const saveRole = async (memberId) => {
-        
+
         await assignRole({
             groupId: selectedGroup._id,
             memberId,
             role: memberRoles[memberId]
         });
-        
+
     };
 
     const toggleGroupInfo = () => {

@@ -76,12 +76,13 @@ export const Upload = async (req, res) => {
 }
 
 export const generateSignedUrl = async (req, res) => {
-
     try {
+        
+        const { fileName, expiration, userId, bucketName } = req.body;
 
-        const { fileName, expiration, userId } = req.body;
-
-        const bucketName = process.env.BUCKET_NAME;
+        if (!fileName || !expiration || !userId || !bucketName) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
 
         const s3Client = await getS3Client(req);
 
@@ -89,14 +90,21 @@ export const generateSignedUrl = async (req, res) => {
             return res.status(400).json({ message: "S3 client not initialized" });
         }
 
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+        const videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'];
+
+        let fileCategory = 'other';
+        if (imageExtensions.includes(fileExtension)) fileCategory = 'images';
+        else if (videoExtensions.includes(fileExtension)) fileCategory = 'videos';
+
         const filePath = `users/${userId}/${fileCategory}/${fileName}`;
 
         try {
-
             const headCommand = new HeadObjectCommand({
                 Bucket: bucketName,
                 Key: filePath
-            })
+            });
 
             await s3Client.send(headCommand);
 
@@ -106,8 +114,8 @@ export const generateSignedUrl = async (req, res) => {
                     Bucket: bucketName,
                     Key: filePath
                 }),
-                { expiresIn: `${expiration}` * 60 }
-            )
+                { expiresIn: expiration * 60 }
+            );
 
             if (!Url) {
                 return res.status(400).json({ message: "Error in generating Url" });
@@ -116,19 +124,14 @@ export const generateSignedUrl = async (req, res) => {
             res.status(200).json({ message: "Success", Url });
 
         } catch (error) {
-
             if (error.name === 'NotFound' || error.code === 'NoSuchKey' || error.$metadata?.httpStatusCode === 404) {
                 return res.status(404).json({ message: "No such file found. Please try uploading again." });
             }
-
             throw error;
-
         }
 
-
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "error in getSignedUrl controller" });
+        console.log("Error in generateSignedUrl:", error);
+        res.status(500).json({ message: "Error in getSignedUrl controller" });
     }
-
-}
+};

@@ -62,7 +62,7 @@ export const bucketFunc = create((set,get)=>({
         }
     },
 
-    generateDefaultBucketUrl:async(fileName,expiration,userId)=>{
+    generateDefaultBucketUrl:async({fileName,expiration,userId})=>{
         try {
 
             const bucketName = get().selectedBucket; 

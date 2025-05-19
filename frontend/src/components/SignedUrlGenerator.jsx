@@ -225,7 +225,7 @@ export default function SignedUrlGenerator() {
     }
 
     if (useDefault === true) {
-      generateDefaultBucketUrl(fileName, expiration,userId);
+      generateDefaultBucketUrl({fileName, expiration,userId});
     } else {
       // Add your custom bucket logic here if needed
     }
