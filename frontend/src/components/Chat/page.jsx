@@ -91,7 +91,7 @@ const ChatLayout = () => {
 
     const onRemoveMember = (member) => {
         const groupId = selectedGroup._id;
-        const memberId = member._id;
+        const memberId = member.userId;
         removeUserFromGroup({ groupId, memberId });
     };
 

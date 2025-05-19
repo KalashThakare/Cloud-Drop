@@ -98,18 +98,25 @@ export const removeMember = async (req, res) => {
         const { memberId, groupId } = req.body;
         const userId = req.user._id;
 
+        console.log(userId)
+
         if (!memberId) {
             return res.status(400).json({ message: "Please provide member Id" });
         }
 
         const group = await Group.findById(groupId);
+
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
 
+        if(memberId.toString() === group.createdBy.toString()){
+            res.status(403).json({message:"You cannot remove yourself"})
+        }
+
         const originalCount = group.members.length;
 
-        group.members = group.members.filter(member => member._id.toString() !== memberId.toString());
+        group.members = group.members.filter(member => member.userId.toString() !== memberId.toString());
 
         if (group.members.length === originalCount) {
             return res.status(404).json({ message: "Member not found in group" });
