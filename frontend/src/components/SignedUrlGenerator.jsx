@@ -205,6 +205,7 @@ export default function SignedUrlGenerator() {
   const [signedUrl, setSignedUrl] = useState("");
   const [recipients, setRecipient] = useState("");
   const [showLeftPanel, setShowLeftPanel] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const generateDefaultBucketUrl = bucketFunc(
     (state) => state.generateDefaultBucketUrl
@@ -247,6 +248,8 @@ export default function SignedUrlGenerator() {
   const copyToClipboard = () => {
     if (signedUrl) {
       navigator.clipboard.writeText(signedUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
       toast.success("URL Copied");
     }
   };
@@ -386,7 +389,7 @@ export default function SignedUrlGenerator() {
             
             {/* Email Sharing */}
             <div className="space-y-2 sm:space-y-3">
-              <label className="text-sm sm:text-base text-zinc-400 font-medium">
+              <label className="text-lg sm:text-xl md:text-2xl text-white font-semibold">
                 Send Link via Email
               </label>
               <textarea
