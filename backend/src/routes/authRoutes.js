@@ -17,12 +17,11 @@ router.get("/check",protectRoute,checkAuth);
 
 router.get("/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:3000/Auth", // Or your login page
+    failureRedirect: "http://localhost:3000/Auth",
     session: true,
     scope: ["profile", "email"]
   }),
   (req, res) => {
-    // Redirect to frontend on success
     res.redirect("http://localhost:3000/Main?useDefault=true");
   }
 );
