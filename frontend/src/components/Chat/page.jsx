@@ -163,7 +163,7 @@ const ChatLayout = () => {
             const expiration = parts[2] ? parseInt(parts[2]) : 60;
 
             if(useDefault === true){
-                generateDefaultBucketUrl({fileName, expiration, currentUserId});
+                generateDefaultBucketUrl({fileName, expiration, userId:currentUserId});
             }
 
             sendMessage({

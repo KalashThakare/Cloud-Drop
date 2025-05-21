@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import SubscriptionPlans from "@/components/SubscriptionPlans";
 import { useRouter } from "next/navigation";
