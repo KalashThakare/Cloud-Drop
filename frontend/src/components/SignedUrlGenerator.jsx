@@ -281,38 +281,44 @@ export default function SignedUrlGenerator() {
             
             {/* File Name */}
             <div className="space-y-1">
-              <label className="text-sm sm:text-base text-zinc-400 font-medium">File Name</label>
+              <label htmlFor="fileName" className="text-sm sm:text-base text-zinc-400 font-medium">File Name</label>
               <input
+                id="fileName"
                 type="text"
                 placeholder="example.pdf"
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
                 className="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-cyan-500 p-3 sm:p-3.5 rounded-lg text-sm sm:text-base text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all duration-200"
+                autoComplete="off"
               />
             </div>
             
             {/* Expiration Time */}
             <div className="space-y-1">
-              <label className="text-sm sm:text-base text-zinc-400 font-medium">Expiration Time (minutes)</label>
+              <label htmlFor="expiration" className="text-sm sm:text-base text-zinc-400 font-medium">Expiration Time (minutes)</label>
               <input
+                id="expiration"
                 type="number"
                 min="1"
                 value={expiration}
                 onChange={(e) => setExpiration(e.target.value)}
                 className="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-cyan-500 p-3 sm:p-3.5 rounded-lg text-sm sm:text-base text-white focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all duration-200"
+                autoComplete="off"
               />
             </div>
             
             {/* Max Uses */}
             <div className="space-y-1">
-              <label className="text-sm sm:text-base text-zinc-400 font-medium">Max Uses</label>
+              <label htmlFor="maxUses" className="text-sm sm:text-base text-zinc-400 font-medium">Max Uses</label>
               <input
+                id="maxUses"
                 type="number"
                 min="1"
                 value={maxUses}
                 onChange={(e) => setMaxUses(e.target.value)}
                 disabled={viewOnce}
                 className="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-cyan-500 p-3 sm:p-3.5 rounded-lg text-sm sm:text-base text-white disabled:opacity-60 focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all duration-200"
+                autoComplete="off"
               />
             </div>
             
@@ -320,6 +326,7 @@ export default function SignedUrlGenerator() {
             <div className="flex flex-col gap-3 mt-1">
               <label className="flex items-center gap-3 text-sm sm:text-base text-white cursor-pointer hover:text-cyan-300 transition-colors duration-150">
                 <input
+                  id="allowDownload"
                   type="checkbox"
                   checked={allowDownload}
                   onChange={() => setAllowDownload(!allowDownload)}
@@ -329,6 +336,7 @@ export default function SignedUrlGenerator() {
               </label>
               <label className="flex items-center gap-3 text-sm sm:text-base text-white cursor-pointer hover:text-cyan-300 transition-colors duration-150">
                 <input
+                  id="viewOnce"
                   type="checkbox"
                   checked={viewOnce}
                   onChange={() => {
@@ -393,15 +401,17 @@ export default function SignedUrlGenerator() {
             
             {/* Email Sharing */}
             <div className="space-y-2 sm:space-y-3">
-              <label className="text-lg sm:text-xl md:text-2xl text-white font-semibold">
+              <label htmlFor="recipients" className="text-lg sm:text-xl md:text-2xl text-white font-semibold">
                 Send Link via Email
               </label>
               <textarea
+                id="recipients"
                 value={recipients}
                 onChange={(e) => setRecipient(e.target.value)}
                 placeholder="Enter emails separated by commas..."
                 className="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-cyan-500 p-3 sm:p-3.5 rounded-lg text-sm sm:text-base text-white resize-none focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all duration-200"
                 rows={3}
+                autoComplete="off"
               />
               <button
                 onClick={sendEmail}

@@ -13,7 +13,7 @@ const CreateGroupInput = ({
             {!showInput ? (
                 <button
                     onClick={() => setShowInput(true)}
-                    className="w-full bg-cyan-700 hover:bg-cyan-600 text-white py-2 rounded-lg transition flex justify-center items-center gap-2"
+                    className="w-full bg-cyan-700 hover:bg-cyan-600 text-white p-2 rounded-md transition flex justify-center items-center gap-2"
                 >
                     <span>
                         <IconPlus size={25} />

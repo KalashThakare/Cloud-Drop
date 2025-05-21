@@ -9,7 +9,7 @@ const GroupList = ({
     iconText
 }) => {
     return (
-        <div className="mb-6">
+        <div className="flex-col items-center mb-6">
             <h4 className="text-sm text-zinc-400 mb-2 uppercase tracking-widest">
                 {title}
             </h4>
@@ -17,7 +17,7 @@ const GroupList = ({
                 {groups.map((group) => (
                     <div
                         key={group._id}
-                        className={`flex items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 ${
+                        className={`flex justify-center items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 ${
                             selectedGroup === group
                                 ? "bg-zinc-800 border-l-4 border-sky-400 shadow"
                                 : "hover:bg-zinc-800"
