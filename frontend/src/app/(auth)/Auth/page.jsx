@@ -416,6 +416,10 @@ export default function Auth() {
                   </button>
                 </div>
               </form>
+
+              <a href="http://localhost:4000/api/auth/google/callback">
+                <button>Login with Google</button>
+              </a>
             </div>
           </div>
 

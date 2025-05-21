@@ -38,7 +38,7 @@ export default function Home() {
     };
   }, []);
 
-  const handleFreeClick = () => {
+  const handleFreeClick = async() => {
     const token = localStorage.getItem("authToken");
     if (token && isTokenValid(token)) {
       checkAuth();
@@ -46,6 +46,27 @@ export default function Home() {
     } else {
       router.push("/Auth");
     }
+
+    try {
+    const response = await fetch("/api/auth/current-user", {
+      method: "GET",
+      credentials: "include", // Important: include cookies
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if (data) {
+      // User is authenticated via session
+      router.push("/Main?useDefault=true");
+    } else {
+      router.push("/Auth");
+    }
+  } catch (error) {
+    console.error("OAuth session check failed:", error);
+    router.push("/Auth");
+  }
   };
 
   const handleYourClick = () => {
