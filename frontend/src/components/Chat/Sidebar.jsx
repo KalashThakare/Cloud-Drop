@@ -32,10 +32,10 @@ const Sidebar = ({
                 md:w-1/3
                 lg:w-1/4
                 xl:w-1/5
-                min-w-[170px]
+                min-w-[120px]
                 max-w-xs
                 p-3 xs:p-4 sm:p-5 md:p-6
-                rounded-tr-xl rounded-br-xl
+                rounded-tr-md rounded-br-md
                 backdrop-blur-md
             "
             style={{

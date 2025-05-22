@@ -3,7 +3,7 @@ import "@/app/globals.css"; // Import global styles
 const WelcomeScreen = () => {
   return (
     <div className="flex flex-col items-center text-center rounded-md text-white min-h-[80vh] h-full px-3 xs:px-4 sm:px-8 md:px-12 py-8 xs:py-10 sm:py-14 md:py-20 bg-gradient-to-br from-zinc-950 via-zinc-900 to-cyan-950 overflow-y-scroll hide-scrollbar">
-      <div className="animate-bounce text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 xs:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-600 drop-shadow-xl tracking-tight">
+      <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 xs:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-600 drop-shadow-xl tracking-tight">
         Welcome to SecureChat
       </div>
       <div className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-300 max-w-md xs:max-w-xl sm:max-w-2xl mb-8 xs:mb-10 sm:mb-14 mx-auto">

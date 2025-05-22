@@ -11,6 +11,7 @@ import ConfirmDeleteModal from './ConfirmDeleteModal.jsx';
 import AddMemberModal from './AddMember.jsx';
 import { useSearchParams } from "next/navigation";
 import { bucketFunc } from '@/store/bucketFunc.js';
+import { toast } from 'sonner';
 
 const ChatLayout = () => {
 
@@ -121,7 +122,10 @@ const ChatLayout = () => {
 
     const handleSend = async () => {
 
-        if (!input.trim()) return;
+        if (!(input.trim())){
+            toast.warning("Please enter a message");
+            return;
+        }
 
         if (input.startsWith("/signedUrl")) {
             handleSignedUrlCommand(input);
@@ -227,7 +231,7 @@ const ChatLayout = () => {
     };
 
     return (
-        <div className="flex h-full w-full text-white">
+        <div className="flex md:h-full h-[93vh] w-full text-white">
             <Sidebar
                 createdGroups={createdGroups}
                 memberGroups={memberGroups}

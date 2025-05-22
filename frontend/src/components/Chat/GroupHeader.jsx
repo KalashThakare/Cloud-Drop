@@ -8,39 +8,37 @@ const GroupHeader = ({
     setShowAddMember
 }) => {
     return (
-        <div className="mb-4 border-b border-zinc-800 pb-3">
-            <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
+        <div className="mb-2 xs:mb-3 sm:mb-4 border-b border-zinc-800 pb-2 xs:pb-3 sm:pb-4 bg-gradient-to-r from-zinc-950/80 via-slate-950/80 to-zinc-950/60 rounded-t-xl shadow-sm">
+            <div className="flex flex-row justify-between xs:items-center gap-2 px-2 xs:px-4 sm:px-6">
+                {/* Group Info */}
+                <div className="flex items-center gap-2 xs:gap-3">
                     <div>
                         <div
-                            className="text-xl font-semibold cursor-pointer hover:text-cyan-400 flex items-center gap-2"
+                            className="text-base xs:text-lg sm:text-xl lg:text-2xl font-semibold cursor-pointer hover:text-cyan-400 flex items-center gap-1 xs:gap-2 transition-colors"
                             onClick={toggleGroupInfo}
                         >
-                            {selectedGroup.groupName}
-                            <IconInfoCircle size={18} className="text-cyan-500" />
+                            <span className="truncate max-w-[120px] xs:max-w-[180px] sm:max-w-[260px] md:max-w-[340px] lg:max-w-[420px] xl:max-w-[520px]">
+                                {selectedGroup.groupName}
+                            </span>
+                            <IconInfoCircle size={20} className="text-cyan-500 ml-4" />
                         </div>
-                        <div className="text-sm text-zinc-400">
-                            {selectedGroup.members?.length} members • Created on{" "}
-                            {new Date(selectedGroup.createdAt).toLocaleDateString()}
-                            {selectedGroup.createdBy !== "You" &&
-                                selectedGroup.members?.length > 0 && (
-                                <> • Created by {selectedGroup.members[0].email}</>
-                                )}
+                        <div className="text-xs xs:text-sm sm:text-base text-zinc-400">
+                            {selectedGroup.members?.length} members
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
+                {/* Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 xs:mt-0 w-auto">
                     <button
                         onClick={() => setShowAddMember(true)}
-                        className="text-emerald-500 text-sm border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-600 hover:text-white transition"
+                        className="text-green-700 text-xs xs:text-sm sm:text-base border border-green-700 px-4 xs:px-5 py-1 rounded-full hover:bg-green-500 hover:text-white transition-all duration-150 font-medium shadow-sm"
                     >
                         Add Member
                     </button>
-
                     <button
                         onClick={handleDeleteClick}
-                        className="text-red-600 text-sm border border-red-700 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
+                        className="text-red-700 text-xs xs:text-sm sm:text-base border border-red-700 px-4 xs:px-5 py-1 rounded-full hover:bg-red-500 hover:text-white transition-all duration-150 font-medium shadow-sm"
                     >
                         Delete Group
                     </button>

@@ -13,7 +13,7 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
   return (
     <div
       ref={scrollRef}
-      className="flex-1 overflow-y-scroll space-y-4 pr-2"
+      className="flex-1 overflow-y-auto space-y-3 xs:space-y-4 sm:space-y-5 px-1 xs:px-2 custom-scroll min-h-0 bg-gradient-to-br from-zinc-950/80 via-slate-950/80 to-zinc-950/60"
       style={{
         scrollbarWidth: "none", // Firefox
         msOverflowStyle: "none", // IE 10+
@@ -21,13 +21,12 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
     >
       <style>
         {`
-          /* Hide scrollbar for Chrome, Safari and Opera */
-          .hide-scrollbar::-webkit-scrollbar {
+          .custom-scroll::-webkit-scrollbar {
             display: none;
           }
         `}
       </style>
-      <div className="hide-scrollbar"></div>
+      <div className="custom-scroll"></div>
 
       {selectedGroup ? (
         messages.length > 0 ? (
@@ -39,23 +38,27 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
             return (
               <div
                 key={`${msg._id}-${idx}`}
-                className={`flex flex-col ${fromUser ? "items-end" : "items-start"
-                  }`}
+                className={`flex flex-col ${
+                  fromUser
+                    ? "items-end ml-6 xs:ml-8 sm:ml-10"
+                    : "items-start mr-6 xs:mr-8 sm:mr-10"
+                }`}
               >
                 {!fromUser && showSender && (
-                  <span className="text-xs text-zinc-400 mb-1">
+                  <span className="text-xs xs:text-sm text-zinc-400 mb-1 pl-1">
                     {msg.senderRole}
                   </span>
                 )}
 
-                <div
-                  className={`max-w-sm px-4 py-2 rounded-lg ${fromUser
-                      ? "bg-gray-500 text-white"
-                      : "bg-zinc-800 text-white"
-                    }`}
-                >
-                  <div className="text-sm">{msg.text}</div>
-                </div>
+                <p
+                  className={`max-w-md w-auto break-all text-sm px-4 py-2 rounded-lg 
+                    ${fromUser
+                      ? "bg-slate-800 border border-slate-700 text-white"
+                      : "bg-neutral-800 border border-neutral-700 text-white"
+                    }
+                    ${fromUser ? "rounded-br-none" : "rounded-bl-none"}
+                    `}
+                >{msg.text}</p>
               </div>
             );
           })

@@ -25,7 +25,7 @@ const GroupList = ({
                         onClick={() => handleGroupClick(group)}
                     >
                         <span className={`${iconClass} text-sm mr-2`}>{iconText}</span>
-                        <span className="text-white text-sm">
+                        <span className="text-white text-pretty text-sm">
                             {group.groupName}
                         </span>
                     </div>
