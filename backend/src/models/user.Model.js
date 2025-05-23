@@ -58,8 +58,27 @@ const UserModel = new mongoose.Schema({
         required:true,
         minLength:[4,'password must be atleast 4 characters long']
     },
+    
     buckets:[ConfigSchema],
-    ConnectedBucket:{activeBucketSchema}
+
+    ConnectedBucket:{activeBucketSchema},
+
+    subscription:{
+        isActive:{
+            type:Boolean,
+            default:false
+        },
+        razorPaySubId:{
+            type:String,
+        },
+        plan:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"SubscriptioModel"
+        },
+        endsAt:{
+            Date
+        }
+    }
 });
 
 UserModel.methods.generateAuthToken = function(){
