@@ -40,3 +40,16 @@ export const subscribeToPlan =async()=>{
     res.status(200).json({message:"Subscription created",subscriptionId:subscription.id});
 
 }
+
+
+export const getPlans = async () =>{
+    try {
+
+        const plans = await SubscriptioModel.find();
+        res.status(200).json(plans);
+        
+    } catch (error) {
+        console.log("getPlans error=>",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+}
