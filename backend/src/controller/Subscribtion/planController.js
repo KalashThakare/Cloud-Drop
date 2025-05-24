@@ -1,4 +1,4 @@
-import SubscriptioModel from "../../models/subscriptionPlanModal.js";
+import SubscriptioModel from "../../models/subscriptionPlan.Model.js";
 import razorpay from "../../lib/razorpay.js"
 import User from "../../models/user.Model.js";
 

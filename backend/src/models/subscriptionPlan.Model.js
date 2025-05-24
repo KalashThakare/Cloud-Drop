@@ -25,6 +25,6 @@ const subscriptionPlanSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-const SubscriptioModel = new mongoose.model("SubscriptionPlan", subscriptionPlanSchema);
+const SubscriptionModel = new mongoose.model("SubscriptionPlan", subscriptionPlanSchema);
 
-export default SubscriptioModel;
+export default SubscriptionModel;
