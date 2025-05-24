@@ -38,7 +38,7 @@ export default function Home() {
     };
   }, []);
 
-  const handleFreeClick = async() => {
+  const handleFreeClick = async () => {
     const token = localStorage.getItem("authToken");
     if (token && isTokenValid(token)) {
       checkAuth();
@@ -66,6 +66,7 @@ export default function Home() {
     { text: "Workflow", className: "text-cyan-500/80 dark:text-cyan-400/80" },
   ];
 
+  // Enhanced features for CloudDrop
   const features = [
     {
       title: "Secure File Management",
@@ -76,37 +77,62 @@ export default function Home() {
     {
       title: "Smart Collaboration",
       description:
-        "Real-time group chat with role-based access controls and team management features.",
+        "Real-time group chat, role-based access, and team management. Add, remove, and assign roles to members instantly.",
       icon: "💬",
     },
     {
       title: "AI-Powered Insights",
       description:
-        "Automatically generate document summaries and extract key insights using advanced AI.",
+        "Generate document summaries and extract key insights using advanced AI for faster decision-making.",
       icon: "🧠",
     },
     {
       title: "Flexible Storage",
       description:
-        "Seamlessly switch between platform buckets and your own AWS S3 storage with full control.",
+        "Switch between CloudDrop's secure platform bucket and your own AWS S3 with a single click.",
       icon: "🔄",
     },
     {
       title: "Secure Sharing",
       description:
-        "Generate time-limited signed URLs with granular access permissions for safe file distribution.",
+        "Generate time-limited signed URLs with granular access controls for safe file distribution.",
       icon: "🔗",
     },
     {
       title: "Integrated Platform",
       description:
-        "Full-stack solution combining Next.js frontend with Node.js/Express backend for optimal performance.",
+        "Modern stack: Next.js frontend, Node.js/Express backend, AWS S3, MongoDB, and Tailwind CSS for performance and scalability.",
       icon: "⚡",
     },
   ];
 
+  // Add a testimonials section
+  const testimonials = [
+    {
+      name: "Amit S.",
+      company: "Acme Corp",
+      quote:
+        "CloudDrop made our team collaboration seamless and secure. The signed URL feature is a game changer for sharing sensitive files.",
+      avatar: "🧑‍💼",
+    },
+    {
+      name: "Priya K.",
+      company: "DataWorks",
+      quote:
+        "The ability to switch between platform and personal buckets is unique and super useful. Highly recommended!",
+      avatar: "👩‍💻",
+    },
+    {
+      name: "Rahul D.",
+      company: "TechFlow",
+      quote:
+        "AI-powered summaries save us hours every week. CloudDrop is the best cloud collaboration tool we've used.",
+      avatar: "👨‍💼",
+    },
+  ];
+
   return (
-    <div className="relative min-h-screen bg-zinc-950 text-white overflow-hidden">
+    <div className="relative min-h-screen bg-zinc-950 text-white overflow-hidden font-sans">
       {/* Decorative background */}
       <div className="absolute top-40 left-1/8 w-3/4 h-0.5 bg-cyan-700/30 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(8,145,178,0.15)]"></div>
       <div className="absolute -right-20 -top-20 w-64 h-64 bg-zinc-700/80 rounded-full filter blur-3xl opacity-20"></div>
@@ -114,7 +140,7 @@ export default function Home() {
 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4 sm:py-6 backdrop-blur-sm bg-zinc-950/80 border-b border-zinc-800/50">
-        <h1 className="text-2xl sm:text-3xl font-bold">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
           <span className="text-zinc-300">Cloud</span>
           <span className="text-cyan-600">Drop</span>
         </h1>
@@ -130,6 +156,12 @@ export default function Home() {
             className="text-base lg:text-lg text-zinc-400 hover:text-cyan-400 transition-colors"
           >
             Pricing
+          </a>
+          <a
+            href="#testimonials"
+            className="text-base lg:text-lg text-zinc-400 hover:text-cyan-400 transition-colors"
+          >
+            Testimonials
           </a>
           <a
             href="#technology"
@@ -177,6 +209,13 @@ export default function Home() {
               Pricing
             </a>
             <a
+              href="#testimonials"
+              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors"
+              onClick={() => setNavOpen(false)}
+            >
+              Testimonials
+            </a>
+            <a
               href="#technology"
               className="text-base text-zinc-400 hover:text-cyan-400 transition-colors"
               onClick={() => setNavOpen(false)}
@@ -191,14 +230,14 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 pt-28 pb-16 sm:pt-32 sm:pb-20 md:pt-36 md:pb-24 mt-4 z-10 relative">
         <TypewriterEffectSmooth
           className="
-    text-3xl
-    sm:text-4xl
-    md:text-4xl
-    lg:text-5xl
-    xl:text-6xl
-    font-extrabold
-    leading-tight
-  "
+            text-3xl
+            sm:text-4xl
+            md:text-4xl
+            lg:text-5xl
+            xl:text-6xl
+            font-extrabold
+            leading-tight
+          "
           words={words}
         />
         <p className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-md sm:max-w-xl md:max-w-2xl mx-auto mb-8 leading-relaxed">
@@ -302,8 +341,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section (optional, can be removed if not needed) */}
+      {/* Pricing Section */}
       <SubscriptionPlans />
+
+      {/* Testimonials Section */}
+      <section
+        id="testimonials"
+        className="py-16 sm:py-20 bg-gradient-to-b from-zinc-950/80 to-zinc-900/90 border-t border-zinc-800/40"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
+            What Our Users Say
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <div
+                key={i}
+                className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-6 flex flex-col items-center text-center shadow-lg hover:shadow-cyan-900/10 transition-all"
+              >
+                <div className="text-4xl mb-3">{t.avatar}</div>
+                <blockquote className="text-zinc-300 italic mb-3">
+                  "{t.quote}"
+                </blockquote>
+                <div className="text-cyan-400 font-semibold">{t.name}</div>
+                <div className="text-zinc-500 text-xs">{t.company}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Technology Section */}
       <section
@@ -317,14 +383,31 @@ export default function Home() {
             Built With Modern Technology
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6">
-            {[
-              { name: "Next.js", category: "Frontend Framework" },
-              { name: "Node.js", category: "Backend Runtime" },
-              { name: "Express", category: "API Framework" },
-              { name: "AWS S3", category: "Cloud Storage" },
-              { name: "MongoDB", category: "Database" },
-              { name: "Tailwind CSS", category: "Styling" },
-            ].map((tech, index) => (
+            {[{
+              name: "Next.js",
+              category: "Frontend Framework",
+            },
+            {
+              name: "Node.js",
+              category: "Backend Runtime",
+            },
+            {
+              name: "Express",
+              category: "API Framework",
+            },
+            {
+              name: "AWS S3",
+              category: "Cloud Storage",
+            },
+            {
+              name: "MongoDB",
+              category: "Database",
+            },
+            {
+              name: "Tailwind CSS",
+              category: "Styling",
+            },
+          ].map((tech, index) => (
               <div
                 key={index}
                 className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 sm:p-4 text-center hover:border-cyan-900/20 transition-all"
@@ -349,7 +432,7 @@ export default function Home() {
           </h3>
           <button
             onClick={handleFreeClick}
-            className="bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 sm:px-6 rounded-full transition-colors mb-4 sm:mb-6 border border-cyan-900/20 hover:border-cyan-800/30 shadow-sm shadow-cyan-950/10"
+            className="bg-cyan-700 hover:bg-cyan-600 text-white font-medium py-2 px-4 sm:px-6 rounded-full transition-colors mb-4 sm:mb-6 border border-cyan-900/20 hover:border-cyan-800/30 shadow-sm shadow-cyan-950/10"
           >
             Get Started Now
           </button>

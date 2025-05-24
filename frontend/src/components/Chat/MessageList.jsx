@@ -1,5 +1,9 @@
 import React, { useRef, useEffect } from "react";
-import { IconMessageReport, IconPercentage100 } from "@tabler/icons-react"
+import {
+  IconMessageReport,
+  IconCopy,
+  IconExternalLink,
+} from "@tabler/icons-react";
 
 const MessageList = ({ messages, currentUserId, selectedGroup }) => {
   const scrollRef = useRef(null);
@@ -9,6 +13,24 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, selectedGroup]);
+
+  // Helper to detect and extract signed URL from message text
+  const extractSignedUrl = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const match = text.match(urlRegex);
+    return match ? match[0] : null;
+  };
+
+  // Copy to clipboard utility
+  const handleCopy = (url) => {
+    navigator.clipboard.writeText(url);
+  };
+
+  // Helper to format time as HH:mm
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
 
   return (
     <div
@@ -35,6 +57,9 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
             const showSender =
               idx === 0 || messages[idx - 1].senderId !== msg.senderId;
 
+            // Check for signed URL in message
+            const signedUrl = extractSignedUrl(msg.text);
+
             return (
               <div
                 key={`${msg._id}-${idx}`}
@@ -50,21 +75,65 @@ const MessageList = ({ messages, currentUserId, selectedGroup }) => {
                   </span>
                 )}
 
-                <p
-                  className={`max-w-md w-auto break-all text-sm px-4 py-2 rounded-lg 
-                    ${fromUser
-                      ? "bg-slate-800 border border-slate-700 text-white"
-                      : "bg-neutral-800 border border-neutral-700 text-white"
+                <div
+                  className={`relative max-w-md w-auto break-all text-sm px-4 py-2 rounded-lg 
+                    ${
+                      fromUser
+                        ? "bg-slate-800 border border-slate-700 text-white"
+                        : "bg-neutral-800 border border-neutral-700 text-white"
                     }
                     ${fromUser ? "rounded-br-none" : "rounded-bl-none"}
-                    `}
-                >{msg.text}</p>
+                  `}
+                >
+                  {signedUrl ? (
+                    <div className="flex flex-col gap-1">
+                      <span>
+                        {msg.text.split(signedUrl)[0]}
+                        <a
+                          href={signedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-cyan-400 underline break-all hover:text-cyan-300 transition"
+                        >
+                          {signedUrl}
+                        </a>
+                        {msg.text.split(signedUrl)[1]}
+                      </span>
+                      <div className="flex gap-2 mt-1">
+                        <button
+                          onClick={() => handleCopy(signedUrl)}
+                          className="flex items-center gap-1 px-2 py-1 rounded bg-zinc-700 hover:bg-zinc-600 text-xs text-white transition"
+                          title="Copy URL"
+                        >
+                          <IconCopy size={16} /> Copy
+                        </button>
+                        <a
+                          href={signedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-xs text-white transition"
+                          title="Open in new tab"
+                        >
+                          <IconExternalLink size={16} /> View
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    msg.text
+                  )}
+                  {/* Message time at the bottom right inside rounded brackets */}
+                  <span className="block text-[0.65rem] xs:text-[0.70rem] text-zinc-400 mt-2 text-right">
+                    ({formatTime(msg.createdAt)})
+                  </span>
+                </div>
               </div>
             );
           })
         ) : (
           <div className="h-full w-full flex items-center justify-center text-zinc-500 text-sm">
-            <div>< IconMessageReport className="text-red-700" /></div>
+            <div>
+              <IconMessageReport className="text-red-700" />
+            </div>
             <span className="p-1">
               No messages yet. Start the conversation!
             </span>

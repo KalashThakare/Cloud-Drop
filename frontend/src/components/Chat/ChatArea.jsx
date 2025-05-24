@@ -22,7 +22,7 @@ const ChatArea = ({
     onRemoveMember,
 }) => {
     return (
-        <div className="flex flex-col flex-1 bg-zinc-950 p-4 min-w-[250px] w-full h-full md:min-h-[93vh] rounded-xs shadow-lg border border-zinc-800 backdrop-blur-md transition-all duration-300">
+        <div className="flex flex-col flex-1 bg-zinc-950 p-2 md:p-4 min-w-[250px] w-full h-full md:min-h-[93vh] rounded-xs shadow-lg border border-zinc-800 backdrop-blur-md transition-all duration-300">
             {!selectedGroup ? (
                 <WelcomeScreen />
             ) : (

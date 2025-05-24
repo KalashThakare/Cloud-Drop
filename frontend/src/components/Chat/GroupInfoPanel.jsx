@@ -1,5 +1,7 @@
 import React from "react";
 import { IconX, IconCheck } from "@tabler/icons-react";
+import "@/app/globals.css";
+
 
 const GroupInfoPanel = ({
   selectedGroup,
@@ -10,7 +12,7 @@ const GroupInfoPanel = ({
   onRemoveMember,
 }) => {
   return (
-    <div className="relative text-center rounded-2xl h-full w-full inset-0 bg-gradient-to-br from-zinc-900 via-slate-950 to-zinc-950 border-l border-cyan-800/40 z-50 p-4 xs:p-6 sm:p-8 md:p-10 overflow-y-auto shadow-2xl transition-all duration-300">
+    <div className="relative text-center rounded-2xl h-full w-full inset-0 bg-gradient-to-br from-zinc-900 via-slate-950 to-zinc-950 border-l border-cyan-800/40 z-50 p-4 xs:p-6 sm:p-8 md:p-10 overflow-y-auto shadow-2xl transition-all duration-300 hide-scrollbar">
       {/* Close Button */}
       <button
         onClick={toggleGroupInfo}
@@ -47,7 +49,7 @@ const GroupInfoPanel = ({
           {selectedGroup.members?.map((member) => (
             <div
               key={member._id}
-              className="grid grid-cols-1 lg:grid-cols-2 w-fit items-center justify-between relative gap-2 xs:gap-4 bg-zinc-800/90 p-3 xs:p-4 rounded-xl shadow transition-all duration-200"
+              className="grid grid-cols-1 lg:grid-cols-2 min-w-[220px] mx-2 w-fit items-center justify-between relative gap-2 xs:gap-4 bg-zinc-800/90 p-3 xs:p-4 rounded-xl shadow transition-all duration-200"
             >
               {/* Remove User Icon */}
               <button
@@ -81,7 +83,7 @@ const GroupInfoPanel = ({
                       handleRoleChange(member._id, e.target.value)
                     }
                     placeholder="Assign role"
-                    className="bg-zinc-700 text-white text-xs xs:text-sm px-2 py-1 rounded border border-zinc-600 focus:border-cyan-500 transition-all duration-150"
+                    className="bg-zinc-700 min-w-[10vw] text-white text-xs xs:text-sm px-2 py-1 rounded border border-zinc-600 focus:border-cyan-500 transition-all duration-150"
                   />
                   <button
                     onClick={() => saveRole(member._id)}
