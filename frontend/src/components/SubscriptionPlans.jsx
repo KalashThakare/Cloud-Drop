@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // Animations
 const fadeIn = keyframes`
@@ -273,8 +274,20 @@ const SelectButton = styled.button`
 
 
 const SubscriptionPlans = () => {
-  const plans = subscriptionStore((state) => state.plans); 
+
+  const plans = subscriptionStore((state) => state.plans);
+  const subscribe = subscriptionStore((state)=>state.subscribeToPlan);
+  const authUser = useAuthStore((state)=>state.authUser)
+  const userId = authUser?._id;
+
   console.log(plans);
+
+  const handleClick=(planId)=>{
+
+    console.log("SelectedPlanId=>",planId)
+    subscribe({userId,planId});
+
+  }
 
   return (
     <section id="pricing">
@@ -312,7 +325,7 @@ const SubscriptionPlans = () => {
                   </FeatureItem>
                 )}
               </FeatureList>
-              <SelectButton highlight={!pkg.isFree ? "true" : undefined}>
+              <SelectButton onClick={()=>handleClick(pkg._id)} highlight={!pkg.isFree ? "true" : undefined}>
                 {pkg.isFree ? "Start Free" : "Subscribe"}
               </SelectButton>
             </PackageCard>
