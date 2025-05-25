@@ -2,7 +2,7 @@ import SubscriptioModel from "../../models/subscriptionPlan.Model.js";
 import razorpay from "../../lib/razorpay.js"
 import User from "../../models/user.Model.js";
 
-export const subscribeToPlan =async()=>{
+export const subscribeToPlan =async(req,res)=>{
 
     const {userId,planId} = req.body;
 
@@ -42,14 +42,14 @@ export const subscribeToPlan =async()=>{
 }
 
 
-export const getPlans = async () =>{
+export const getPlans = async (req,res) =>{
     try {
 
         const plans = await SubscriptioModel.find();
-        res.status(200).json(plans);
+        return res.status(200).json(plans);
         
     } catch (error) {
         console.log("getPlans error=>",error);
-        res.status(500).json({message:"Internal server error"});
+        return res.status(500).json({message:"Internal server error"});
     }
 }

@@ -162,7 +162,7 @@ function UploadForm() {
             />
           </label>
           <p className="text-xs sm:text-sm text-zinc-500 mt-1 text-center">
-            Supported formats: JPG, PNG, GIF · Max size: 5MB
+            Supported formats: JPG, PNG, GIF, MP4 · Max size: 50MB
           </p>
           {/* Remove All Items Button */}
           {files.length > 0 && (

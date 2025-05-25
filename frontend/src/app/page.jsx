@@ -5,16 +5,20 @@ import SubscriptionPlans from "@/components/SubscriptionPlans";
 import { useRouter } from "next/navigation";
 import { isTokenValid } from "../lib/utils.js";
 import { useAuthStore } from "@/store/useAuthStore.js";
+import { subscriptionStore } from "@/store/subscriptionStore.js";
 
 // Responsive, attractive dashboard/landing page for CloudDrop
 export default function Home() {
   const router = useRouter();
   const checkAuth = useAuthStore((state) => state.checkAuth);
+  const getPlans = subscriptionStore((state)=>state.getPlans)
 
   // Mobile nav state
   const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
+
+    getPlans();
     // Smooth scroll with offset for hash links
     const handleHashClick = (e) => {
       const targetId = e.currentTarget.getAttribute("href");
@@ -29,6 +33,7 @@ export default function Home() {
         }
       }
     };
+
     const links = document.querySelectorAll('a[href^="#"]');
     links.forEach((link) => link.addEventListener("click", handleHashClick));
     return () => {

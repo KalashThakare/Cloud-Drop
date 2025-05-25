@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
+import { subscriptionStore } from "@/store/subscriptionStore.js";
 
 // Animations
 const fadeIn = keyframes`
@@ -211,93 +212,108 @@ const SelectButton = styled.button`
   @media (max-width: 600px) { padding: 0.7rem 1rem; font-size: 0.95rem; }
 `;
 
-const plans = [
-  {
-    title: "Free Plan",
-    price: "$0",
-    highlight: false,
-    badge: "Free Forever",
-    icon: <Star size={18} />,
-    features: [
-      "Up to 2 Groups",
-      "Up to 10 Members per Group",
-      "100MB Cloud Storage",
-      "Basic File Sharing",
-      "Generate Signed URLs",
-      "Community Support",
-    ],
-    cta: "Get Started",
-  },
-  {
-    title: "Pro Plan",
-    price: "$9",
-    highlight: true,
-    badge: "Most Popular",
-    icon: <Crown size={18} />,
-    features: [
-      "Unlimited Groups",
-      "Up to 100 Members per Group",
-      "10GB Cloud Storage",
-      // "Advanced File Sharing",
-      "Signed URLs with Expiry",
-      // "Priority Email Support",
-      "Role Management",
-      "Bucket Integration",
-      "Team Collaboration Tools",
-    ],
-    cta: "Upgrade Now",
-  },
-  {
-    title: "Enterprise",
-    price: "Custom",
-    highlight: false,
-    badge: "Best for Teams",
-    icon: <Star size={18} />,
-    features: [
-      "All Pro Features",
-      "Unlimited Members",
-      "Unlimited Storage",
-      // "Custom Integrations",
-      "Dedicated Account Manager",
-      // "SLA & Compliance",
-      "Onboarding & Training",
-      "Premium Support",
-    ],
-    cta: "Contact Sales",
-  },
-];
+// const plans = [
+//   {
+//     title: "Free Plan",
+//     price: "$0",
+//     highlight: false,
+//     badge: "Free Forever",
+//     icon: <Star size={18} />,
+//     features: [
+//       "Up to 2 Groups",
+//       "Up to 10 Members per Group",
+//       "100MB Cloud Storage",
+//       "Basic File Sharing",
+//       "Generate Signed URLs",
+//       "Community Support",
+//     ],
+//     cta: "Get Started",
+//   },
+//   {
+//     title: "Pro Plan",
+//     price: "$9",
+//     highlight: true,
+//     badge: "Most Popular",
+//     icon: <Crown size={18} />,
+//     features: [
+//       "Unlimited Groups",
+//       "Up to 100 Members per Group",
+//       "10GB Cloud Storage",
+//       // "Advanced File Sharing",
+//       "Signed URLs with Expiry",
+//       // "Priority Email Support",
+//       "Role Management",
+//       "Bucket Integration",
+//       "Team Collaboration Tools",
+//     ],
+//     cta: "Upgrade Now",
+//   },
+//   {
+//     title: "Enterprise",
+//     price: "Custom",
+//     highlight: false,
+//     badge: "Best for Teams",
+//     icon: <Star size={18} />,
+//     features: [
+//       "All Pro Features",
+//       "Unlimited Members",
+//       "Unlimited Storage",
+//       // "Custom Integrations",
+//       "Dedicated Account Manager",
+//       // "SLA & Compliance",
+//       "Onboarding & Training",
+//       "Premium Support",
+//     ],
+//     cta: "Contact Sales",
+//   },
+// ];
+
+
+
+
 
 const SubscriptionPlans = () => {
+  const plans = subscriptionStore((state) => state.plans); 
+  console.log(plans);
+
   return (
     <section id="pricing">
       <Container>
         <Title>Subscription Plans</Title>
         <Desc>
-          Choose the plan that fits your team. Upgrade anytime as your needs grow.<br />
-          <span style={{ color: "#00ffff" }}>All plans include secure file sharing, group chat, and cloud storage.</span>
+          Choose the plan that fits your team. Upgrade anytime as your needs grow.
+          <br />
+          <span style={{ color: "#00ffff" }}>
+            All plans include secure file sharing, group chat, and cloud storage.
+          </span>
         </Desc>
         <PackagesContainer>
           {plans.map((pkg, index) => (
             <PackageCard
-              key={pkg.title}
+              key={pkg._id}
               delay={index}
-              className={pkg.highlight ? "highlight" : ""}
+              className={pkg.isFree ? "highlight" : ""}
             >
               <Badge>
-                {pkg.icon}
-                {pkg.badge}
+                💼 {pkg.isFree ? "Free Plan" : "Premium Plan"} {/* Placeholder icon + label */}
               </Badge>
-              <PackageTitle>{pkg.title}</PackageTitle>
-              <Price>{pkg.price}</Price>
+              <PackageTitle>{pkg.name}</PackageTitle>
+              <Price>{pkg.price === 0 ? "Free" : `₹${pkg.price}`}</Price>
               <FeatureList>
-                {pkg.features.map((feature, i) => (
-                  <FeatureItem key={i}>
-                    <CheckCircle size={18} /> {feature}
+                {pkg.features.length > 0 ? (
+                  pkg.features.map((feature, i) => (
+                    <FeatureItem key={i}>
+                      <CheckCircle size={18} /> {feature}
+                    </FeatureItem>
+                  ))
+                ) : (
+                  <FeatureItem>
+                    <CheckCircle size={18} /> Basic Access
                   </FeatureItem>
-                ))}
+                )}
               </FeatureList>
-              <SelectButton highlight={pkg.highlight ? "true" : undefined}>
-                {pkg.cta}
+              <SelectButton highlight={pkg.isFree ? "true" : undefined}>
+                {pkg.isFree ? "Start Free" : "Subscribe"}
               </SelectButton>
             </PackageCard>
           ))}
@@ -308,3 +324,4 @@ const SubscriptionPlans = () => {
 };
 
 export default SubscriptionPlans;
+

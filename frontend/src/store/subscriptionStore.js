@@ -2,7 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import { create } from "zustand";
 import { toast } from "sonner";
 
-export const subscriptionStore = create((set, get) = ({
+export const subscriptionStore = create((set, get) => ({
 
     selectedPlan: null,
     plans: [],
@@ -14,7 +14,7 @@ export const subscriptionStore = create((set, get) = ({
             set({ plans: data });
 
             if (data.length > 0) {
-                set({ selectedPlan: data[0]._id });
+                set({ selectedPlan: data[1]._id });
             }
             
         } catch (error) {
