@@ -328,7 +328,7 @@ const Dashboard = ({
 }) => {
   
   return (
-    <div className={`flex justify-center ${activeView === "Chat_Room" ? "p-1" : "p-4 md:p-8"} border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-zinc-900`}>
+    <div className={`flex justify-center ${activeView === "Chat_Room" || activeView === "home" ? "p-1" : "p-4 md:p-8"} border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-zinc-900`}>
 
       {activeView === "home" && <DashboardLanding /> }
 

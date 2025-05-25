@@ -49,7 +49,7 @@ const Desc = styled.p`
 
 const PackagesContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   justify-content: center;
   align-content: center;
@@ -123,7 +123,7 @@ const PackageTitle = styled.h3`
   color: white;
   font-size: 2.3rem;
   margin-bottom: 0.2rem;
-  margin-top: 0.5rem;
+  margin-top: 2rem;
   text-align: center;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -288,17 +288,17 @@ const SubscriptionPlans = () => {
           </span>
         </Desc>
         <PackagesContainer>
-          {plans.map((pkg, index) => (
+          {plans.slice(0).reverse().map((pkg, index) => (
             <PackageCard
               key={pkg._id}
               delay={index}
-              className={pkg.isFree ? "highlight" : ""}
+              className={pkg.isFree ? "" : "highlight"}
             >
               <Badge>
-                💼 {pkg.isFree ? "Free Plan" : "Premium Plan"} {/* Placeholder icon + label */}
+                {pkg.isFree ? <Star size={18} /> : <Crown size={18} />}  {pkg.isFree ? "Free Plan" : "Premium Plan"} {/* Placeholder icon + label */}
               </Badge>
               <PackageTitle>{pkg.name}</PackageTitle>
-              <Price>{pkg.price === 0 ? "Free" : `₹${pkg.price}`}</Price>
+              <Price>{pkg.price === 0 ? "Free" : `₹ ${pkg.price}`}</Price>
               <FeatureList>
                 {pkg.features.length > 0 ? (
                   pkg.features.map((feature, i) => (
@@ -312,7 +312,7 @@ const SubscriptionPlans = () => {
                   </FeatureItem>
                 )}
               </FeatureList>
-              <SelectButton highlight={pkg.isFree ? "true" : undefined}>
+              <SelectButton highlight={!pkg.isFree ? "true" : undefined}>
                 {pkg.isFree ? "Start Free" : "Subscribe"}
               </SelectButton>
             </PackageCard>

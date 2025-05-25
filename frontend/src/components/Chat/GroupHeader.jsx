@@ -17,7 +17,7 @@ const GroupHeader = ({
                             className="text-base xs:text-lg sm:text-xl lg:text-2xl font-semibold cursor-pointer hover:text-cyan-400 flex items-center gap-1 xs:gap-2 transition-colors"
                             onClick={toggleGroupInfo}
                         >
-                            <span className="truncate max-w-[120px] xs:max-w-[180px] sm:max-w-[260px] md:max-w-[340px] lg:max-w-[420px] xl:max-w-[520px]">
+                            <span className="truncate max-w-[120px] xs:max-w-[180px] sm:max-w-[180px] md:max-w-[150px] lg:max-w-[320px] xl:max-w-[520px]">
                                 {selectedGroup.groupName}
                             </span>
                             <IconInfoCircle size={20} className="text-cyan-500 ml-4" />
@@ -32,13 +32,13 @@ const GroupHeader = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 xs:mt-0 w-auto">
                     <button
                         onClick={() => setShowAddMember(true)}
-                        className="text-green-700 text-xs xs:text-sm sm:text-base border border-green-700 px-4 xs:px-5 py-1 rounded-full hover:bg-green-500 hover:text-white transition-all duration-150 font-medium shadow-sm"
+                        className="text-green-700 text-xs xs:text-sm sm:text-base border min-w-[80px] border-green-700 px-4 xs:px-5 py-1 rounded-full hover:bg-green-500 hover:text-white transition-all duration-150 font-medium shadow-sm"
                     >
                         Add Member
                     </button>
                     <button
                         onClick={handleDeleteClick}
-                        className="text-red-700 text-xs xs:text-sm sm:text-base border border-red-700 px-4 xs:px-5 py-1 rounded-full hover:bg-red-500 hover:text-white transition-all duration-150 font-medium shadow-sm"
+                        className="text-red-700 text-xs xs:text-sm sm:text-base border min-w-[80px] border-red-700 px-4 xs:px-5 py-1 rounded-full hover:bg-red-500 hover:text-white transition-all duration-150 font-medium shadow-sm"
                     >
                         Delete Group
                     </button>
