@@ -94,50 +94,35 @@ export const removeFileFromDatabase = async (userId, fileId) => {
 };
 
 
-export const getUserFiles = async (userId) => {
+export const getUserFiles = async (req,res) => {
     try {
+
+        const {userId} = req.body;
+        
         const result = await fileSchema.findOne({ userId }).populate('userId', 'name email');
         
         if (!result) {
-            return {
-                success: true,
-                data: null,
-                message: 'No files found for this user'
-            };
+            return res.status(400).json({message:"User hasent uploaded anything yet"})
         }
 
-        return {
-            success: true,
-            data: result,
-            totalFiles: result.totalFiles,
-            totalSize: result.totalSize,
-            message: 'Files retrieved successfully'
-        };
+        res.status(200).json(result)
+
+        
     } catch (error) {
         console.error('Error getting user files:', error);
-        return {
-            success: false,
-            error: error.message,
-            message: 'Failed to retrieve user files'
-        };
+        res.status(500).json({message:"Internal server error"})
     }
 };
 
-export const getUserFileStats = async (userId) => {
+export const getUserFileStats = async (req,res) => {
     try {
+
+        const {userId} = req.body;
+
         const result = await fileSchema.findOne({ userId });
         
         if (!result) {
-            return {
-                success: true,
-                data: {
-                    totalFiles: 0,
-                    totalSize: 0,
-                    totalSizeFormatted: '0 Bytes',
-                    lastModified: null
-                },
-                message: 'No files found for this user'
-            };
+            return res.status(400).json({message:"No files found for this user"});
         }
 
         // Format file size
@@ -148,25 +133,11 @@ export const getUserFileStats = async (userId) => {
             return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
         };
 
-        return {
-            success: true,
-            data: {
-                totalFiles: result.totalFiles,
-                totalSize: result.totalSize,
-                totalSizeFormatted: formatBytes(result.totalSize),
-                lastModified: result.lastModified,
-                createdAt: result.createdAt,
-                updatedAt: result.updatedAt
-            },
-            message: 'File statistics retrieved successfully'
-        };
+        res.status(200).json(result);
+        
     } catch (error) {
         console.error('Error getting file statistics:', error);
-        return {
-            success: false,
-            error: error.message,
-            message: 'Failed to retrieve file statistics'
-        };
+        return res.status(500).json({message:"Failed to retrieve file statistics"})
     }
 };
 

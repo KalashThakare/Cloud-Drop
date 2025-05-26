@@ -10,6 +10,7 @@ import messageRoute from "./routes/Chat/message.Route.js";
 import groupRoute from "./routes/Chat/group.Route.js";
 import {app} from "../src/lib/socket.js";
 import subscriptionRoutes from "../src/routes/subscriptionRoutes.js"
+import fileManagementRoutes from "../src/routes/fileManagement/fileManagementRoutes.js"
 
 dotenv.config();
 
@@ -29,5 +30,6 @@ app.use("/api/start-user-bucket-session",userBucketawsRoutes);
 app.use("/api/messages",messageRoute);
 app.use("/api/group",groupRoute);
 app.use("/api/subscription",subscriptionRoutes);
+app.use("/api/files",fileManagementRoutes)
 
 export default app;
