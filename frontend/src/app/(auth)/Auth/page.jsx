@@ -37,7 +37,7 @@ export default function Auth() {
       password: data.password,
     });
     if (authUser) {
-      const redirectTo = localStorage.getItem("redirectAfterLogin") || "/Main";
+      const redirectTo = localStorage.getItem("redirectAfterLogin") || "/Main?useDefault=true";
       localStorage.removeItem("redirectAfterLogin");
       router.replace(redirectTo);
     }
