@@ -20,6 +20,7 @@ import DashboardLanding from "@/components/ui/DashboardLanding.jsx";
 import UploadForm from "@/components/CloudDrop.jsx";
 import { useSocketEventStore } from "@/store/socketEvents";
 import Notification from "@/components/Notification";
+import FileManagerPage from "@/components/FileManagerPage";
 
 function Main() {
   const searchParams = useSearchParams();
@@ -148,6 +149,18 @@ function Main() {
       onClick: () => setActiveView("Chat_Room"),
       className: "px-4 py-2 text-md",
     },
+    {
+  label: "File Manager",
+  href: "#",
+  icon: (
+    <svg className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" fill="none" viewBox="0 0 24 24">
+      <path d="M4 4h16v16H4z" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M4 8h16" stroke="currentColor" strokeWidth="1.5"/>
+    </svg>
+  ),
+  onClick: () => setActiveView("file_manager"),
+  className: "px-4 py-2 text-md",
+},
     {
       label: (
         <span className="relative">
@@ -345,7 +358,7 @@ const Dashboard = ({
       } border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-zinc-900`}
     >
       {activeView === "home" && <DashboardLanding />}
-
+      {activeView === "file_manager" && <FileManagerPage />}
       {/* {activeView === "add_bucket" && (
         <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
            
