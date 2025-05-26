@@ -1,57 +1,69 @@
 import React from "react";
-import "@/app/globals.css"; // Import global styles
+import { Users, Shield, Brain } from "lucide-react";
+import "@/app/globals.css";
+
 const WelcomeScreen = () => {
   return (
-    <div className="flex flex-col items-center text-center rounded-md text-white min-h-[80vh] h-full px-3 xs:px-4 sm:px-8 md:px-12 py-8 xs:py-10 sm:py-14 md:py-20 bg-gradient-to-br from-zinc-950 via-slate-950 to-zinc-950 overflow-y-scroll hide-scrollbar">
-      <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 xs:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-600 drop-shadow-xl tracking-tight">
-        Welcome to SecureChat
-      </div>
-      <div className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-300 max-w-md xs:max-w-xl sm:max-w-2xl mb-8 xs:mb-10 sm:mb-14 mx-auto">
-        Create secure team spaces, collaborate efficiently, and share files
-        safely — with AI-enhanced productivity.
-      </div>
+    <div className="h-[93vh] overflow-y-auto hide-scrollbar pb-4">
+      <div className="relative flex flex-col justify-center items-center min-h-screen w-full px-4 xs:px-6 sm:px-8 md:px-10 font-sans text-white">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-zinc-900 opacity-90 -z-10" />
 
-      <div
-        className="
-        grid 
-        gap-5 xs:gap-6 sm:gap-7 md:gap-8 lg:gap-10
-        w-full
-        max-w-xs xs:max-w-2xl sm:max-w-4xl md:max-w-5xl lg:max-w-7xl
-        grid-cols-1 md:grid-cols-2 lg:grid-cols-3
-        transition-all
-      "
-      >
-        {/* Team Creation */}
-        <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-cyan-950 border border-cyan-700/30 hover:scale-[1.015] hover:border-cyan-400/80 shadow-lg hover:shadow-cyan-400/30 rounded-2xl p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col items-center h-full transition-all duration-200 group">
-          <h3 className="text-base xs:text-lg sm:text-xl lg:text-2xl font-semibold text-cyan-300 mb-1 xs:mb-2 group-hover:text-cyan-400 transition-colors">
-            Team Creation
-          </h3>
-          <p className="text-xs xs:text-sm sm:text-base lg:text-lg text-zinc-400 group-hover:text-cyan-200 transition-colors">
-            Set up a new workspace for your team to collaborate and innovate
-            effortlessly.
+        {/* Intro */}
+        <div className="text-center mb-10 xs:mb-12 sm:mb-16 hover:shadow-cyan-500/20 transition-all duration-200 hover:scale-[1.02] focus-within:scale-[1.02] cursor-pointer group">
+          <h1 className="text-3xl xs:text-4xl sm:text-5xl font-bold tracking-tight">
+            <span className="text-cyan-500 drop-shadow group-hover:animate-pulse">
+              Welcome to{" "}
+            </span>
+            <span className="text-white">SecureChat</span>
+          </h1>
+          <p className="text-base xs:text-lg text-zinc-400 mt-3 xs:mt-4 max-w-xl xs:max-w-2xl mx-auto leading-relaxed">
+            Create secure team spaces, collaborate efficiently, and share files
+            safely — with AI-enhanced productivity.
           </p>
         </div>
 
-        {/* Secure File Sharing */}
-        <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-emerald-950 border border-emerald-700/30 hover:scale-[1.015] hover:border-emerald-400/80 shadow-lg hover:shadow-emerald-400/30 rounded-2xl p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col items-center h-full transition-all duration-200 group">
-          <h3 className="text-base xs:text-lg sm:text-xl lg:text-2xl font-semibold text-emerald-300 mb-1 xs:mb-2 group-hover:text-emerald-400 transition-colors">
-            Secure File Sharing
-          </h3>
-          <p className="text-xs xs:text-sm sm:text-base lg:text-lg text-zinc-400 group-hover:text-emerald-200 transition-colors">
-            Share files with time-limited secure links and granular access
-            controls.
-          </p>
-        </div>
-
-        {/* AI Summaries */}
-        <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-purple-950 border border-purple-700/30 hover:scale-[1.015] hover:border-purple-400/80 shadow-lg hover:shadow-purple-400/30 rounded-2xl p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col items-center h-full transition-all duration-200 group md:col-span-2 lg:col-span-1">
-          <h3 className="text-base xs:text-lg sm:text-xl lg:text-2xl font-semibold text-purple-300 mb-1 xs:mb-2 group-hover:text-purple-400 transition-colors">
-            AI-Powered Summaries
-          </h3>
-          <p className="text-xs xs:text-sm sm:text-base lg:text-lg text-zinc-400 group-hover:text-purple-200 transition-colors">
-            Let AI extract key insights from your documents — stay focused, act
-            faster.
-          </p>
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-6 xs:gap-8 md:gap-10 max-w-2xl xs:max-w-3xl md:max-w-6xl mx-auto">
+          {/* Team Creation */}
+          <div className="bg-zinc-900 border border-cyan-700/30 rounded-2xl p-4 xs:p-5 hover:shadow-cyan-500/20 transition-all duration-200 hover:scale-[1.02] focus-within:scale-[1.02] cursor-pointer group">
+            <div className="flex gap-2.5 text-2xl xs:text-3xl mb-3 xs:mb-4 text-cyan-400 group-hover:animate-pulse">
+              <Users className="w-8 h-8" />
+              <h3 className="text-lg xs:text-xl font-semibold mb-1 xs:mb-2 text-cyan-400">
+                Team Creation
+              </h3>
+            </div>
+            <p className="text-sm xs:text-md text-zinc-400">
+              Set up a new workspace for your team to collaborate and innovate
+              effortlessly.
+            </p>
+          </div>
+          {/* Secure File Sharing */}
+          <div className="bg-zinc-900 border border-emerald-700/30 rounded-2xl p-4 xs:p-5 hover:shadow-emerald-400/20 transition-all duration-200 hover:scale-[1.02] focus-within:scale-[1.02] cursor-pointer group">
+            <div className="flex gap-2.5 text-2xl xs:text-3xl mb-3 xs:mb-4 text-emerald-400 group-hover:animate-pulse">
+              <Shield className="w-8 h-8" />
+              <h3 className="text-lg xs:text-xl font-semibold mb-1 xs:mb-2 text-emerald-400">
+                Secure File Sharing
+              </h3>
+            </div>
+            <p className="text-sm xs:text-md text-zinc-400">
+              Share files with time-limited secure links and granular access
+              controls.
+            </p>
+          </div>
+          {/* AI Summaries */}
+          <div className="bg-zinc-900 border border-purple-700/30 rounded-2xl p-4 xs:p-5 hover:shadow-purple-400/20 transition-all duration-200 hover:scale-[1.02] focus-within:scale-[1.02] cursor-pointer group">
+            <div className="flex gap-2.5 text-2xl xs:text-3xl mb-3 xs:mb-4 text-purple-400 group-hover:animate-pulse">
+              <Brain className="w-8 h-8" />
+              <h3 className="text-lg xs:text-xl font-semibold mb-1 xs:mb-2 text-purple-400">
+                AI-Powered Summaries
+              </h3>
+            </div>
+            <p className="text-sm xs:text-md text-zinc-400">
+              Let AI extract key insights from your documents — stay focused,
+              act faster.
+            </p>
+          </div>
         </div>
       </div>
     </div>
