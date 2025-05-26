@@ -1,10 +1,11 @@
 import { axiosInstance } from "@/lib/axios.js";
 import { create } from "zustand";
-import { persist } from "zustand/middleware"; 
+import { persist } from "zustand/middleware";
 import { toast } from "sonner";
 import { io } from "socket.io-client";
 // import router from "next/router";
 import { useRouter } from "next/navigation";
+import { getErrorMessage } from "@/lib/errorUtils";
 
 export const useAuthStore = create(
   persist(
@@ -58,7 +59,7 @@ export const useAuthStore = create(
           }
 
           const res = await axiosInstance.get("/auth/check", {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           });
 
           if (res.data) {
@@ -68,6 +69,12 @@ export const useAuthStore = create(
             set({ authUser: null, isloggingin: false });
           }
         } catch (error) {
+          const status = error?.response?.status;
+          if (status === 401 || status === 403) {
+            toast.warning(getErrorMessage(error, "Session expired. Please login again."));
+          } else {
+            toast.error(getErrorMessage(error, "Failed to check authentication"));
+          }
           localStorage.removeItem("authToken");
           set({ authUser: null, isloggingin: false });
           localStorage.removeItem("useDefaultAfterLogin");
@@ -84,12 +91,17 @@ export const useAuthStore = create(
             localStorage.setItem("authToken", res.data.token);
           }
           set({ authUser: res.data, isloggingin: false });
-          get().connectSocket(); // 🔌 connect socket
-          toast.success('Logged in successfully');
+          get().connectSocket();
+          toast.success("Logged in successfully");
           return res.data;
         } catch (error) {
           set({ authUser: null, isloggingin: false });
-          toast.error("Invalid credentials");
+          const status = error?.response?.status;
+          if (status === 400 || status === 401) {
+            toast.warning(getErrorMessage(error, "Invalid credentials"));
+          } else {
+            toast.error(getErrorMessage(error, "Login failed"));
+          }
           return null;
         }
       },
@@ -99,13 +111,18 @@ export const useAuthStore = create(
         set({ isloggingin: true });
         try {
           await axiosInstance.post("/auth/logout");
+          toast.success("Logged out successfully");
         } catch (error) {
-          toast.error('Error during logout');
+          const status = error?.response?.status;
+          if (status === 401) {
+            toast.warning(getErrorMessage(error, "You are already logged out"));
+          } else {
+            toast.error(getErrorMessage(error, "Logout failed"));
+          }
         } finally {
           localStorage.removeItem("authToken");
-          get().disconnectSocket(); // 🔌 disconnect socket
+          get().disconnectSocket();
           set({ authUser: null, isloggingin: false });
-          toast.success('Logged out successfully');
         }
       },
 
@@ -118,12 +135,17 @@ export const useAuthStore = create(
             localStorage.setItem("authToken", res.data.token);
           }
           set({ authUser: res.data, isloggingin: false });
-          get().connectSocket(); // 🔌 connect after signup
-          toast.success('Signed up Successfully');
+          get().connectSocket();
+          toast.success("Signed up Successfully");
           return 1;
         } catch (error) {
           set({ isloggingin: false });
-          toast.error('Error during signup');
+          const status = error?.response?.status;
+          if (status === 400) {
+            toast.warning(getErrorMessage(error, "Signup failed"));
+          } else {
+            toast.error(getErrorMessage(error, "Error during signup"));
+          }
           return 0;
         }
       },

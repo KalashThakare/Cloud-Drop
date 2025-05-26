@@ -1,290 +1,283 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { chatFunc, groupFunc } from '../../store/chatStore.js';
-import { useAuthStore } from '../../store/useAuthStore.js';
-import { useSocketEventStore } from '../../store/socketEvents.js';
-import Sidebar from './Sidebar.jsx';
-import ChatArea from './ChatArea.jsx';
-import MemberDrawer from './MemberDrawer.jsx';
-import ConfirmDeleteModal from './ConfirmDeleteModal.jsx';
-import AddMemberModal from './AddMember.jsx';
+import React, { useState, useEffect } from "react";
+import { chatFunc, groupFunc } from "../../store/chatStore.js";
+import { useAuthStore } from "../../store/useAuthStore.js";
+import { useSocketEventStore } from "../../store/socketEvents.js";
+import Sidebar from "./Sidebar.jsx";
+import ChatArea from "./ChatArea.jsx";
+import MemberDrawer from "./MemberDrawer.jsx";
+import ConfirmDeleteModal from "./ConfirmDeleteModal.jsx";
+import AddMemberModal from "./AddMember.jsx";
 import { useSearchParams } from "next/navigation";
-import { bucketFunc } from '@/store/bucketFunc.js';
-import { toast } from 'sonner';
+import { bucketFunc } from "@/store/bucketFunc.js";
+import { toast } from "sonner";
 
 const ChatLayout = () => {
+  const searchParams = useSearchParams();
+  const useDefault = searchParams.get("useDefault") === "true";
 
-    const searchParams = useSearchParams();
-    const useDefault = searchParams.get("useDefault") === "true";
+  const getGroups = groupFunc((state) => state.getGroups);
+  const createdGroups = groupFunc((state) => state.createdGroups);
+  const memberGroups = groupFunc((state) => state.memberGroups);
+  const createGroup = groupFunc((state) => state.createGroup);
+  const deleteGroup = groupFunc((state) => state.deleteGroup);
+  const addMember = groupFunc((state) => state.addMember);
+  const assignRole = groupFunc((state) => state.assignRole);
+  const removeUserFromGroup = groupFunc((state) => state.removeUserFromGroup);
 
+  const authUser = useAuthStore((state) => state.authUser);
+  const currentUserId = authUser?._id;
 
-    const getGroups = groupFunc((state) => state.getGroups);
-    const createdGroups = groupFunc((state) => state.createdGroups);
-    const memberGroups = groupFunc((state) => state.memberGroups);
-    const createGroup = groupFunc((state) => state.createGroup);
-    const deleteGroup = groupFunc((state) => state.deleteGroup);
-    const addMember = groupFunc((state) => state.addMember);
-    const assignRole = groupFunc((state) => state.assignRole);
-    const removeUserFromGroup = groupFunc((state) => state.removeUserFromGroup);
+  const setActiveChat = useSocketEventStore((state) => state.setActiveChat);
+  const clearActiveChat = useSocketEventStore((state) => state.clearActiveChat);
+  const subscribeToEvents = useSocketEventStore(
+    (state) => state.subscribeToEvents
+  );
+  const subscribeToUserEvents = useSocketEventStore(
+    (state) => state.subscribeToUserEvents
+  );
+  const initSocketEvents = useSocketEventStore(
+    (state) => state.initSocketEvents
+  );
+  const cleanup = useSocketEventStore((state) => state.cleanup);
 
-    const authUser = useAuthStore((state) => state.authUser);
-    const currentUserId = authUser?._id;
+  const sendMessage = chatFunc((state) => state.sendMessage);
+  const getMessages = chatFunc((state) => state.getMessages);
+  const messages = chatFunc((state) => state.messages);
 
-    const setActiveChat = useSocketEventStore((state) => state.setActiveChat);
-    const clearActiveChat = useSocketEventStore((state) => state.clearActiveChat);
-    const subscribeToEvents = useSocketEventStore((state) => state.subscribeToEvents);
-    const subscribeToUserEvents = useSocketEventStore((state) => state.subscribeToUserEvents)
-    const initSocketEvents = useSocketEventStore((state) => state.initSocketEvents);
-    const cleanup = useSocketEventStore((state) => state.cleanup);
+  const generateDefaultBucketUrl = bucketFunc(
+    (state) => state.generateDefaultBucketUrl
+  );
+  const generatedUrl = bucketFunc((state) => state.generatedUrl);
 
+  useEffect(() => {
+    getGroups();
 
-    const sendMessage = chatFunc((state) => state.sendMessage);
-    const getMessages = chatFunc((state) => state.getMessages);
-    const messages = chatFunc((state) => state.messages);
+    initSocketEvents();
 
-    const generateDefaultBucketUrl = bucketFunc(
-        (state) => state.generateDefaultBucketUrl
-      );
-    const generatedUrl = bucketFunc((state) => state.generatedUrl);
-
-    useEffect(() => {
-        getGroups();
-
-        initSocketEvents();
-
-        return () => {
-            cleanup();
-        };
-    }, [getGroups, initSocketEvents, cleanup]);
-
-    const [selectedGroup, setSelectedGroup] = useState('');
-    const [input, setInput] = useState('');
-    const [showInput, setShowInput] = useState(false);
-    const [groupName, setGroupName] = useState("");
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [showAddMember, setShowAddMember] = useState(false);
-    const [memberEmail, setMemberEmail] = useState('');
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [showGroupInfo, setShowGroupInfo] = useState(false);
-    const [memberRoles, setMemberRoles] = useState({});
-
-
-    const handleCreateGroup = () => {
-        if (!groupName.trim()) return;
-
-
-        createGroup({ groupName }, () => {
-
-            getGroups();
-
-            cleanup();
-            initSocketEvents();
-        });
-
-        setGroupName('');
-        setShowInput(false);
+    return () => {
+      cleanup();
     };
+  }, [getGroups, initSocketEvents, cleanup]);
 
-    const handleDeleteClick = () => {
-        setShowConfirm(true);
-    };
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [input, setInput] = useState("");
+  const [showInput, setShowInput] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [memberEmail, setMemberEmail] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showGroupInfo, setShowGroupInfo] = useState(false);
+  const [memberRoles, setMemberRoles] = useState({});
 
-    const confirmDelete = () => {
-        console.log(selectedGroup._id);
-        deleteGroup(selectedGroup._id);
-        setShowConfirm(false);
-    };
+  const handleCreateGroup = () => {
+    if (!groupName.trim()) return;
 
-    const handleAddMember = () => {
-        const groupId = selectedGroup._id;
-        addMember({ groupId, memberEmail });
-        subscribeToUserEvents({ groupId, userId: currentUserId })
-    };
+    createGroup({ groupName }, () => {
+      getGroups();
 
-    const onRemoveMember = (member) => {
-        const groupId = selectedGroup._id;
-        const memberId = member.userId;
-        removeUserFromGroup({ groupId, memberId });
-    };
+      cleanup();
+      initSocketEvents();
+    });
 
-    const handleGroupClick = (group) => {
+    setGroupName("");
+    setShowInput(false);
+  };
 
-        setSelectedGroup(group);
-        setShowGroupInfo(false);
+  const handleDeleteClick = () => {
+    setShowConfirm(true);
+  };
 
-        chatFunc.getState().selectGroup(group);
+  const confirmDelete = () => {
+    console.log(selectedGroup._id);
+    deleteGroup(selectedGroup._id);
+    setShowConfirm(false);
+  };
 
-        setActiveChat('group', group._id);
+  const handleAddMember = () => {
+    const groupId = selectedGroup._id;
+    addMember({ groupId, memberEmail });
+    subscribeToUserEvents({ groupId, userId: currentUserId });
+  };
 
-        subscribeToEvents();
-    };
+  const onRemoveMember = (member) => {
+    const groupId = selectedGroup._id;
+    const memberId = member.userId;
+    removeUserFromGroup({ groupId, memberId });
+  };
 
-    const handleSend = async () => {
+  const handleGroupClick = (group) => {
+    setSelectedGroup(group);
+    setShowGroupInfo(false);
 
-        if (!(input.trim())){
-            toast.warning("Please enter a message");
-            return;
-        }
+    chatFunc.getState().selectGroup(group);
 
-        if (input.startsWith("/signedUrl")) {
-            handleSignedUrlCommand(input);
-        } else {
+    setActiveChat("group", group._id);
 
-            setInput('');
+    subscribeToEvents();
+  };
 
-            if (selectedGroup && selectedGroup._id) {
-                chatFunc.getState().sendMessage({
-                    groupId: selectedGroup._id,
-                    text: input
-                });
-            } else {
-                console.error("No group selected");
-            }
-
-        }
-
-
-    };
-
-    const handleSignedUrlCommand=(input)=>{
-
-        try {
-
-            const parts = input.split(' ').filter(part=>part.trim());
-
-            if(parts.length<2){
-                sendMessage({
-                    groupId:selectedGroup._id,
-                    text: "Usage: /signedUrl filename [expiration in minutes]"
-                });
-                
-                return;
-            }
-
-            const fileName = parts[1];
-
-            const expiration = parts[2] ? parseInt(parts[2]) : 60;
-
-            if(useDefault === true){
-                generateDefaultBucketUrl({fileName, expiration, userId:currentUserId});
-            }
-
-            sendMessage({
-                groupId:selectedGroup._id,
-                text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${generatedUrl.Url}`
-            })
-
-            console.log(generatedUrl)
-
-            setInput('');
-            
-            
-        } catch (error) {
-
-            console.error('Error generating signed URL:', error);
-
-            sendMessage({
-                groupId:selectedGroup._id,
-                text:`Error generating signed URL: ${error.message}`
-            })
-            
-        }
+  const handleSend = async () => {
+    if (!input.trim()) {
+      toast.warning("Please enter a message");
+      return;
     }
-
-    useEffect(() => {
-        if (selectedGroup?.members) {
-            const roles = {};
-            selectedGroup.members.forEach(member => {
-                roles[member._id] = member.role || 'member';
-            });
-            setMemberRoles(roles);
-        }
-    }, [selectedGroup]);
-
-    useEffect(() => {
-        return () => {
-            clearActiveChat();
-            chatFunc.getState().clearSelectedGroup();
-        };
-    }, [clearActiveChat]);
-
-    const handleRoleChange = (memberId, newRole) => {
-        setMemberRoles(prev => ({
-            ...prev,
-            [memberId]: newRole
-        }));
-    };
-
-    const saveRole = async (memberId) => {
-
-        await assignRole({
+    try {
+      if (input.startsWith("/signedUrl")) {
+        handleSignedUrlCommand(input);
+      } else {
+        setInput("");
+        if (selectedGroup && selectedGroup._id) {
+          await chatFunc.getState().sendMessage({
             groupId: selectedGroup._id,
-            memberId,
-            role: memberRoles[memberId]
+            text: input,
+          });
+          toast.success("Message sent");
+        } else {
+          toast.warning("No group selected");
+        }
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to send message"));
+    }
+  };
+
+  const handleSignedUrlCommand = (input) => {
+    try {
+      const parts = input.split(" ").filter((part) => part.trim());
+
+      if (parts.length < 2) {
+        sendMessage({
+          groupId: selectedGroup._id,
+          text: "Usage: /signedUrl filename [expiration in minutes]",
         });
 
+        return;
+      }
+
+      const fileName = parts[1];
+
+      const expiration = parts[2] ? parseInt(parts[2]) : 60;
+
+      if (useDefault === true) {
+        generateDefaultBucketUrl({
+          fileName,
+          expiration,
+          userId: currentUserId,
+        });
+      }
+
+      sendMessage({
+        groupId: selectedGroup._id,
+        text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${generatedUrl.Url}`,
+      });
+
+      console.log(generatedUrl);
+
+      setInput("");
+    } catch (error) {
+      console.error("Error generating signed URL:", error);
+
+      sendMessage({
+        groupId: selectedGroup._id,
+        text: `Error generating signed URL: ${error.message}`,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (selectedGroup?.members) {
+      const roles = {};
+      selectedGroup.members.forEach((member) => {
+        roles[member._id] = member.role || "member";
+      });
+      setMemberRoles(roles);
+    }
+  }, [selectedGroup]);
+
+  useEffect(() => {
+    return () => {
+      clearActiveChat();
+      chatFunc.getState().clearSelectedGroup();
     };
+  }, [clearActiveChat]);
 
-    const toggleGroupInfo = () => {
-        setShowGroupInfo(!showGroupInfo);
-    };
+  const handleRoleChange = (memberId, newRole) => {
+    setMemberRoles((prev) => ({
+      ...prev,
+      [memberId]: newRole,
+    }));
+  };
 
-    return (
-        <div className="flex md:h-full h-[93vh] w-full text-white">
-            <Sidebar
-                createdGroups={createdGroups}
-                memberGroups={memberGroups}
-                selectedGroup={selectedGroup}
-                handleGroupClick={handleGroupClick}
-                showInput={showInput}
-                setShowInput={setShowInput}
-                groupName={groupName}
-                setGroupName={setGroupName}
-                handleCreateGroup={handleCreateGroup}
-            />
+  const saveRole = async (memberId) => {
+    await assignRole({
+      groupId: selectedGroup._id,
+      memberId,
+      role: memberRoles[memberId],
+    });
+  };
 
-            <ChatArea
-                selectedGroup={selectedGroup}
-                messages={messages}
-                currentUserId={currentUserId}
-                input={input}
-                setInput={setInput}
-                handleSend={handleSend}
-                handleDeleteClick={handleDeleteClick}
-                toggleGroupInfo={toggleGroupInfo}
-                showGroupInfo={showGroupInfo}
-                setShowAddMember={setShowAddMember}
-                memberRoles={memberRoles}
-                handleRoleChange={handleRoleChange}
-                saveRole={saveRole}
-                onRemoveMember={onRemoveMember}
-            />
+  const toggleGroupInfo = () => {
+    setShowGroupInfo(!showGroupInfo);
+  };
 
-            <MemberDrawer
-                isOpen={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                members={selectedGroup?.members || []}
-                onRemove={onRemoveMember}
-            />
+  return (
+    <div className="flex md:h-full h-[93vh] w-full text-white">
+      <Sidebar
+        createdGroups={createdGroups}
+        memberGroups={memberGroups}
+        selectedGroup={selectedGroup}
+        handleGroupClick={handleGroupClick}
+        showInput={showInput}
+        setShowInput={setShowInput}
+        groupName={groupName}
+        setGroupName={setGroupName}
+        handleCreateGroup={handleCreateGroup}
+      />
 
-            {showConfirm && (
-                <ConfirmDeleteModal
-                    onCancel={() => setShowConfirm(false)}
-                    onConfirm={confirmDelete}
-                />
-            )}
+      <ChatArea
+        selectedGroup={selectedGroup}
+        messages={messages}
+        currentUserId={currentUserId}
+        input={input}
+        setInput={setInput}
+        handleSend={handleSend}
+        handleDeleteClick={handleDeleteClick}
+        toggleGroupInfo={toggleGroupInfo}
+        showGroupInfo={showGroupInfo}
+        setShowAddMember={setShowAddMember}
+        memberRoles={memberRoles}
+        handleRoleChange={handleRoleChange}
+        saveRole={saveRole}
+        onRemoveMember={onRemoveMember}
+      />
 
-            {showAddMember && (
-                <AddMemberModal
-                    memberEmail={memberEmail}
-                    setMemberEmail={setMemberEmail}
-                    onCancel={() => setShowAddMember(false)}
-                    onAdd={handleAddMember}
-                />
-            )}
-        </div>
-    );
+      <MemberDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        members={selectedGroup?.members || []}
+        onRemove={onRemoveMember}
+      />
+
+      {showConfirm && (
+        <ConfirmDeleteModal
+          onCancel={() => setShowConfirm(false)}
+          onConfirm={confirmDelete}
+        />
+      )}
+
+      {showAddMember && (
+        <AddMemberModal
+          memberEmail={memberEmail}
+          setMemberEmail={setMemberEmail}
+          onCancel={() => setShowAddMember(false)}
+          onAdd={handleAddMember}
+        />
+      )}
+    </div>
+  );
 };
 
 export default ChatLayout;

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 export default function FileSelector({ userBucket }) {
   const [files, setFiles] = useState([]);

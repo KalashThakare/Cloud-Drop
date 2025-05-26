@@ -1,9 +1,37 @@
-import { useSocketEventStore } from '@/store/socketEvents';
-import React from 'react';
-import { Bell, CheckCircle2, Info, XCircle } from 'lucide-react';
+import { useSocketEventStore } from "@/store/socketEvents";
+import React, { useState, useEffect } from "react";
+import { Bell, CheckCircle2, Info, XCircle } from "lucide-react";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errorUtils";
 
 function Notification() {
   const notifications = useSocketEventStore((s) => s.notifications);
+  const clearNotifications = useSocketEventStore((s) => s.clearNotifications);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+
+  useEffect(() => {
+    setHasInteracted(true);
+  }, []); // Set to true on mount (when user opens notifications)
+
+  // Example: Clear all notifications with error handling
+  const handleClearAll = async () => {
+    setIsClearing(true);
+    try {
+      // If clearNotifications is async, await it; otherwise, just call it
+      await Promise.resolve(clearNotifications());
+      toast.success("All notifications cleared!");
+    } catch (error) {
+      // If backend returns a handled error
+      if (error?.response?.status && error.response.status < 500) {
+        toast.warning(getErrorMessage(error, "Could not clear notifications."));
+      } else {
+        toast.error(getErrorMessage(error, "Failed to clear notifications."));
+      }
+    } finally {
+      setIsClearing(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto bg-gradient-to-br from-zinc-950 via-zinc-900 to-slate-950 text-white rounded-2xl shadow-2xl p-6 border border-cyan-700/60 mt-8 transition-all duration-300">
@@ -13,12 +41,22 @@ function Notification() {
           Notifications
         </h2>
       </div>
-      {notifications.length === 0 ? (
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={handleClearAll}
+          disabled={isClearing || notifications.length === 0}
+          className="text-xs px-3 py-1 rounded bg-cyan-800 hover:bg-cyan-700 disabled:bg-zinc-700 transition"
+        >
+          {isClearing ? "Clearing..." : "Clear All"}
+        </button>
+      </div>
+      {notifications.length === 0 && hasInteracted ? (
         <div className="flex flex-col items-center text-center text-zinc-400 py-8">
           <Info className="w-8 h-8 mb-2 text-cyan-500/80" />
           <span className="font-medium mb-1">No new notifications</span>
           <span className="text-xs text-zinc-500">
-            You’ll see updates here when someone sends a message to a group you are not currently viewing.
+            You’ll see updates here when someone sends a message to a group you
+            are not currently viewing.
           </span>
         </div>
       ) : (

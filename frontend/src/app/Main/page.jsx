@@ -1,33 +1,20 @@
 "use client";
-import { axiosInstance } from "@/lib/axios";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import {
-  LogOut,
-  FilePlus2,
-  Plug,
-  Trash2,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { bucketFunc } from "@/store/bucketFunc";
 import { toast } from "sonner";
-import {
-  Sidebar,
-  SidebarBody,
-  SidebarLink,
-} from "@/components/ui/sidebar.jsx";
+import { getErrorMessage } from "@/lib/errorUtils";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar.jsx";
 import {
   IconShieldHalfFilled,
-  IconBucket,
-  IconFile,
   IconCloudUp,
   IconUsersGroup,
 } from "@tabler/icons-react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import FileSelector from "@/components/FileSelector";
 import SignedUrlGenerator from "@/components/SignedUrlGenerator";
-import Link from "next/link";
 import ChatPage from "@/components/Chat/page";
 import DashboardLanding from "@/components/ui/DashboardLanding.jsx";
 import UploadForm from "@/components/CloudDrop.jsx";
@@ -49,7 +36,10 @@ function Main() {
     bucketKey: "",
     bucketSecret: "",
   });
-  const hasUnreadNotification = useSocketEventStore((s) => s.hasUnreadNotification);
+  // const [hasInteracted, setHasInteracted] = useState(false);
+  const hasUnreadNotification = useSocketEventStore(
+    (s) => s.hasUnreadNotification
+  );
 
   const router = useRouter();
   const authUser = useAuthStore((state) => state.authUser);
@@ -58,21 +48,20 @@ function Main() {
   const logout = useAuthStore((state) => state.logout);
   const fetchedBuckets = bucketFunc((state) => state.fetchedBuckets);
   const fetchBucket = bucketFunc((state) => state.fetchBucket);
-  const connectPlatformBucket = bucketFunc((state) => state.connectPlatformBucket);
+  const connectPlatformBucket = bucketFunc(
+    (state) => state.connectPlatformBucket
+  );
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const deleteBucket = bucketFunc((state) => state.deleteBucket);
   const addBucket = bucketFunc((state) => state.addBucket);
-  const activeGroupId = useSocketEventStore((s) => s.activeGroupId);
+  // const activeGroupId = useSocketEventStore((s) => s.activeGroupId);
   useEffect(() => {
     checkAuth();
     useSocketEventStore.getState().initSocketEvents();
-  return () => useSocketEventStore.getState().cleanup();
+    return () => useSocketEventStore.getState().cleanup();
   }, [checkAuth]);
 
-
-
   useEffect(() => {
-
     if (isloggingin) return;
 
     if (authUser === null) {
@@ -82,39 +71,36 @@ function Main() {
       router.push("/Auth");
     } else {
       if (useDefault === true) {
-        connectPlatformBucket()
+        connectPlatformBucket();
       }
       fetchBucket();
     }
   }, [authUser, router, fetchBucket, isloggingin, connectPlatformBucket]);
-
 
   if (isloggingin)
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
         <div className="flex items-center space-x-3">
           <div className="animate-spin h-6 w-6 rounded-full border-2 border-cyan-300 border-t-transparent" />
-          <span className="text-lg font-semibold">Loading your dashboard...</span>
+          <span className="text-lg font-semibold">
+            Loading your dashboard...
+          </span>
         </div>
       </div>
     );
-
-
-
-
 
   if (!authUser) {
     return (
       <div className="flex items-center justify-center h-screen bg-black">
         <div className="bg-zinc-900 text-white p-8 rounded-2xl shadow-xl border-2 border-cyan-300 max-w-md text-center">
-          <h2 className="text-2xl font-bold mb-3 text-cyan-300">Access Denied</h2>
+          <h2 className="text-2xl font-bold mb-3 text-cyan-300">
+            Access Denied
+          </h2>
           <p className="text-base text-gray-300">Please log in to continue.</p>
         </div>
       </div>
     );
   }
-
-
 
   const links = [
     // {
@@ -173,8 +159,16 @@ function Main() {
       ),
       href: "#",
       icon: (
-        <svg className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" fill="none" viewBox="0 0 24 24">
-          <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" stroke="currentColor" strokeWidth="1.5"/>
+        <svg
+          className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
         </svg>
       ),
       onClick: () => {
@@ -199,28 +193,39 @@ function Main() {
   ];
 
   const handleConnectClick = (bucketName) => {
+    setHasInteracted(true);
     setConnectingBucket(bucketName);
   };
 
   const connectToBucket = async (bucketName, secret) => {
+    setHasInteracted(true);
     try {
       await connectBucket({ bucketName, secret });
       toast.success("Bucket connected successfully");
       setConnectingBucket(null);
       setSecret("");
     } catch (error) {
-      toast.error("Failed to connect bucket");
+      if (error?.response?.status && error.response.status < 500) {
+        toast.warning(getErrorMessage(error, "Failed to connect bucket"));
+      } else {
+        toast.error(getErrorMessage(error, "Failed to connect bucket"));
+      }
       console.error(error);
     }
   };
 
   const deleteBucketId = async (bucketName) => {
+    setHasInteracted(true);
     try {
       await deleteBucket({ bucketName });
       fetchBucket();
       toast.success("Bucket deleted successfully");
     } catch (error) {
-      toast.error("Failed to delete bucket");
+      if (error?.response?.status && error.response.status < 500) {
+        toast.warning(getErrorMessage(error, "Failed to delete bucket"));
+      } else {
+        toast.error(getErrorMessage(error, "Failed to delete bucket"));
+      }
       console.error(error);
     }
   };
@@ -232,6 +237,7 @@ function Main() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setHasInteracted(true);
     try {
       await addBucket(bucket);
       toast.success("Bucket added successfully");
@@ -244,7 +250,11 @@ function Main() {
       fetchBucket();
       setActiveView("your_buckets");
     } catch (error) {
-      toast.error("Failed to add bucket");
+      if (error?.response?.status && error.response.status < 500) {
+        toast.warning(getErrorMessage(error, "Failed to add bucket"));
+      } else {
+        toast.error(getErrorMessage(error, "Failed to add bucket"));
+      }
       console.error(error);
     }
   };
@@ -326,11 +336,15 @@ const Dashboard = ({
   setCaption,
   submit,
 }) => {
-  
   return (
-    <div className={`flex justify-center ${activeView === "Chat_Room" || activeView === "home" ? "p-1" : "p-4 md:p-8"} border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-zinc-900`}>
-
-      {activeView === "home" && <DashboardLanding /> }
+    <div
+      className={`flex justify-center ${
+        activeView === "Chat_Room" || activeView === "home"
+          ? "p-1"
+          : "p-4 md:p-8"
+      } border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-zinc-900`}
+    >
+      {activeView === "home" && <DashboardLanding />}
 
       {/* {activeView === "add_bucket" && (
         <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
@@ -467,7 +481,7 @@ const Dashboard = ({
         </div>
       )} */}
       {activeView === "cloud_drop" && <UploadForm />}
-      {activeView === "file_upload" && <FileSelector />}
+      {/* {activeView === "file_upload" && <FileSelector />} */}
       {activeView === "signed_url" && <SignedUrlGenerator />}
       {activeView === "Chat_Room" && <ChatPage />}
       {activeView === "notification" && <Notification />}

@@ -68,7 +68,7 @@ function UploadForm() {
         type: "manual",
         message: "Please select a bucket first.",
       });
-      toast.error("Please select a bucket first.");
+      toast.warning("Please select a bucket first.");
       return;
     }
     if (!files || files.length === 0) {
@@ -76,7 +76,7 @@ function UploadForm() {
         type: "manual",
         message: "Please select files to upload.",
       });
-      toast.error("Please select files to upload.");
+      toast.warning("Please select files to upload.");
       return;
     }
 
@@ -120,7 +120,11 @@ function UploadForm() {
         if (fileInputRef.current) fileInputRef.current.value = null;
       }, 1000);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Upload failed."));
+      if (error?.response?.status && error.response.status < 500) {
+        toast.warning(getErrorMessage(error, "Upload failed."));
+      } else {
+        toast.error(getErrorMessage(error, "Upload failed."));
+      }
       setProgress(0);
     } finally {
       setIsUploading(false);
