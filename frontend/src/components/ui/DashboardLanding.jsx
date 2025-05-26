@@ -4,7 +4,7 @@ import { Cloud, Shield, Users, Rocket } from "lucide-react";
 
 const DashboardLanding = () => {
   return (
-    <div className="h-[90vh] overflow-y-auto hide-scrollbar pb-4">
+    <div className="h-[90vh] overflow-y-scroll hide-scrollbar pb-4">
       <div
         id="Home"
         className="relative min-h-screen w-full px-4 xs:px-6 sm:px-8 md:px-10 pt-10 xs:pt-12 sm:pt-14 font-sans text-white"

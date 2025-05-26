@@ -1,11 +1,13 @@
 "use client";
 import "@/app/globals.css";
 import { useState, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { axiosInstance } from "@/lib/axios";
 import { bucketFunc } from "@/store/bucketFunc";
 import { toast } from "sonner";
 import { FiX } from "react-icons/fi";
 import { useAuthStore } from "@/store/useAuthStore.js";
+import { getErrorMessage } from "@/lib/errorUtils";
 
 function UploadForm() {
   const [files, setFiles] = useState([]);
@@ -13,17 +15,33 @@ function UploadForm() {
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [selectedFileIndex, setSelectedFileIndex] = useState(null); // NEW: Track selected file for info panel
+  const [selectedFileIndex, setSelectedFileIndex] = useState(null);
 
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const authUser = useAuthStore((state) => state.authUser);
   const currentUserId = authUser?._id;
 
+  // react-hook-form for validation
+  const {
+    handleSubmit,
+    formState: { errors },
+    setError,
+    clearErrors,
+  } = useForm();
+
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
     setFiles(selectedFiles);
     setCustomFilenames({});
-    setSelectedFileIndex(null); // Reset info panel
+    setSelectedFileIndex(null);
+    if (selectedFiles.length === 0) {
+      setError("files", {
+        type: "manual",
+        message: "Please select files to upload.",
+      });
+    } else {
+      clearErrors("files");
+    }
   };
 
   const handleFilenameChange = (index, newFilename) => {
@@ -44,22 +62,27 @@ function UploadForm() {
     return `${timestamp}-${nameWithoutExt}.${extension}`;
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async () => {
     if (!selectedBucket) {
+      setError("bucket", {
+        type: "manual",
+        message: "Please select a bucket first.",
+      });
       toast.error("Please select a bucket first.");
       return;
     }
-
     if (!files || files.length === 0) {
+      setError("files", {
+        type: "manual",
+        message: "Please select files to upload.",
+      });
       toast.error("Please select files to upload.");
       return;
     }
 
     const formData = new FormData();
     formData.append("bucketName", selectedBucket);
-    formData.append("userId",currentUserId);
+    formData.append("userId", currentUserId);
     files.forEach((file, index) => {
       const renamedFile = new File([file], getFinalFilename(file, index), {
         type: file.type,
@@ -97,8 +120,7 @@ function UploadForm() {
         if (fileInputRef.current) fileInputRef.current.value = null;
       }, 1000);
     } catch (error) {
-      toast.error("Upload failed.");
-      console.error(error);
+      toast.error(getErrorMessage(error, "Upload failed."));
       setProgress(0);
     } finally {
       setIsUploading(false);
@@ -121,9 +143,7 @@ function UploadForm() {
       return reindexed;
     });
     if (fileInputRef.current) fileInputRef.current.value = null;
-    // If the removed file was selected, close the info panel
     if (selectedFileIndex === index) setSelectedFileIndex(null);
-    // If the removed file was before the selected, shift the index
     else if (selectedFileIndex > index)
       setSelectedFileIndex(selectedFileIndex - 1);
   };
@@ -138,16 +158,14 @@ function UploadForm() {
 
   return (
     <form
-      onSubmit={handleUpload}
+      onSubmit={handleSubmit(onSubmit)}
       className="w-full max-w-7xl mx-auto pl-2 pr-1 sm:pl-4 md:pl-6 sm:pr-2 md:pr-3 pt-4 md:pt-6 pb-2 rounded-xl bg-zinc-900 shadow-xl flex flex-col gap-4 sm:gap-6 border border-zinc-700 overflow-y-scroll hide-scrollbar max-h-[90vh]"
     >
       <div className="flex flex-col md:flex-row gap-6 justify-evenly">
         {/* Left: Image Upload and Preview */}
         <div
           className={`flex flex-col gap-2 sm:gap-3 transition-all duration-300 ${
-            selectedFileIndex === null
-              ? "w-full"
-              : "w-full md:w-1/2"
+            selectedFileIndex === null ? "w-full" : "w-full md:w-1/2"
           }`}
         >
           <label className="text-sm sm:text-base text-zinc-400 font-medium">
@@ -161,10 +179,17 @@ function UploadForm() {
               className="mt-2 w-full p-3 sm:p-4 bg-zinc-800 text-white border border-dashed border-zinc-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:border-cyan-400 hover:bg-zinc-800 transition-all text-xs sm:text-sm"
             />
           </label>
+          {errors.files && (
+            <span className="text-red-400 text-xs">{errors.files.message}</span>
+          )}
+          {errors.bucket && (
+            <span className="text-red-400 text-xs">
+              {errors.bucket.message}
+            </span>
+          )}
           <p className="text-xs sm:text-sm text-zinc-500 mt-1 text-center">
             Supported formats: JPG, PNG, GIF, MP4 · Max size: 50MB
           </p>
-          {/* Remove All Items Button */}
           {files.length > 0 && (
             <button
               type="button"
@@ -225,7 +250,6 @@ function UploadForm() {
         >
           {selectedFileIndex !== null && files[selectedFileIndex] && (
             <div className="relative bg-zinc-800 border border-zinc-700 rounded-xl p-4 mt-2 md:mt-0">
-              {/* Close button */}
               <button
                 type="button"
                 className="absolute top-1.5 right-1.5 bg-zinc-700 bg-opacity-80 rounded-full p-1 hover:bg-red-500 transition"

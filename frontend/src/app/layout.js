@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Script from "next/script";
+import { ErrorBoundary } from "../components/ErrorBoundary.jsx";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,14 +25,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
-         <Script 
+        <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="beforeInteractive"
         />
-        
-        <Toaster position="top-center" richColors/>
-        {children}
+
+        <Toaster position="top-center" richColors />
+        <ErrorBoundary>{children}</ErrorBoundary>
       </body>
     </html>
   );

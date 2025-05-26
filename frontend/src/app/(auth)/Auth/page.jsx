@@ -2,62 +2,64 @@
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore.js";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 export default function Auth() {
   const router = useRouter();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoginPage, setIsLoginPage] = useState(true);
 
   const login = useAuthStore((state) => state.login);
   const signup = useAuthStore((state) => state.signup);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Login form
+  const {
+    register: loginRegister,
+    handleSubmit: handleLoginSubmit,
+    formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
+    reset: resetLogin,
+  } = useForm();
 
-    if (!isLoginPage) {
-      // Signup logic
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
-      if (!agreeToTerms) {
-        alert("You must agree to the terms and conditions!");
-        return;
-      }
+  // Signup form
+  const {
+    register: signupRegister,
+    handleSubmit: handleSignupSubmit,
+    watch,
+    formState: { errors: signupErrors, isSubmitting: isSignupSubmitting },
+    reset: resetSignup,
+  } = useForm();
 
-      const authUser = await signup({ name, email, password });
-      if (authUser) {
-        setIsLoginPage(true);
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setName("");
-        setAgreeToTerms(false);
-      }
-    } else {
-      // Login logic
-      const authUser = await login({ email, password });
-      if (authUser) {
-        // Check for redirectAfterLogin in localStorage
-        const redirectTo = localStorage.getItem("redirectAfterLogin") || "/Main";
-        localStorage.removeItem("redirectAfterLogin"); // Clear the redirect key
-        router.replace(redirectTo); // Redirect to the saved route or default to /Main
-      }
+  const signupPassword = watch("password", "");
+
+  // Login handler
+  const onLogin = async (data) => {
+    const authUser = await login({
+      email: data.email,
+      password: data.password,
+    });
+    if (authUser) {
+      const redirectTo = localStorage.getItem("redirectAfterLogin") || "/Main";
+      localStorage.removeItem("redirectAfterLogin");
+      router.replace(redirectTo);
+    }
+  };
+
+  // Signup handler
+  const onSignup = async (data) => {
+    const authUser = await signup({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
+    if (authUser) {
+      setIsLoginPage(true);
+      resetSignup();
     }
   };
 
   const togglePage = () => {
     setIsLoginPage(!isLoginPage);
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-    setName("");
-    setAgreeToTerms(false);
+    resetLogin();
+    resetSignup();
   };
 
   return (
@@ -77,32 +79,47 @@ export default function Auth() {
               <h2 className="text-3xl font-bold text-white text-center mb-8">
                 Welcome Back
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleLoginSubmit(onLogin)} className="space-y-6">
                 <div className="space-y-2">
                   <input
                     type="email"
                     placeholder="Email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-3 bg-gray-900 rounded border border-gray-800 text-white"
-                    required
+                    {...loginRegister("email", {
+                      required: "Email is required",
+                      pattern: {
+                        value: /^\S+@\S+$/,
+                        message: "Invalid email address",
+                      },
+                    })}
                   />
+                  {loginErrors.email && (
+                    <span className="text-red-400 text-xs">
+                      {loginErrors.email.message}
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <input
                     type="password"
                     placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-3 bg-gray-900 rounded border border-gray-800 text-white"
-                    required
+                    {...loginRegister("password", {
+                      required: "Password is required",
+                    })}
                   />
+                  {loginErrors.password && (
+                    <span className="text-red-400 text-xs">
+                      {loginErrors.password.message}
+                    </span>
+                  )}
                 </div>
                 <button
                   type="submit"
+                  disabled={isLoginSubmitting}
                   className="w-full py-3 px-4 bg-cyan-500 hover:bg-cyan-600 text-black font-medium rounded transition duration-200"
                 >
-                  Sign In Securely
+                  {isLoginSubmitting ? "Signing in..." : "Sign In Securely"}
                 </button>
                 <div className="text-center pt-4">
                   <button
@@ -123,65 +140,106 @@ export default function Auth() {
               <h2 className="text-3xl font-bold text-white text-center mb-8">
                 Get Started
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                onSubmit={handleSignupSubmit(onSignup)}
+                className="space-y-6"
+              >
                 <div className="space-y-2">
                   <input
                     type="text"
                     placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
                     className="w-full p-3 bg-gray-900 rounded border border-gray-800 text-white"
-                    required
+                    {...signupRegister("name", {
+                      required: "Name is required",
+                    })}
                   />
+                  {signupErrors.name && (
+                    <span className="text-red-400 text-xs">
+                      {signupErrors.name.message}
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <input
                     type="email"
                     placeholder="Email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-3 bg-gray-900 rounded border border-gray-800 text-white"
-                    required
+                    {...signupRegister("email", {
+                      required: "Email is required",
+                      pattern: {
+                        value: /^\S+@\S+$/,
+                        message: "Invalid email address",
+                      },
+                    })}
                   />
+                  {signupErrors.email && (
+                    <span className="text-red-400 text-xs">
+                      {signupErrors.email.message}
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <input
                     type="password"
                     placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-3 bg-gray-900 rounded border border-gray-800 text-white"
-                    required
+                    {...signupRegister("password", {
+                      required: "Password is required",
+                      minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters",
+                      },
+                    })}
                   />
+                  {signupErrors.password && (
+                    <span className="text-red-400 text-xs">
+                      {signupErrors.password.message}
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <input
                     type="password"
                     placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full p-3 bg-gray-900 rounded border border-gray-800 text-white"
-                    required
+                    {...signupRegister("confirmPassword", {
+                      required: "Please confirm your password",
+                      validate: (value) =>
+                        value === signupPassword || "Passwords do not match",
+                    })}
                   />
+                  {signupErrors.confirmPassword && (
+                    <span className="text-red-400 text-xs">
+                      {signupErrors.confirmPassword.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-start">
                   <input
                     id="terms"
                     type="checkbox"
-                    checked={agreeToTerms}
-                    onChange={(e) => setAgreeToTerms(e.target.checked)}
                     className="h-4 w-4 text-cyan-500 border-gray-700 rounded"
-                    required
+                    {...signupRegister("agreeToTerms", {
+                      required: "You must agree to the terms and conditions",
+                    })}
                   />
                   <label htmlFor="terms" className="ml-3 text-sm text-gray-400">
                     I agree to the Terms of Service and Privacy Policy.
                   </label>
                 </div>
+                {signupErrors.agreeToTerms && (
+                  <span className="text-red-400 text-xs">
+                    {signupErrors.agreeToTerms.message}
+                  </span>
+                )}
                 <button
                   type="submit"
+                  disabled={isSignupSubmitting}
                   className="w-full py-3 px-4 bg-cyan-500 hover:bg-cyan-600 text-black font-medium rounded transition duration-200"
                 >
-                  Create Your Account
+                  {isSignupSubmitting
+                    ? "Creating account..."
+                    : "Create Your Account"}
                 </button>
                 <div className="text-center pt-4">
                   <button
