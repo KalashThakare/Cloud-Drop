@@ -144,7 +144,7 @@ const ChatLayout = () => {
     }
   };
 
-  const handleSignedUrlCommand = (input) => {
+  const handleSignedUrlCommand =async (input) => {
     try {
       const parts = input.split(" ").filter((part) => part.trim());
 
@@ -161,18 +161,27 @@ const ChatLayout = () => {
 
       const expiration = parts[2] ? parseInt(parts[2]) : 60;
 
+      let urlData = null;
+
       if (useDefault === true) {
-        generateDefaultBucketUrl({
+        urlData = await generateDefaultBucketUrl({
           fileName,
           expiration,
           userId: currentUserId,
         });
       }
 
-      sendMessage({
+      if (urlData && urlData.Url) {
+      await sendMessage({
         groupId: selectedGroup._id,
-        text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${generatedUrl.Url}`,
+        text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${urlData.Url}`,
       });
+    } else {
+      await sendMessage({
+        groupId: selectedGroup._id,
+        text: `Failed to generate signed URL for ${fileName}. Please try again.`,
+      });
+    }
 
       console.log(generatedUrl);
 

@@ -7,7 +7,7 @@ export const bucketFunc = create((set, get) => ({
   bucket: null,
   fetchedBuckets: [],
   selectedBucket: "",
-  generatedUrl: "",
+  generatedUrl: null,
   usersBucket: {},
   cloudFormationTemplateUrl: "",
 
@@ -84,6 +84,7 @@ export const bucketFunc = create((set, get) => ({
     set({ generatedUrl: res.data });
     return res.data; // Return the URL data
   } catch (error) {
+    set({generatedUrl:null})
     const status = error?.response?.status;
     if (status === 404) {
       toast.warning(
