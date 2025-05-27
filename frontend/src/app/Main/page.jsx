@@ -77,7 +77,7 @@ function Main() {
       if (useDefault === true) {
         connectPlatformBucket();
       }
-      fetchBucket();
+      // fetchBucket();
     }
   }, [authUser, router, fetchBucket, isloggingin, connectPlatformBucket]);
 

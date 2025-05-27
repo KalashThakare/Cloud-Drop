@@ -84,7 +84,7 @@ export default function FileManagerPage() {
   return (
     <div className={`${breakpoints} flex flex-col gap-6 md:h-full h-[93vh] [@media(max-width:360px)]:gap-2 overflow-y-auto hide-scrollbar`}>
       <div className="flex flex-col [@media(min-width:320px)]:flex-row sm:items-center justify-between gap-4 [@media(max-width:360px)]:gap-2">
-        <h1 className="text-2xl font-bold text-cyan-400">Your Files</h1>
+        <h1 className="text-3xl font-bold text-cyan-400">Your Files</h1>
         <div className="flex gap-2">
           <button
             onClick={handleRefresh}
