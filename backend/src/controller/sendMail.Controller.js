@@ -3,9 +3,9 @@ import { generateVerificationToken,mailVerification } from "../services/verifySe
 
 export const reqAccess = async(req,res)=>{
     try {
-        const {recipient,bucketName,expiration,fileName} = req.body;
+        const {recipient,bucketName,expiration,filePath} = req.body;
         console.log(req.body)
-        await generateVerificationToken(recipient,bucketName,expiration,fileName);
+        await generateVerificationToken(recipient,bucketName,expiration,filePath);
 
         res.status(200).json({message:"Verification links sent successfully!"});
     } catch (error) {

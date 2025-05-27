@@ -11,19 +11,129 @@ export const transporter = nodemailer.createTransport({
     }
 })
 
-export const sendVerificationEmail=async(email, link)=> {
+export const sendVerificationEmail = async (email, link) => {
+    const htmlBody = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verify Your File Access Request</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background-color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 20px; text-align: center;">
+                <div style="background-color: rgba(255,255,255,0.1); width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h1 style="color: white; margin: 0; font-size: 26px; font-weight: 600;">Verify File Access</h1>
+                <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 15px;">Confirm your request to access the secure file</p>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 40px 30px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #1e293b; margin: 0 0 15px; font-size: 22px; font-weight: 600;">Almost There!</h2>
+                    <p style="color: #64748b; margin: 0; font-size: 16px; line-height: 1.6;">
+                        To ensure secure access to your file, please verify your request by clicking the verification link below.
+                    </p>
+                </div>
+
+                <!-- Steps Process -->
+                <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 30px 0;">
+                    <h3 style="color: #1e293b; margin: 0 0 20px; font-size: 16px; font-weight: 600; text-align: center;">What happens next:</h3>
+                    
+                    <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                        <div style="background-color: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 15px; flex-shrink: 0;">1</div>
+                        <div>
+                            <h4 style="color: #1e293b; margin: 0 0 5px; font-size: 14px; font-weight: 600;">Click Verification Link</h4>
+                            <p style="color: #64748b; margin: 0; font-size: 13px; line-height: 1.4;">Click the secure verification button below to confirm your identity</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                        <div style="background-color: #6b7280; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 15px; flex-shrink: 0;">2</div>
+                        <div>
+                            <h4 style="color: #64748b; margin: 0 0 5px; font-size: 14px; font-weight: 600;">Verification Complete</h4>
+                            <p style="color: #64748b; margin: 0; font-size: 13px; line-height: 1.4;">You'll see a confirmation message in your browser</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: flex-start;">
+                        <div style="background-color: #6b7280; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 15px; flex-shrink: 0;">3</div>
+                        <div>
+                            <h4 style="color: #64748b; margin: 0 0 5px; font-size: 14px; font-weight: 600;">Receive File Link</h4>
+                            <p style="color: #64748b; margin: 0; font-size: 13px; line-height: 1.4;">A new email with your secure file link will be sent within moments</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Button -->
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="${link}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);">
+                        <svg style="display: inline-block; vertical-align: middle; margin-right: 8px;" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Verify My Request
+                    </a>
+                </div>
+
+                <!-- Important Notice -->
+                <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 18px; border-radius: 6px; margin: 30px 0;">
+                    <div style="display: flex; align-items: flex-start;">
+                        <svg style="margin-right: 12px; margin-top: 2px; flex-shrink: 0;" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div>
+                            <h4 style="color: #92400e; margin: 0 0 6px; font-size: 15px; font-weight: 600;">Important</h4>
+                            <p style="color: #92400e; margin: 0; font-size: 14px; line-height: 1.5;">
+                                This verification link is <strong>valid for one use only</strong>. After clicking, you'll receive your file access link in a separate email within a few minutes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alternative Link -->
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <p style="color: #64748b; margin: 0 0 10px; font-size: 14px;">
+                        Button not working? Copy and paste this link:
+                    </p>
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; word-break: break-all; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; color: #475569;">
+                        ${link}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #f8fafc; padding: 25px; text-align: center; border-top: 1px solid #e2e8f0;">
+                <p style="color: #64748b; margin: 0 0 8px; font-size: 14px;">
+                    This is an automated verification email. Please do not reply.
+                </p>
+                <p style="color: #94a3b8; margin: 0; font-size: 12px;">
+                    If you did not request file access, please ignore this email.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
     const mailOptions = {
         from: "kalashthakare898@gmail.com",
         to: email,
-        subject: "Secure File Access Verification",
-        text: `Click this link to verify your access:\n${link}\n\nThis link is valid for one use only.`,
+        subject: "Verify Your File Access Request",
+        text: `Click this link to verify your access:\n\n${link}\n\nThis link is valid for one use only.\n\nAfter verification, you'll receive another email with your secure file link.`,
+        html: htmlBody,
     };
+    
     await transporter.sendMail(mailOptions);
-}
+};
 
-export const sendUrl=async(email,url)=>{
-
-  const htmlBody = `
+export const sendUrl = async (email, url, expiration) => {
+    const htmlBody = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -55,6 +165,22 @@ export const sendUrl=async(email,url)=>{
                     </p>
                 </div>
 
+                <!-- Expiration Alert -->
+                <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 18px; border-radius: 6px; margin: 0 0 30px 0;">
+                    <div style="display: flex; align-items: flex-start;">
+                        <svg style="margin-right: 12px; margin-top: 2px; flex-shrink: 0;" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="#f59e0b" stroke-width="2"/>
+                            <polyline points="12,6 12,12 16,14" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div>
+                            <h4 style="color: #92400e; margin: 0 0 6px; font-size: 15px; font-weight: 600;">⏰ Time Sensitive</h4>
+                            <p style="color: #92400e; margin: 0; font-size: 14px; line-height: 1.5;">
+                                This secure link will <strong>expire on ${expiration}</strong>. Please access your file promptly to avoid losing access.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Link Box -->
                 <div style="background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
                     <div style="margin-bottom: 20px;">
@@ -78,9 +204,22 @@ export const sendUrl=async(email,url)=>{
                         <div>
                             <h4 style="color: #1e40af; margin: 0 0 6px; font-size: 15px; font-weight: 600;">How to Access</h4>
                             <p style="color: #1e40af; margin: 0; font-size: 14px; line-height: 1.5;">
-                                Click the link above or copy and paste it into your browser address bar to access your file.
+                                Click the link above or copy and paste it into your browser address bar to access your file. Remember to download before the expiration time.
                             </p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 16px; border-radius: 6px; margin: 20px 0;">
+                    <div style="display: flex; align-items: flex-start;">
+                        <svg style="margin-right: 10px; margin-top: 2px; flex-shrink: 0;" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#64748b" stroke-width="2"/>
+                            <path d="M9 12L11 14L15 10" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p style="color: #475569; margin: 0; font-size: 13px; line-height: 1.4;">
+                            <strong>Security:</strong> This link is unique to you and should not be shared with others. It provides temporary access to your file and will automatically expire on the date shown above.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -98,14 +237,15 @@ export const sendUrl=async(email,url)=>{
     </body>
     </html>
     `;
+    
     await transporter.sendMail({
         from: "your-email@gmail.com",
         to: email,
-        subject: "Your Secure File Link",
-        text: `Here is your secure file link:\n ${url}`,
-        html:htmlBody
+        subject: `🔒 Your Secure File Link (Expires: ${expiration})`,
+        text: `Here is your secure file link:\n\n${url}\n\n⚠️ IMPORTANT: This link will expire in ${expiration} mins. Please access your file before this time.`,
+        html: htmlBody
     });
-}
+};
 
 export const sendOTPEmail = async (email, otpCode) => {
     try {

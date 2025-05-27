@@ -85,8 +85,18 @@ export default function SignedUrlGenerator() {
     return;
   }
 
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+        const videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'];
+
+        let fileCategory = 'other';
+        if (imageExtensions.includes(fileExtension)) fileCategory = 'images';
+        else if (videoExtensions.includes(fileExtension)) fileCategory = 'videos';
+
+        const filePath = `users/${userId}/${fileCategory}/${fileName}`;
+
   // try {
-  await sendMail(fileName, expiration, emailArray);
+  await sendMail(filePath, expiration, emailArray);
   //   toast.success("Email sent!");
   // } catch (error) {
   //   if (error?.response?.status && error.response.status < 500) {
