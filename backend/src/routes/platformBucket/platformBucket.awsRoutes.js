@@ -1,7 +1,7 @@
 import express from "express"
 import { protectRoute } from "../../middleware/auth.middleware.js";
 import { createS3Client } from "../../lib/platformClient/s3.js";
-import { generateSignedUrl, Upload } from "../../controller/platformBucket/cloud.Controller.js";
+import { deleteMultipleFiles, generateSignedUrl, Upload } from "../../controller/platformBucket/cloud.Controller.js";
 import mailRoute from "../mail/mailFunction.routes.js"
 import multer from "multer";
 
@@ -24,5 +24,7 @@ router.post("/s3client/upload", (req, res, next) => {
 router.post("/getUrl",protectRoute,generateSignedUrl)
 
 router.use("/sendMail",mailRoute)
+
+router.post("/s3client/delete-multiple", protectRoute, deleteMultipleFiles);
 
 export default router;

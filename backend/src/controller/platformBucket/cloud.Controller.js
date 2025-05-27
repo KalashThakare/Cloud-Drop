@@ -1,8 +1,8 @@
-import { GetObjectCommand, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, HeadObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getS3Client } from "../../lib/platformClient/s3.js";
 import { v4 as uuidv4 } from 'uuid';
-import { addMultipleFilesToDatabase } from "./file.Controller.js";
+import { addMultipleFilesToDatabase, removeMultipleFilesFromDatabase } from "./file.Controller.js";
 import dotenv from "dotenv";
 
 
@@ -72,12 +72,14 @@ export const Upload = async (req, res) => {
                 fileDataForDB.push({
                     fileId: fileId,
                     fileName: fileName,
-                    originalName: file.originalname,
                     fileSize: file.size,
                     mimeType: file.mimetype,
                 });
 
                 console.log(`File ${file.originalname} uploaded successfully to S3`);
+                console.log(file.originalName);
+                console.log(fileName)
+                console.log(files)
 
             } catch (fileError) {
                 console.error(`Failed to upload file ${file.originalname}:`, fileError);
@@ -203,5 +205,142 @@ export const generateSignedUrl = async (req, res) => {
     } catch (error) {
         console.log("Error in generateSignedUrl:", error);
         res.status(500).json({ message: "Error in getSignedUrl controller" });
+    }
+};
+
+
+export const deleteMultipleFiles = async (req, res) => {
+    try {
+        const s3Client = await getS3Client(req);
+        
+        console.log("req-body", req.body);
+        
+        const { bucketName, userId, files } = req.body;
+        
+        if (!bucketName || !userId || !files) {
+            return res.status(400).json({ 
+                message: "Missing required fields: bucketName, userId, and files are required" 
+            });
+        }
+        
+        if (!Array.isArray(files) || files.length === 0) {
+            return res.status(400).json({ 
+                message: "Files must be a non-empty array" 
+            });
+        }
+        
+        const deletionResults = [];
+        const failedDeletions = [];
+        const fileIdsForDB = [];
+        
+        for (const fileData of files) {
+            try {
+                const { fileName, fileId, fileType } = fileData;
+                
+                if (!fileName) {
+                    failedDeletions.push({
+                        fileId: fileId || 'unknown',
+                        fileName: fileName || 'unknown',
+                        error: 'Missing fileName'
+                    });
+                    continue;
+                }
+                
+                let fileCategory = 'other';
+                if (fileType) {
+                    fileCategory = fileType;
+                } else {
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+                    const videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'];
+                    
+                    if (imageExtensions.includes(fileExtension)) fileCategory = 'images';
+                    else if (videoExtensions.includes(fileExtension)) fileCategory = 'videos';
+                }
+                
+                const filePath = `users/${userId}/${fileCategory}/${fileName}`;
+                
+                const deleteParams = {
+                    Bucket: bucketName,
+                    Key: filePath
+                };
+                
+                const command = new DeleteObjectCommand(deleteParams);
+                await s3Client.send(command);
+                
+                deletionResults.push({
+                    fileId: fileId,
+                    fileName: fileName,
+                    filePath: filePath,
+                    fileType: fileCategory,
+                    deletedAt: new Date()
+                });
+                
+                if (fileId) {
+                    fileIdsForDB.push(fileId);
+                }
+                
+                console.log(`File ${fileName} deleted successfully from S3`);
+                
+            } catch (fileError) {
+                console.error(`Failed to delete file ${fileData.fileName}:`, fileError);
+                failedDeletions.push({
+                    fileId: fileData.fileId || 'unknown',
+                    fileName: fileData.fileName || 'unknown',
+                    error: fileError.message
+                });
+            }
+        }
+    
+        if (deletionResults.length === 0) {
+            return res.status(500).json({
+                message: "All file deletions failed",
+                failedDeletions: failedDeletions
+            });
+        }
+    
+        let dbResult = { success: true };
+        if (fileIdsForDB.length > 0) {
+            dbResult = await removeMultipleFilesFromDatabase(userId, fileIdsForDB);
+            
+            if (!dbResult.success) {
+                console.error("Database update failed:", dbResult.error);
+                
+                return res.status(207).json({
+                    message: "Files deleted from S3 but database update failed",
+                    deletedFiles: deletionResults,
+                    databaseError: dbResult.message,
+                    warning: "Files removed from storage but may still be tracked in database"
+                });
+            }
+        }
+        
+        const responseData = {
+            message: "Files deleted successfully",
+            deletedFiles: deletionResults,
+            totalFilesDeleted: deletionResults.length,
+            databaseInfo: dbResult.data ? {
+                remainingFiles: dbResult.data.totalFiles,
+                remainingSize: dbResult.data.totalSize,
+                filesRemoved: dbResult.filesRemoved,
+                totalSizeRemoved: dbResult.totalSizeRemoved,
+                lastModified: dbResult.data.lastModified
+            } : null
+        };
+        
+        if (failedDeletions.length > 0) {
+            responseData.failedDeletions = failedDeletions;
+            responseData.message = `${deletionResults.length} files deleted successfully, ${failedDeletions.length} failed`;
+        }
+        
+        res.status(200).json(responseData);
+        console.log("Delete process completed successfully");
+        
+    } catch (error) {
+        console.error("Error in delete controller:", error);
+        res.status(500).json({ 
+            message: "Error in delete controller",
+            error: error.message 
+        });
     }
 };

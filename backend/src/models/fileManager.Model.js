@@ -10,10 +10,6 @@ const fileInfoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    originalName: {
-        type: String,
-        required: true
-    },
     fileSize: {
         type: Number,
         required: true
