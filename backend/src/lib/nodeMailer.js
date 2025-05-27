@@ -4,15 +4,15 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-    service:"gmail",
-    auth:{
-        user:"kalashthakare898@gmail.com",
-        pass:process.env.PASSKEY
-    }
+  service: "gmail",
+  auth: {
+    user: "kalashthakare898@gmail.com",
+    pass: process.env.PASSKEY
+  }
 })
 
 export const sendVerificationEmail = async (email, link) => {
-    const htmlBody = `
+  const htmlBody = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -121,19 +121,19 @@ export const sendVerificationEmail = async (email, link) => {
     </html>
     `;
 
-    const mailOptions = {
-        from: "kalashthakare898@gmail.com",
-        to: email,
-        subject: "Verify Your File Access Request",
-        text: `Click this link to verify your access:\n\n${link}\n\nThis link is valid for one use only.\n\nAfter verification, you'll receive another email with your secure file link.`,
-        html: htmlBody,
-    };
-    
-    await transporter.sendMail(mailOptions);
+  const mailOptions = {
+    from: "kalashthakare898@gmail.com",
+    to: email,
+    subject: "Verify Your File Access Request",
+    text: `Click this link to verify your access:\n\n${link}\n\nThis link is valid for one use only.\n\nAfter verification, you'll receive another email with your secure file link.`,
+    html: htmlBody,
+  };
+
+  await transporter.sendMail(mailOptions);
 };
 
 export const sendUrl = async (email, url, expiration) => {
-    const htmlBody = `
+  const htmlBody = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -237,20 +237,20 @@ export const sendUrl = async (email, url, expiration) => {
     </body>
     </html>
     `;
-    
-    await transporter.sendMail({
-        from: "your-email@gmail.com",
-        to: email,
-        subject: `🔒 Your Secure File Link (Expires: ${expiration})`,
-        text: `Here is your secure file link:\n\n${url}\n\n⚠️ IMPORTANT: This link will expire in ${expiration} mins. Please access your file before this time.`,
-        html: htmlBody
-    });
+
+  await transporter.sendMail({
+    from: "your-email@gmail.com",
+    to: email,
+    subject: `🔒 Your Secure File Link (Expires: ${expiration})`,
+    text: `Here is your secure file link:\n\n${url}\n\n⚠️ IMPORTANT: This link will expire in ${expiration} mins. Please access your file before this time.`,
+    html: htmlBody
+  });
 };
 
 export const sendOTPEmail = async (email, otpCode) => {
-    try {
-        const subject = "Your OTP Verification Code";
-        const htmlContent = `
+  try {
+    const subject = "Your OTP Verification Code";
+    const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
             <h1 style="color: white; margin: 0; font-size: 28px;">Email Verification</h1>
@@ -288,17 +288,17 @@ export const sendOTPEmail = async (email, otpCode) => {
           </div>
         </div>
       `;
-        
-        await transporter.sendMail({
-            to: email,
-            subject: subject,
-            html: htmlContent
-        });
 
-        console.log(`OTP sent successfully to ${email}`);
-        return true;
-    } catch (error) {
-        console.log("Error sending OTP email:", error);
-        throw error;
-    }
+    await transporter.sendMail({
+      to: email,
+      subject: subject,
+      html: htmlContent
+    });
+
+    console.log(`OTP sent successfully to ${email}`);
+    return true;
+  } catch (error) {
+    console.log("Error sending OTP email:", error);
+    throw error;
+  }
 };
