@@ -14,14 +14,20 @@ export const chatFunc = create((set, get) => ({
         groupId,
         text,
       });
-
       set({ messages: [...messages, res.data] });
+      toast.success("Message sent");
     } catch (error) {
       const status = error?.response?.status;
-      if (status === 400 || status === 404) {
-        toast.warning(getErrorMessage(error, "Error sending message"));
+      const msg =
+        error?.response?.data?.error || error?.response?.data?.message;
+      if (status === 400) {
+        toast.warning(getErrorMessage(error, msg || "Invalid message data"));
+      } else if (status === 404) {
+        toast.warning(
+          getErrorMessage(error, msg || "Sender is not a member of the group")
+        );
       } else {
-        toast.error(getErrorMessage(error, "Error sending message"));
+        toast.error(getErrorMessage(error, "Failed to send message"));
       }
     }
   },
@@ -35,8 +41,10 @@ export const chatFunc = create((set, get) => ({
       return res.data;
     } catch (error) {
       const status = error?.response?.status;
+      const msg =
+        error?.response?.data?.error || error?.response?.data?.message;
       if (status === 404) {
-        toast.warning(getErrorMessage(error, "No messages found"));
+        toast.warning(getErrorMessage(error, msg || "No messages found"));
       } else {
         toast.error(getErrorMessage(error, "Failed loading messages"));
       }
@@ -46,7 +54,11 @@ export const chatFunc = create((set, get) => ({
 
   selectGroup: async (group) => {
     set({ selectedGroup: group });
-    await get().getMessages(group._id);
+    try {
+      await get().getMessages(group._id);
+    } catch (error) {
+      // getMessages already handles toast
+    }
   },
 
   addMessage: (newMessage) => {
@@ -63,15 +75,13 @@ export const groupFunc = create((set, get) => ({
   createdGroups: [],
   memberGroups: [],
 
-  getGroups: async (data) => {
+  getGroups: async () => {
     try {
       const res = await axiosInstance.get("/messages/rooms");
-      console.log(res.data);
-
       set({ createdGroups: res.data.createdGroups });
       set({ memberGroups: res.data.memberGroups });
     } catch (error) {
-      console.error("Error in chatStore", error);
+      toast.error(getErrorMessage(error, "Failed to fetch groups"));
       set({ createdGroups: [] });
       set({ memberGroups: [] });
     }
@@ -81,14 +91,15 @@ export const groupFunc = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/group/create", data);
       toast.success("New group created");
-
       get().getGroups();
-
       return res.data;
     } catch (error) {
       const status = error?.response?.status;
+      const msg = error?.response?.data?.message;
       if (status === 400) {
-        toast.warning(getErrorMessage(error, "Failed to create group"));
+        toast.warning(getErrorMessage(error, msg || "Group name is required"));
+      } else if (status === 500) {
+        toast.error(getErrorMessage(error, "Internal server error"));
       } else {
         toast.error(getErrorMessage(error, "Failed to create group"));
       }
@@ -102,38 +113,49 @@ export const groupFunc = create((set, get) => ({
         groupId: groupId,
       });
       toast.success("Group deleted");
-
       get().getGroups();
-
       return res.data;
     } catch (error) {
       const status = error?.response?.status;
+      const msg = error?.response?.data?.message;
       if (status === 404) {
         toast.warning(
           getErrorMessage(
             error,
-            "You don't have permission to delete the group"
+            "Only group admin can terminate the group or group not found"
           )
         );
-      } else {
+      } else if (status === 500) {
         toast.error(getErrorMessage(error, "Internal server error"));
+      } else {
+        toast.error(getErrorMessage(error, "Failed to delete group"));
       }
     }
   },
 
   addMember: async ({ groupId, memberEmail }) => {
     try {
-      await axiosInstance.post("/group/add-member", {
+      const res = await axiosInstance.post("/group/add-member", {
         groupId,
         emails: memberEmail,
       });
-      toast.success("Added member");
-
+      const { addedCount, skipped } = res.data;
+      if (addedCount > 0) {
+        toast.success(`Added ${addedCount} member(s)`);
+      }
+      if (skipped && skipped.length > 0) {
+        toast.warning(skipped.map((s) => `${s.email}: ${s.reason}`).join(", "));
+      }
       get().getGroups();
     } catch (error) {
       const status = error?.response?.status;
+      const msg = error?.response?.data?.message;
       if (status === 400) {
-        toast.warning(getErrorMessage(error, "Error adding member"));
+        toast.warning(getErrorMessage(error, msg || "Invalid member email(s)"));
+      } else if (status === 404) {
+        toast.warning(getErrorMessage(error, msg || "Group not found"));
+      } else if (status === 500) {
+        toast.error(getErrorMessage(error, "Server error"));
       } else {
         toast.error(getErrorMessage(error, "Error adding member"));
       }
@@ -142,21 +164,17 @@ export const groupFunc = create((set, get) => ({
 
   addGroup: (groupData) => {
     const { createdGroups } = get();
-
     set({ createdGroups: [...createdGroups, groupData] });
   },
 
   updateGroup: (updatedGroup) => {
     const { createdGroups, memberGroups } = get();
-
     const updatedCreatedGroups = createdGroups.map((group) =>
       group._id === updatedGroup._id ? updatedGroup : group
     );
-
-    const updatedMemberGroups = createdGroups.map((group) =>
+    const updatedMemberGroups = memberGroups.map((group) =>
       group._id === updatedGroup._id ? updatedGroup : group
     );
-
     set({
       createdGroups: updatedCreatedGroups,
       memberGroups: updatedMemberGroups,
@@ -165,7 +183,6 @@ export const groupFunc = create((set, get) => ({
 
   removeGroup: (groupId) => {
     const { createdGroups, memberGroups } = get();
-
     set({
       createdGroups: createdGroups.filter((group) => group._id !== groupId),
       memberGroups: memberGroups.filter((group) => group._id !== groupId),
@@ -174,7 +191,6 @@ export const groupFunc = create((set, get) => ({
 
   addUserToGroup: (groupId, user) => {
     const { createdGroups, memberGroups } = get();
-
     const updatedCreatedGroups = createdGroups.map((group) => {
       if (group._id === groupId) {
         return {
@@ -182,21 +198,17 @@ export const groupFunc = create((set, get) => ({
           members: [...group.members, user],
         };
       }
-
       return group;
     });
-
     const updatedMemberGroups = memberGroups.map((group) => {
       if (group._id === groupId) {
         return {
           ...group,
-          members: [...Grid2X2Plus.members, user],
+          members: [...group.members, user],
         };
       }
-
       return group;
     });
-
     set({
       createdGroups: updatedCreatedGroups,
       memberGroups: updatedMemberGroups,
@@ -205,14 +217,12 @@ export const groupFunc = create((set, get) => ({
 
   removeUserFromGroup: async ({ groupId, memberId }) => {
     try {
-      await axiosInstance.post(`/group/remove-member`, {
+      const res = await axiosInstance.post(`/group/remove-member`, {
         groupId,
         memberId,
       });
-
       toast.success("User removed from group");
       const { createdGroups, memberGroups } = get();
-
       const updatedCreatedGroups = createdGroups.map((group) => {
         if (group._id === groupId) {
           return {
@@ -220,10 +230,8 @@ export const groupFunc = create((set, get) => ({
             members: group.members.filter((member) => member._id !== memberId),
           };
         }
-
         return group;
       });
-
       const updatedMemberGroups = memberGroups.map((group) => {
         if (group._id === groupId) {
           return {
@@ -231,18 +239,29 @@ export const groupFunc = create((set, get) => ({
             members: group.members.filter((member) => member._id !== memberId),
           };
         }
-
         return group;
       });
-
       set({
         createdGroups: updatedCreatedGroups,
         memberGroups: updatedMemberGroups,
       });
     } catch (error) {
       const status = error?.response?.status;
-      if (status === 400 || status === 404) {
-        toast.warning(getErrorMessage(error, "Error removing user"));
+      const msg = error?.response?.data?.message;
+      if (status === 400) {
+        toast.warning(
+          getErrorMessage(error, msg || "Please provide member Id")
+        );
+      } else if (status === 403) {
+        toast.warning(
+          getErrorMessage(error, msg || "You cannot remove yourself")
+        );
+      } else if (status === 404) {
+        toast.warning(
+          getErrorMessage(error, msg || "Group or member not found")
+        );
+      } else if (status === 500) {
+        toast.error(getErrorMessage(error, "Server error"));
       } else {
         toast.error(getErrorMessage(error, "Error removing user"));
       }
@@ -256,15 +275,25 @@ export const groupFunc = create((set, get) => ({
         memberId,
         role,
       });
-
       toast.success("Role assigned");
     } catch (error) {
       const status = error?.response?.status;
-      const message = error?.response?.data?.error;
-
+      const msg =
+        error?.response?.data?.message || error?.response?.data?.error;
       if (status === 403) {
         toast.warning(
-          getErrorMessage(error, "You don't have permission to assign roles")
+          getErrorMessage(
+            error,
+            msg || "You don't have permission to assign roles"
+          )
+        );
+      } else if (status === 404) {
+        toast.warning(
+          getErrorMessage(error, msg || "Required field missing or not found")
+        );
+      } else if (status === 500) {
+        toast.error(
+          getErrorMessage(error, "An error occurred while assigning the role")
         );
       } else {
         toast.error(getErrorMessage(error, "Internal server error"));

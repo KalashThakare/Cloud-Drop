@@ -269,23 +269,25 @@ const SelectButton = styled.button`
 //   },
 // ];
 
-
-
-
-
-const SubscriptionPlans = () => {
+const SubscriptionPlans = ({handleFreeClick}) => {
 
   const plans = subscriptionStore((state) => state.plans);
   const subscribe = subscriptionStore((state)=>state.subscribeToPlan);
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
 
-  console.log(plans);
+  // console.log(plans);
 
   const handleClick=(planId)=>{
-
-    console.log("SelectedPlanId=>",planId)
-    subscribe({userId,planId});
+    // console.log("SelectedPlanId=>",planId)
+    if(planId === "6832088eddb43751ca46304d"){
+      // console.log("Free plan selected");
+      handleFreeClick();
+    } else {
+      // console.log("Premium plan selected");
+      subscribe({userId,planId});
+    }
+    
 
   }
 

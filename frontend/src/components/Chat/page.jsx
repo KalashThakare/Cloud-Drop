@@ -124,8 +124,7 @@ const ChatLayout = () => {
       toast.warning("Please enter a message");
       return;
     }
-    try {
-      if (input.startsWith("/signedUrl")) {
+      if (input.startsWith("/signedUrl" || "/signedurl" || "/SignedUrl" || "/signedURL" || "/SIGNEDURL")) {
         handleSignedUrlCommand(input);
       } else {
         setInput("");
@@ -134,14 +133,9 @@ const ChatLayout = () => {
             groupId: selectedGroup._id,
             text: input,
           });
-          toast.success("Message sent");
-        } else {
-          toast.warning("No group selected");
         }
       }
-    } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to send message"));
-    }
+    
   };
 
   const handleSignedUrlCommand =async (input) => {

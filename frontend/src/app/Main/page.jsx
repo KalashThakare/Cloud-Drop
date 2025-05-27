@@ -116,7 +116,7 @@ function Main() {
     //   onClick: () => setActiveView("your_buckets"),
     //   className: "px-4 py-2 text-md",
     // },
-    // // {
+    // {
     //   label: "File Upload",
     //   href: "#",
     //   icon: (
@@ -291,7 +291,7 @@ function Main() {
                   link={link}
                   onClick={(e) => {
                     if (link.onClick) link.onClick(e);
-                    setOpen(false); // <-- This ensures the sidebar closes on mobile
+                    setOpen(false);
                   }}
                   className={link.className}
                 />
@@ -347,8 +347,7 @@ const Dashboard = ({
           : "p-4 md:p-8"
       } border-0 items-center h-full w-full flex-1 flex-col gap-2 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-zinc-900`}
     >
-      {activeView === "home" && <DashboardLanding />}
-      {activeView === "file_manager" && <FileManagerPage />}
+      
       {/* {activeView === "add_bucket" && (
         <div className="flex flex-col gap-4 min-h-screen items-center justify-center">
            
@@ -392,8 +391,8 @@ const Dashboard = ({
             </button>
           </Link>
         </div>
-      )} 
-      */}
+      )}  */}
+      {/* {activeView === "file_upload" && <FileSelector />} */}
       {/* {activeView === "your_buckets" && (
         <div className="w-96 p-6 rounded-xl bg-black shadow-lg text-white border border-gray-700">
           <h1 className="text-2xl font-bold mb-4 text-cyan-300 text-center">
@@ -484,7 +483,8 @@ const Dashboard = ({
         </div>
       )} */}
       {activeView === "cloud_drop" && <UploadForm />}
-      {/* {activeView === "file_upload" && <FileSelector />} */}
+      {activeView === "home" && <DashboardLanding />}
+      {activeView === "file_manager" && <FileManagerPage />}
       {activeView === "signed_url" && <SignedUrlGenerator />}
       {activeView === "Chat_Room" && <ChatPage />}
       {activeView === "notification" && <Notification />}

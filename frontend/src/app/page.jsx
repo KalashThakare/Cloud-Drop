@@ -53,16 +53,16 @@ export default function Home() {
     }
   };
 
-  const handleYourClick = () => {
-    const token = localStorage.getItem("authToken");
-    const authUser = useAuthStore.getState().authUser;
-    if (token && isTokenValid(token) && authUser) {
-      router.push("/Own?useDefault=false");
-    } else {
-      localStorage.setItem("redirectAfterLogin", "/Own?useDefault=false");
-      router.push("/Auth");
-    }
-  };
+  // const handleYourClick = () => {
+  //   const token = localStorage.getItem("authToken");
+  //   const authUser = useAuthStore.getState().authUser;
+  //   if (token && isTokenValid(token) && authUser) {
+  //     router.push("/Own?useDefault=false");
+  //   } else {
+  //     localStorage.setItem("redirectAfterLogin", "/Own?useDefault=false");
+  //     router.push("/Auth");
+  //   }
+  // };
 
   const words = [
     { text: "Transform" },
@@ -250,8 +250,8 @@ export default function Home() {
           AI-powered insights, and seamless bucket management. Built for teams
           that demand performance and security.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-md justify-center">
-          <button
+        <div className="w-full max-w-xs sm:max-w-md justify-center">
+          {/* <button
             onClick={handleFreeClick}
             className="relative inline-flex h-12 overflow-hidden rounded-full p-[1px] shadow-lg shadow-zinc-900/50 focus:outline-none group transition-all hover:shadow-cyan-900/20 w-full sm:w-48"
           >
@@ -279,14 +279,14 @@ export default function Home() {
               </svg>
             </div>
             <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-cyan-800/0 via-cyan-800/70 to-cyan-800/0 transition-opacity duration-500 group-hover:opacity-40" />
-          </button>
+          </button> */}
           <button
-            onClick={handleYourClick}
+            onClick={handleFreeClick}
             className="relative inline-flex h-12 overflow-hidden rounded-full p-[1px] focus:outline-none group transition-all hover:shadow-[0_0_15px_5px_rgba(8,145,178,0.1)] w-full sm:w-48"
           >
             <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#3f3f46_0%,#0891b2_30%,#3f3f46_60%)]" />
-            <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-zinc-900 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl group-hover:bg-zinc-800 transition-all">
-              Connect Your Bucket
+            <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-zinc-900 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl group-hover:bg-zinc-800 hover:text-cyan-500 transition-all">
+              Get Started
             </span>
           </button>
         </div>
@@ -347,7 +347,9 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <SubscriptionPlans />
+      <SubscriptionPlans 
+      handleFreeClick={handleFreeClick}
+      />
 
       {/* Testimonials Section */}
       <section
