@@ -60,7 +60,7 @@ function Main() {
   const addBucket = bucketFunc((state) => state.addBucket);
   // const activeGroupId = useSocketEventStore((s) => s.activeGroupId);
   useEffect(() => {
-    checkAuth();
+    checkAuth(router);
     useSocketEventStore.getState().initSocketEvents();
     return () => useSocketEventStore.getState().cleanup();
   }, [checkAuth]);
