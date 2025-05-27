@@ -2,18 +2,21 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { LogOut } from "lucide-react";
+// import { LogOut } from "lucide-react";
 import { bucketFunc } from "@/store/bucketFunc";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar.jsx";
 import {
-  IconShieldHalfFilled,
   IconCloudUp,
+  IconShieldHalfFilled,
   IconUsersGroup,
+  IconFolderOpen,
+  IconBellRinging,
+  IconLogout2,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
-import FileSelector from "@/components/FileSelector";
+// import FileSelector from "@/components/FileSelector";
 import SignedUrlGenerator from "@/components/SignedUrlGenerator";
 import ChatPage from "@/components/Chat/page";
 import DashboardLanding from "@/components/ui/DashboardLanding.jsx";
@@ -113,16 +116,7 @@ function Main() {
     //   onClick: () => setActiveView("your_buckets"),
     //   className: "px-4 py-2 text-md",
     // },
-    {
-      label: "Cloud Drop",
-      href: "#",
-      icon: (
-        <IconCloudUp className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      onClick: () => setActiveView("cloud_drop"),
-      className: "px-4 py-2 text-md",
-    },
-    // {
+    // // {
     //   label: "File Upload",
     //   href: "#",
     //   icon: (
@@ -132,77 +126,73 @@ function Main() {
     //   className: "px-4 py-2 text-md",
     // },
     {
-      label: "Signed URL",
-      href: "#",
-      icon: (
-        <IconShieldHalfFilled className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      onClick: () => setActiveView("signed_url"),
-      className: "px-4 py-2 text-md",
+    label: "Cloud Drop",
+    href: "#",
+    icon: (
+      <IconCloudUp className="h-6 w-6 text-xl shrink-0 text-cyan-600 dark:text-cyan-300" />
+    ),
+    onClick: () => setActiveView("cloud_drop"),
+    className: "px-4 py-2 text-md",
+  },
+  {
+    label: "Signed URL",
+    href: "#",
+    icon: (
+      <IconShieldHalfFilled className="h-6 w-6 text-xl shrink-0 text-emerald-600 dark:text-emerald-300" />
+    ),
+    onClick: () => setActiveView("signed_url"),
+    className: "px-4 py-2 text-md",
+  },
+  {
+    label: "Chat Room",
+    href: "#",
+    icon: (
+      <IconUsersGroup className="h-6 w-6 text-xl shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />
+    ),
+    onClick: () => setActiveView("Chat_Room"),
+    className: "px-4 py-2 text-md",
+  },
+  {
+    label: "File Manager",
+    href: "#",
+    icon: (
+      <IconFolderOpen className="h-6 w-6 text-xl shrink-0 text-yellow-600 dark:text-yellow-300" />
+    ),
+    onClick: () => setActiveView("file_manager"),
+    className: "px-4 py-2 text-md",
+  },
+  {
+    label: (
+      <span className="relative">
+        Notification
+        {hasUnreadNotification && (
+          <span className="absolute -top-1 -right-3 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+        )}
+      </span>
+    ),
+    href: "#",
+    icon: (
+      <IconBellRinging className="h-6 w-6 text-xl shrink-0 text-orange-500 dark:text-orange-300" />
+    ),
+    onClick: () => {
+      setActiveView("notification");
+      useSocketEventStore.getState().clearNotifications();
     },
+    className: "px-4 py-2 text-md",
+  },
     {
-      label: "Chat Room",
-      href: "#",
-      icon: (
-        <IconUsersGroup className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      onClick: () => setActiveView("Chat_Room"),
-      className: "px-4 py-2 text-md",
+    label: "Logout",
+    href: "#",
+    icon: (
+      <IconLogout2 className="h-6 w-6 text-xl shrink-0 text-red-500 dark:text-red-400" />
+    ),
+    onClick: () => {
+      logout();
+      router.replace("/");
     },
-    {
-  label: "File Manager",
-  href: "#",
-  icon: (
-    <svg className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" fill="none" viewBox="0 0 24 24">
-      <path d="M4 4h16v16H4z" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M4 8h16" stroke="currentColor" strokeWidth="1.5"/>
-    </svg>
-  ),
-  onClick: () => setActiveView("file_manager"),
-  className: "px-4 py-2 text-md",
-},
-    {
-      label: (
-        <span className="relative">
-          Notification
-          {hasUnreadNotification && (
-            <span className="absolute -top-1 -right-3 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
-          )}
-        </span>
-      ),
-      href: "#",
-      icon: (
-        <svg
-          className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-        </svg>
-      ),
-      onClick: () => {
-        setActiveView("notification");
-        useSocketEventStore.getState().clearNotifications();
-      },
-      className: "px-4 py-2 text-md",
-    },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <LogOut className="h-6 w-6 text-xl shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      onClick: () => {
-        logout();
-        router.replace("/");
-      },
-      className:
-        "hover:bg-zinc-900 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",
-    },
+    className:
+      "hover:bg-zinc-900 hover:px-5 hover:py-3 w-fit px-4 mt-3 py-2 text-md rounded-full",
+  },
   ];
 
   const handleConnectClick = (bucketName) => {

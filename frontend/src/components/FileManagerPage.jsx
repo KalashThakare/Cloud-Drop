@@ -1,23 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
 import { useAuthStore } from "@/store/useAuthStore";
 import { fileManagementStore } from "@/store/fileManagement.Store";
-import { FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import "@/app/globals.css";
 
 const breakpoints = "w-full max-w-5xl mx-auto px-2 sm:px-4 md:px-8 py-4";
 
 export default function FileManagerPage() {
   const authUser = useAuthStore((s) => s.authUser);
   const userId = authUser?._id;
-    if (!userId) {
-        return (
-        <div className={`${breakpoints} text-center text-red-500`}>
-            Please log in to manage your files.
-        </div>
-        );
-    }
+  if (!userId) {
+    return (
+      <div className={`${breakpoints} text-center text-red-500`}>
+        Please log in to manage your files.
+      </div>
+    );
+  }
 
   const files = fileManagementStore((s) => s.files);
   const fileStats = fileManagementStore((s) => s.fileStats);
@@ -26,6 +27,9 @@ export default function FileManagerPage() {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showDownArrow, setShowDownArrow] = useState(false);
+
+  const tableContainerRef = useRef(null);
 
   // Fetch files and stats
   const fetchFilesAndStats = async () => {
@@ -46,6 +50,29 @@ export default function FileManagerPage() {
     }
   }, [userId]);
 
+  // Detect vertical overflow and show arrow if needed
+  useEffect(() => {
+    const checkOverflow = () => {
+      const el = tableContainerRef.current;
+      if (el) {
+        setShowDownArrow(
+          el.scrollHeight > el.clientHeight &&
+            el.scrollTop + el.clientHeight < el.scrollHeight - 2
+        );
+      }
+    };
+    checkOverflow();
+    const el = tableContainerRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkOverflow);
+      window.addEventListener("resize", checkOverflow);
+    }
+    return () => {
+      if (el) el.removeEventListener("scroll", checkOverflow);
+      window.removeEventListener("resize", checkOverflow);
+    };
+  }, [files, loading]);
+
   // Refresh handler
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -55,8 +82,8 @@ export default function FileManagerPage() {
   };
 
   return (
-    <div className={`${breakpoints} flex flex-col gap-6`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className={`${breakpoints} flex flex-col gap-6 md:h-full h-[93vh] [@media(max-width:360px)]:gap-2 overflow-y-auto hide-scrollbar`}>
+      <div className="flex flex-col [@media(min-width:320px)]:flex-row sm:items-center justify-between gap-4 [@media(max-width:360px)]:gap-2">
         <h1 className="text-2xl font-bold text-cyan-400">Your Files</h1>
         <div className="flex gap-2">
           <button
@@ -67,12 +94,12 @@ export default function FileManagerPage() {
             <FiRefreshCw
               className={`w-5 h-5 ${refreshing ? "animate-spin" : ""}`}
             />
-            <span>Refresh</span>
+            <span>{refreshing ? "Refreshing" : "Refresh"}</span>
           </button>
         </div>
       </div>
       {fileStats && (
-        <div className="flex flex-wrap gap-4 text-sm text-zinc-300">
+        <div className="flex flex-wrap gap-4 text-sm text-zinc-300 [@media(max-width:360px)]:gap-2">
           <div className="bg-zinc-800 rounded-lg px-4 py-2">
             <span className="font-semibold text-cyan-300">Total Files:</span>{" "}
             {fileStats.totalFiles}
@@ -89,9 +116,13 @@ export default function FileManagerPage() {
           </div>
         </div>
       )}
-      <div className="overflow-x-auto rounded-lg shadow border border-zinc-700 bg-zinc-900">
+      <div className="relative">
+      <div
+        ref={tableContainerRef}
+        className="relative overflow-x-auto overflow-y-auto hide-scrollbar rounded-lg shadow border border-zinc-700 bg-zinc-900 max-h-[60vh] h-auto [@media(max-width:360px)]:h-[50vh]"
+      >
         <table className="min-w-full text-sm">
-          <thead>
+          <thead className="sticky top-0 bg-zinc-900">
             <tr className="bg-zinc-800 text-cyan-200">
               <th className="p-3 text-left">File Name</th>
               <th className="p-3 text-left">Original Name</th>
@@ -133,6 +164,12 @@ export default function FileManagerPage() {
             )}
           </tbody>
         </table>
+      </div>
+      {showDownArrow && (
+          <div className="absolute bottom-0 left-0 w-full flex justify-center pointer-events-none">
+            <FiChevronDown className="text-cyan-500 text-3xl animate-bounce" />
+          </div>
+        )}
       </div>
     </div>
   );
