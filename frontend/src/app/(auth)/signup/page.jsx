@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { bucketFunc } from "@/store/bucketFunc.js";
+import crypto from "crypto";
 
 export default function Signup() {
 
@@ -11,6 +13,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   const signup = useAuthStore((state)=>state.signup);
+  const sendMail = bucketFunc((state) => state.sendMail);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,6 +21,8 @@ export default function Signup() {
     signup({email,password});
     router.replace('/');
   };
+
+  
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black">
