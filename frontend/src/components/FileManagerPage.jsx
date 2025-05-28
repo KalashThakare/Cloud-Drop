@@ -230,7 +230,7 @@ const getFileTypeFromExtension = (fileName) => {
                   </button>
                 </th>
                 <th className="p-3 text-left">File Name</th>
-                <th className="p-3 text-left">Original Name</th>
+                {/* <th className="p-3 text-left">Original Name</th> */}
                 <th className="p-3 text-left">Size</th>
                 <th className="p-3 text-left">Type</th>
                 <th className="p-3 text-left">Uploaded At</th>
@@ -274,7 +274,7 @@ const getFileTypeFromExtension = (fileName) => {
                       </button>
                     </td>
                     <td className="p-3">{file.fileName}</td>
-                    <td className="p-3">{file.originalName}</td>
+                    {/* <td className="p-3">{file.originalName}</td> */}
                     <td className="p-3">
                       {(file.fileSize / 1024).toFixed(2)} KB
                     </td>
