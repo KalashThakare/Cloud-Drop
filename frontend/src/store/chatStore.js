@@ -15,7 +15,7 @@ export const chatFunc = create((set, get) => ({
         text,
       });
       set({ messages: [...messages, res.data] });
-      toast.success("Message sent");
+
     } catch (error) {
       const status = error?.response?.status;
       const msg =
@@ -270,12 +270,15 @@ export const groupFunc = create((set, get) => ({
 
   assignRole: async ({ groupId, memberId, role }) => {
     try {
+      
       const res = await axiosInstance.post("/group/roles", {
         groupId,
         memberId,
         role,
       });
-      toast.success("Role assigned");
+
+      toast.success("Role assigned successfully!");
+
     } catch (error) {
       const status = error?.response?.status;
       const msg =
@@ -300,4 +303,33 @@ export const groupFunc = create((set, get) => ({
       }
     }
   },
+
+  updateMemberRole: (groupId, memberId, newRole) => {
+    set((state) => ({
+      createdGroups: state.createdGroups.map(group =>
+        group._id === groupId
+          ? {
+            ...group,
+            members: group.members.map(member =>
+              member._id === memberId
+                ? { ...member, role: newRole }
+                : member
+            )
+          }
+          : group
+      ),
+      memberGroups: state.memberGroups.map(group =>
+        group._id === groupId
+          ? {
+            ...group,
+            members: group.members.map(member =>
+              member._id === memberId
+                ? { ...member, role: newRole }
+                : member
+            )
+          }
+          : group
+      ),
+    }));
+  }
 }));

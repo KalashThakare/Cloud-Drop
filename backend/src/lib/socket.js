@@ -9,7 +9,9 @@ const io = new Server(server,{
     cors:{
         origin:["http://localhost:3000"],
         methods: ["GET", "POST"],
+        credentials:true
     },
+    transports: ['websocket', 'polling']
 });
 
 export function getReciverSocketId(userId){
@@ -29,6 +31,11 @@ io.on("Connection",(socket)=>{
     }
 
     io.emit("getOnlineUsers",Object.keys(userSocketMap));
+
+    socket.on("roleUpdated", (data) => {
+        socket.to(data.groupId).emit("roleUpdated", data);
+        console.log("Broadcasting role update:", data);
+    });
 
     socket.on("disconnect",()=>{
         console.log("A user disconnected",socket.id);

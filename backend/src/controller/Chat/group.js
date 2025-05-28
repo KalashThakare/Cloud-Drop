@@ -1,5 +1,6 @@
 import Group from "../../models/group.Model.js";
 import User from "../../models/user.Model.js";
+import { io } from "../../lib/socket.js";
 
 export const createGroup = async (req, res) => {
     try {
@@ -21,6 +22,12 @@ export const createGroup = async (req, res) => {
         });
 
         const savedGroup = await newGroup.save();
+        
+        // Populate the savedGroup with user details for frontend
+        await savedGroup.populate('createdBy', 'email username');
+        await savedGroup.populate('members.userId', 'email username');
+        
+        io.emit("newGroupCreated", savedGroup);
 
         res.status(200).json({
             message: "Group created successfully",
@@ -70,16 +77,29 @@ export const addMembersByEmail = async (req, res) => {
                 continue;
             }
 
-            group.members.push({
+            const newMember = {
                 email,
                 userId: user._id,
                 joinedAt: new Date()
-            });
+            };
 
-            addedMembers.push({ email, userId: user._id });
+            group.members.push(newMember);
+            addedMembers.push({ 
+                email, 
+                userId: user._id,
+                username: user.username || user.email // Include username for frontend
+            });
         }
 
         await group.save();
+
+        // Emit event for each added member with complete user info
+        for (const user of addedMembers) {
+            io.emit("userAddedToGroup", {
+                groupId,
+                user,
+            });
+        }
 
         res.status(200).json({
             message: "Member addition completed",
@@ -95,13 +115,26 @@ export const addMembersByEmail = async (req, res) => {
 
 export const removeMember = async (req, res) => {
     try {
+
         const { memberId, groupId } = req.body;
         const userId = req.user._id;
 
-        console.log(userId)
+        console.log("Removing member:", { memberId, groupId, requesterId: userId });
+        
+        if (!memberId) {
+            return res.status(400).json({ message: "memberId is required" });
+        }
+        
+        if (!groupId) {
+            return res.status(400).json({ message: "groupId is required" });
+        }
 
         if (!memberId) {
             return res.status(400).json({ message: "Please provide member Id" });
+        }
+
+        if (!groupId) {
+            return res.status(400).json({ message: "Please provide group Id" });
         }
 
         const group = await Group.findById(groupId);
@@ -110,8 +143,8 @@ export const removeMember = async (req, res) => {
             return res.status(404).json({ message: "Group not found" });
         }
 
-        if(memberId.toString() === group.createdBy.toString()){
-            res.status(403).json({message:"You cannot remove yourself"})
+        if (memberId.toString() === group.createdBy.toString()) {
+            return res.status(403).json({ message: "You cannot remove yourself" });
         }
 
         const originalCount = group.members.length;
@@ -124,6 +157,12 @@ export const removeMember = async (req, res) => {
 
         await group.save();
 
+        console.log("Emitting userRemovedFromGroup:", { groupId, userId: memberId });
+        io.emit("userRemovedFromGroup", {
+            groupId,
+            userId: memberId
+        });
+
         res.status(200).json({ message: "Member removed successfully" });
     } catch (error) {
         console.error("Error removing member:", error);
@@ -132,29 +171,29 @@ export const removeMember = async (req, res) => {
 };
 
 export const assignRole = async (req, res) => {
-
     try {
-
         const { role, groupId, memberId } = req.body;
         const userId = req.user._id;
 
+        console.log("Assigning role:", { role, groupId, memberId, requesterId: userId });
+
         if (!role) {
-            res.status(404).json({ message: "Role that is to assign is required" });
+            return res.status(400).json({ message: "Role that is to assign is required" });
         }
         if (!groupId) {
-            res.status(404).json({ message: "GroupID is required" });
+            return res.status(400).json({ message: "GroupID is required" });
         }
         if (!userId) {
-            res.status(404).json({ message: "UserID is required" });
+            return res.status(400).json({ message: "UserID is required" });
         }
         if (!memberId) {
-            res.status(404).json({ message: "memberID is required" });
+            return res.status(400).json({ message: "memberID is required" });
         }
 
         const group = await Group.findById(groupId);
 
         if (!group) {
-            res.status(404).json({ message: "No group found" });
+            return res.status(404).json({ message: "No group found" });
         }
 
         if (group.createdBy.toString() !== userId.toString()) {
@@ -166,36 +205,40 @@ export const assignRole = async (req, res) => {
         );
 
         if (memberIndex === -1) {
-            res.status(404).json({ message: "No member found" })
-        };
+            return res.status(404).json({ message: "No member found" });
+        }
 
         group.members[memberIndex].role = role;
 
-        await group.save()
+        await group.save();
+
+        const updatedMember = group.members[memberIndex];
+
+        console.log("Emitting roleUpdated:", { groupId, memberId, role });
+        io.emit("roleUpdated", {
+            groupId,
+            memberId,
+            role,
+            updatedMember
+        });
 
         return res.status(200).json({
             success: true,
             message: "Role assigned successfully",
-            updatedMember: group.members[memberIndex]
+            updatedMember: updatedMember
         });
 
-
     } catch (error) {
-
         console.error("Error in assignRole:", error);
         return res.status(500).json({
             message: "An error occurred while assigning the role",
             error: error.message
         });
-
     }
-
 }
 
 export const exitGroup = async (req, res) => {
-
     try {
-
         const userId = req.user._id;
         const { groupId } = req.params;
 
@@ -219,20 +262,22 @@ export const exitGroup = async (req, res) => {
 
         await group.save();
 
-        res.status(200).json({ message: "Exit successfull" })
+        // Emit event when user exits group
+        io.emit("userRemovedFromGroup", {
+            groupId,
+            userId: userId.toString()
+        });
 
+        res.status(200).json({ message: "Exit successful" });
 
     } catch (error) {
-
-        console.error("error in exit group controoler:", error);
+        console.error("error in exit group controller:", error);
         res.status(500).json({ message: "Internal server error" });
-
     }
 };
 
 export const terminateGroup = async (req, res) => {
     try {
-
         const userId = req.user._id;
         const { groupId } = req.body;
 
@@ -243,21 +288,20 @@ export const terminateGroup = async (req, res) => {
         }
 
         if (userId.toString() === group.createdBy.toString()) {
-
             await Group.findByIdAndDelete(groupId);
+            
+            console.log("Emitting groupDeleted:", { groupId });
+            io.emit("groupDeleted", {
+                groupId
+            });
+            
             return res.status(200).json({ message: "Project terminated successfully" });
-
         } else {
             return res.status(404).json({ message: "Only group admin can terminate the group" });
         }
 
-
     } catch (error) {
-
         console.error("Error in terminateGroup:", error);
         res.status(500).json({ message: "Internal server error" });
-
     }
 }
-
-

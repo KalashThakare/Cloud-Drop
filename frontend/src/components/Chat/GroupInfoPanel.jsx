@@ -2,7 +2,6 @@ import React from "react";
 import { IconX, IconCheck } from "@tabler/icons-react";
 import "@/app/globals.css";
 
-
 const GroupInfoPanel = ({
   selectedGroup,
   toggleGroupInfo,
@@ -70,6 +69,12 @@ const GroupInfoPanel = ({
                   {member._id === selectedGroup.createdBy && (
                     <div className="text-xs text-cyan-400">Admin</div>
                   )}
+                  {/* Display current role */}
+                  {member._id !== selectedGroup.createdBy && memberRoles[member._id] && (
+                    <div className="text-xs text-green-400">
+                      Role: {memberRoles[member._id]}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -78,7 +83,8 @@ const GroupInfoPanel = ({
                 <div className="flex justify-center items-center gap-1 xs:gap-2">
                   <input
                     type="text"
-                    // value={memberRoles[member._id] || ""}
+                    // Fixed: Added value attribute to bind to state
+                    value={memberRoles[member._id] || ""}
                     onChange={(e) =>
                       handleRoleChange(member._id, e.target.value)
                     }

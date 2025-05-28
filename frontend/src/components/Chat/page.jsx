@@ -12,6 +12,7 @@ import AddMemberModal from "./AddMember.jsx";
 import { useSearchParams } from "next/navigation";
 import { bucketFunc } from "@/store/bucketFunc.js";
 import { toast } from "sonner";
+import { debounce } from "lodash";
 
 const ChatLayout = () => {
   const searchParams = useSearchParams();
@@ -53,7 +54,6 @@ const ChatLayout = () => {
 
   useEffect(() => {
     getGroups();
-
     initSocketEvents();
 
     return () => {
@@ -77,7 +77,6 @@ const ChatLayout = () => {
 
     createGroup({ groupName }, () => {
       getGroups();
-
       cleanup();
       initSocketEvents();
     });
@@ -102,21 +101,25 @@ const ChatLayout = () => {
     subscribeToUserEvents({ groupId, userId: currentUserId });
   };
 
-  const onRemoveMember = (member) => {
+  const onRemoveMember = debounce((member) => {
     const groupId = selectedGroup._id;
     const memberId = member.userId;
     removeUserFromGroup({ groupId, memberId });
-  };
+  }, 300);
 
   const handleGroupClick = (group) => {
     setSelectedGroup(group);
     setShowGroupInfo(false);
 
     chatFunc.getState().selectGroup(group);
-
     setActiveChat("group", group._id);
-
     subscribeToEvents();
+
+    // Join the group room for real-time updates
+    const socket = useSocketEventStore.getState().socket;
+    if (socket) {
+      socket.emit("joinGroup", group._id);
+    }
   };
 
   const handleSend = async () => {
@@ -124,21 +127,23 @@ const ChatLayout = () => {
       toast.warning("Please enter a message");
       return;
     }
-      if (input.startsWith("/signedUrl" || "/signedurl" || "/SignedUrl" || "/signedURL" || "/SIGNEDURL")) {
-        handleSignedUrlCommand(input);
-      } else {
-        setInput("");
-        if (selectedGroup && selectedGroup._id) {
-          await chatFunc.getState().sendMessage({
-            groupId: selectedGroup._id,
-            text: input,
-          });
-        }
-      }
     
+    if (input.startsWith("/signedUrl") || input.startsWith("/signedurl") || 
+        input.startsWith("/SignedUrl") || input.startsWith("/signedURL") || 
+        input.startsWith("/SIGNEDURL")) {
+      handleSignedUrlCommand(input);
+    } else {
+      setInput("");
+      if (selectedGroup && selectedGroup._id) {
+        await chatFunc.getState().sendMessage({
+          groupId: selectedGroup._id,
+          text: input,
+        });
+      }
+    }
   };
 
-  const handleSignedUrlCommand =async (input) => {
+  const handleSignedUrlCommand = async (input) => {
     try {
       const parts = input.split(" ").filter((part) => part.trim());
 
@@ -147,14 +152,11 @@ const ChatLayout = () => {
           groupId: selectedGroup._id,
           text: "Usage: /signedUrl filename [expiration in minutes]",
         });
-
         return;
       }
 
       const fileName = parts[1];
-
       const expiration = parts[2] ? parseInt(parts[2]) : 60;
-
       let urlData = null;
 
       if (useDefault === true) {
@@ -166,23 +168,21 @@ const ChatLayout = () => {
       }
 
       if (urlData && urlData.Url) {
-      await sendMessage({
-        groupId: selectedGroup._id,
-        text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${urlData.Url}`,
-      });
-    } else {
-      await sendMessage({
-        groupId: selectedGroup._id,
-        text: `Failed to generate signed URL for ${fileName}. Please try again.`,
-      });
-    }
+        await sendMessage({
+          groupId: selectedGroup._id,
+          text: `Signed URL for ${fileName} (expires in ${expiration} minutes): ${urlData.Url}`,
+        });
+      } else {
+        await sendMessage({
+          groupId: selectedGroup._id,
+          text: `Failed to generate signed URL for ${fileName}. Please try again.`,
+        });
+      }
 
       console.log(generatedUrl);
-
       setInput("");
     } catch (error) {
       console.error("Error generating signed URL:", error);
-
       sendMessage({
         groupId: selectedGroup._id,
         text: `Error generating signed URL: ${error.message}`,
@@ -190,15 +190,55 @@ const ChatLayout = () => {
     }
   };
 
+  // Initialize member roles when selectedGroup changes
   useEffect(() => {
     if (selectedGroup?.members) {
       const roles = {};
       selectedGroup.members.forEach((member) => {
-        roles[member._id] = member.role || "member";
+        roles[member._id] = member.role || "";
       });
+      console.log("Initial roles:", roles);
       setMemberRoles(roles);
     }
   }, [selectedGroup]);
+
+  // Add socket event listener for role updates
+  useEffect(() => {
+    const socket = useSocketEventStore.getState().socket;
+    
+    if (socket) {
+      const handleRoleUpdate = (data) => {
+        console.log("Received role update:", data);
+        
+        // Update local state
+        setMemberRoles(prev => ({
+          ...prev,
+          [data.memberId]: data.role
+        }));
+
+        // Update selectedGroup if it matches
+        if (selectedGroup && selectedGroup._id === data.groupId) {
+          setSelectedGroup(prevGroup => ({
+            ...prevGroup,
+            members: prevGroup.members.map(member => 
+              member._id === data.memberId 
+                ? { ...member, role: data.role }
+                : member
+            )
+          }));
+        }
+
+        // Refresh groups to get updated data
+        getGroups();
+      };
+
+      socket.on("roleUpdated", handleRoleUpdate);
+
+      return () => {
+        socket.off("roleUpdated", handleRoleUpdate);
+      };
+    }
+  }, [selectedGroup, getGroups]);
 
   useEffect(() => {
     return () => {
@@ -215,16 +255,45 @@ const ChatLayout = () => {
   };
 
   const saveRole = async (memberId) => {
-    await assignRole({
-      groupId: selectedGroup._id,
-      memberId,
-      role: memberRoles[memberId],
-    });
+    try {
+      await assignRole({
+        groupId: selectedGroup._id,
+        memberId,
+        role: memberRoles[memberId],
+      });
+
+      // Emit socket event for real-time update
+      const socket = useSocketEventStore.getState().socket;
+      if (socket) {
+        socket.emit("roleUpdated", {
+          groupId: selectedGroup._id,
+          memberId,
+          role: memberRoles[memberId]
+        });
+      }
+
+    } catch (error) {
+      console.error("Error assigning role:", error);
+      toast.error("Failed to assign role");
+    }
   };
 
   const toggleGroupInfo = () => {
     setShowGroupInfo(!showGroupInfo);
   };
+
+  useEffect(() => {
+    // Test socket connection
+    const testConnection = useSocketEventStore.getState().testSocketConnection;
+    testConnection();
+    
+    getGroups();
+    initSocketEvents();
+    
+    return () => {
+      cleanup();
+    };
+  }, []);
 
   return (
     <div className="flex md:h-full h-[93vh] w-full text-white">
@@ -255,13 +324,6 @@ const ChatLayout = () => {
         handleRoleChange={handleRoleChange}
         saveRole={saveRole}
         onRemoveMember={onRemoveMember}
-      />
-
-      <MemberDrawer
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        members={selectedGroup?.members || []}
-        onRemove={onRemoveMember}
       />
 
       {showConfirm && (
