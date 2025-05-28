@@ -27,7 +27,7 @@ router.post("/downgrade-to-free", downgradeToFree);
 
 router.post("/reset-usage", resetUsage);
 
-router.post("/validate-signed-url-expiration",checkSubscriptionLimits, validateSignedUrlExpiration, (req, res) => {
+router.post("/validate-signed-url-expiration", checkSubscriptionLimits , validateSignedUrlExpiration, (req, res) => {
     res.status(200).json({ 
         success: true, 
         message: "Expiration time is valid",

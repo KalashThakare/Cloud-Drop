@@ -6,7 +6,7 @@ dotenv.config();
 export const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "kalashthakare898@gmail.com",
+    user: "clouddrop.s3@gmail.com",
     pass: process.env.PASSKEY
   }
 })
