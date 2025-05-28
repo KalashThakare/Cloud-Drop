@@ -68,36 +68,54 @@ const ChatArea = ({
 
           {selectedGroup && (
   <div
-    className="
-      flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-1
-      px-2 py-1
-      mb-1
-      rounded
-      bg-slate-900/80
-      text-cyan-100
-      text-xs sm:text-sm
-      shadow-sm border border-cyan-900
-      w-full
-      max-w-full
-      min-h-[40px]
-      sm:min-h-[36px]
-      transition-all
-      "
-    style={{ wordBreak: "break-word" }}
-  >
-    
-    <span><span className="font-semibold text-cyan-400">Tip: </span>
-      Type{" "}
-      <span className="bg-zinc-800 px-1.5 py-0.5 rounded text-cyan-200 font-mono">
-        /signedUrl &lt;fileName&gt; [expirationInMinutes]
-      </span>{" "}
-      to generate a signed URL for any file you own.
-      <span className="hidden sm:inline"> Example:&nbsp;</span>
-      <span className="bg-zinc-800 px-1.5 py-0.5 rounded text-cyan-200 font-mono">
-        /signedUrl myfile.jpg 30
-      </span>
+  className="
+    fixed
+    bottom-16 sm:bottom-20
+    left-1/2
+    transform -translate-x-1/2
+    z-50
+    flex flex-col items-center justify-center gap-1
+    px-2 py-1.5 sm:px-4 sm:py-2
+    rounded-md sm:rounded-lg
+    bg-black/20
+    backdrop-blur-sm
+    text-cyan-100/40
+    text-[10px] xs:text-xs sm:text-sm
+    transition-all duration-300
+    hover:text-cyan-100/80
+    hover:bg-black/40
+    pointer-events-none
+    hover:pointer-events-auto
+    max-w-[95vw] xs:max-w-[90vw] sm:max-w-[600px]
+    text-center
+    shadow-lg
+    border border-white/5
+    "
+  style={{ wordBreak: "break-word" }}
+>
+  <span className="lg:hidden leading-tight">
+    <span className="font-semibold text-cyan-400/50 hover:text-cyan-400/80 transition-colors">Tip: </span>
+    Type{" "}
+    <span className="text-cyan-200/50 hover:text-cyan-200/80 font-mono transition-colors">
+      /signedUrl &lt;fileName&gt;
+    </span>{" "}
+    to generate a signed URL.
+  </span>
+  
+  {/* Desktop version with full example */}
+  <span className="hidden sm:inline leading-tight">
+    <span className="font-semibold text-cyan-400/50 hover:text-cyan-400/80 transition-colors">Tip: </span>
+    Type{" "}
+    <span className="text-cyan-200/50 hover:text-cyan-200/80 font-mono transition-colors">
+      /signedUrl &lt;fileName&gt; [expirationInMinutes]
+    </span>{" "}
+    to generate a signed URL for any file you own.
+    Example:&nbsp;
+    <span className="text-cyan-200/50 hover:text-cyan-200/80 font-mono transition-colors">
+      /signedUrl myfile.jpg 30
     </span>
-  </div>
+  </span>
+</div>
 )}
 
           <MessageInput

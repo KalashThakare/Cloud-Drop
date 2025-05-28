@@ -1,4 +1,5 @@
 import { createSubscription } from "../controller/Subscribtion/handler.js";
+import Subscription from "../models/subscriptionHandler.Model.js";
 
 export const checkSubscriptionLimits = async (req, res, next) => {
     try {
