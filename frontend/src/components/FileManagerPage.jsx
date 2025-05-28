@@ -4,7 +4,13 @@ import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
 import { useAuthStore } from "@/store/useAuthStore";
 import { fileManagementStore } from "@/store/fileManagement.Store";
-import { FiRefreshCw, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import {
+  FiRefreshCw,
+  FiChevronDown,
+  FiTrash2,
+  FiCheckSquare,
+  FiSquare,
+} from "react-icons/fi";
 import "@/app/globals.css";
 
 const breakpoints = "w-full max-w-5xl mx-auto px-2 sm:px-4 md:px-8 py-4";
@@ -28,6 +34,7 @@ export default function FileManagerPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showDownArrow, setShowDownArrow] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const tableContainerRef = useRef(null);
 
@@ -81,11 +88,58 @@ export default function FileManagerPage() {
     toast.success("File list refreshed.");
   };
 
+  // Select single file
+  const handleSelectFile = (fileId) => {
+    setSelectedFiles((prev) =>
+      prev.includes(fileId)
+        ? prev.filter((id) => id !== fileId)
+        : [...prev, fileId]
+    );
+  };
+
+  // Select all files
+  const handleSelectAll = () => {
+    if (selectedFiles.length === files.length) {
+      setSelectedFiles([]);
+    } else {
+      setSelectedFiles(files.map((file) => file.fileId));
+    }
+  };
+
+  // Remove single file
+  const handleRemoveFile = (fileId) => {
+    console.log("Remove file with id:", fileId);
+    toast.info("Remove logic for single file not implemented yet.");
+    // Your delete logic here
+  };
+
+  // Remove multiple files
+  const handleRemoveSelected = () => {
+    if (selectedFiles.length === 0) {
+      toast.warning("No files selected.");
+      return;
+    }
+    console.log("Remove files with ids:", selectedFiles);
+    toast.info("Remove logic for multiple files not implemented yet.");
+    // Your delete logic here
+  };
+
   return (
-    <div className={`${breakpoints} flex flex-col gap-6 md:h-full h-[93vh] [@media(max-width:360px)]:gap-2 overflow-y-auto hide-scrollbar`}>
-      <div className="flex flex-col [@media(min-width:320px)]:flex-row sm:items-center justify-between gap-4 [@media(max-width:360px)]:gap-2">
+    <div
+      className={`${breakpoints} flex flex-col gap-6 md:h-full h-[93vh] [@media(max-width:360px)]:gap-2 overflow-y-auto hide-scrollbar`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 [@media(max-width:360px)]:gap-2">
         <h1 className="text-3xl font-bold text-cyan-400">Your Files</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={handleRemoveSelected}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-60"
+            disabled={selectedFiles.length === 0}
+            title="Remove Selected"
+          >
+            <FiTrash2 className="w-5 h-5" />
+            <span>Remove Selected</span>
+          </button>
           <button
             onClick={handleRefresh}
             className="flex items-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition"
@@ -117,55 +171,96 @@ export default function FileManagerPage() {
         </div>
       )}
       <div className="relative">
-      <div
-        ref={tableContainerRef}
-        className="relative overflow-x-auto overflow-y-auto hide-scrollbar rounded-lg shadow border border-zinc-700 bg-zinc-900 max-h-[60vh] h-auto [@media(max-width:360px)]:h-[50vh]"
-      >
-        <table className="min-w-full text-sm">
-          <thead className="sticky top-0 bg-zinc-900">
-            <tr className="bg-zinc-800 text-cyan-200">
-              <th className="p-3 text-left">File Name</th>
-              <th className="p-3 text-left">Original Name</th>
-              <th className="p-3 text-left">Size</th>
-              <th className="p-3 text-left">Type</th>
-              <th className="p-3 text-left">Uploaded At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="text-center py-8 text-zinc-400">
-                  Loading files...
-                </td>
+        <div
+          ref={tableContainerRef}
+          className="relative overflow-x-auto overflow-y-auto hide-scrollbar rounded-lg shadow border border-zinc-700 bg-zinc-900 max-h-[60vh] h-auto [@media(max-width:360px)]:h-[50vh]"
+        >
+          <table className="min-w-full text-sm">
+            <thead className="sticky top-0 bg-zinc-900 z-10">
+              <tr className="bg-zinc-800 text-cyan-200">
+                <th className="p-3 text-left w-10">
+                  <button
+                    onClick={handleSelectAll}
+                    className="focus:outline-none"
+                    title="Select All"
+                  >
+                    {selectedFiles.length === files.length &&
+                    files.length > 0 ? (
+                      <FiCheckSquare className="w-5 h-5 text-cyan-400" />
+                    ) : (
+                      <FiSquare className="w-5 h-5 text-zinc-400" />
+                    )}
+                  </button>
+                </th>
+                <th className="p-3 text-left">File Name</th>
+                <th className="p-3 text-left">Original Name</th>
+                <th className="p-3 text-left">Size</th>
+                <th className="p-3 text-left">Type</th>
+                <th className="p-3 text-left">Uploaded At</th>
+                <th className="p-3 text-left">Actions</th>
               </tr>
-            ) : files.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-8 text-zinc-400">
-                  No files found.
-                </td>
-              </tr>
-            ) : (
-              files.map((file) => (
-                <tr
-                  key={file.fileId}
-                  className="border-b border-zinc-800 hover:bg-zinc-800/60 transition"
-                >
-                  <td className="p-3">{file.fileName}</td>
-                  <td className="p-3">{file.originalName}</td>
-                  <td className="p-3">
-                    {(file.fileSize / 1024).toFixed(2)} KB
-                  </td>
-                  <td className="p-3">{file.mimeType}</td>
-                  <td className="p-3">
-                    {new Date(file.uploadedAt).toLocaleString()}
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-8 text-zinc-400">
+                    Loading files...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      {showDownArrow && (
+              ) : files.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-8 text-zinc-400">
+                    No files found.
+                  </td>
+                </tr>
+              ) : (
+                files.map((file) => (
+                  <tr
+                    key={file.fileId}
+                    className="border-b border-zinc-800 hover:bg-zinc-800/60 transition"
+                  >
+                    <td className="p-3">
+                      <button
+                        onClick={() => handleSelectFile(file.fileId)}
+                        className="focus:outline-none"
+                        title={
+                          selectedFiles.includes(file.fileId)
+                            ? "Deselect"
+                            : "Select"
+                        }
+                      >
+                        {selectedFiles.includes(file.fileId) ? (
+                          <FiCheckSquare className="w-5 h-5 text-cyan-400" />
+                        ) : (
+                          <FiSquare className="w-5 h-5 text-zinc-400" />
+                        )}
+                      </button>
+                    </td>
+                    <td className="p-3">{file.fileName}</td>
+                    <td className="p-3">{file.originalName}</td>
+                    <td className="p-3">
+                      {(file.fileSize / 1024).toFixed(2)} KB
+                    </td>
+                    <td className="p-3">{file.mimeType}</td>
+                    <td className="p-3">
+                      {new Date(file.uploadedAt).toLocaleString()}
+                    </td>
+                    <td className="p-3 flex gap-2">
+                      <button
+                        className="p-2 bg-red-700 hover:bg-red-600 rounded text-white"
+                        onClick={() => handleRemoveFile(file.fileId)}
+                        title="Remove"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        {showDownArrow && (
           <div className="absolute bottom-0 left-0 w-full flex justify-center pointer-events-none">
             <FiChevronDown className="text-cyan-500 text-3xl animate-bounce" />
           </div>
