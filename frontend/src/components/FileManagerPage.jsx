@@ -12,6 +12,7 @@ import {
   FiSquare,
 } from "react-icons/fi";
 import "@/app/globals.css";
+import { bucketFunc } from "@/store/bucketFunc";
 
 const breakpoints = "w-full max-w-5xl mx-auto px-2 sm:px-4 md:px-8 py-4";
 
@@ -30,6 +31,8 @@ export default function FileManagerPage() {
   const fileStats = fileManagementStore((s) => s.fileStats);
   const getUserFiles = fileManagementStore((s) => s.getUserFiles);
   const getFileStats = fileManagementStore((s) => s.getFileStats);
+
+  const deleteFiles = bucketFunc((s)=>s.deleteFiles);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -97,7 +100,6 @@ export default function FileManagerPage() {
     );
   };
 
-  // Select all files
   const handleSelectAll = () => {
     if (selectedFiles.length === files.length) {
       setSelectedFiles([]);
@@ -107,22 +109,57 @@ export default function FileManagerPage() {
   };
 
   // Remove single file
-  const handleRemoveFile = (fileId) => {
-    console.log("Remove file with id:", fileId);
-    toast.info("Remove logic for single file not implemented yet.");
-    // Your delete logic here
-  };
+  // const handleRemoveFile = (fileId) => {
+  //   console.log("Remove file with id:", fileId);
+    
+  // };
 
-  // Remove multiple files
-  const handleRemoveSelected = () => {
-    if (selectedFiles.length === 0) {
-      toast.warning("No files selected.");
-      return;
-    }
-    console.log("Remove files with ids:", selectedFiles);
-    toast.info("Remove logic for multiple files not implemented yet.");
-    // Your delete logic here
-  };
+
+const handleRemoveSelected =async () => {
+  if (selectedFiles.length === 0) {
+    toast.warning("No files selected.");
+    return;
+  }
+  
+  const selectedFileDetails = files.filter(file => 
+    selectedFiles.includes(file.fileId)
+  ).map(file => ({
+    fileId: file.fileId,
+    fileName: file.fileName,
+    fileType: file.mimeType ? getFileTypeFromMimeType(file.mimeType) : getFileTypeFromExtension(file.fileName)
+  }));
+  
+  console.log("Remove files with details:", selectedFileDetails);
+
+  deleteFiles({
+    userId,
+    files: selectedFileDetails
+  });
+  
+  setSelectedFiles([]);
+
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
+  await fetchFilesAndStats();
+
+};
+
+const getFileTypeFromMimeType = (mimeType) => {
+  if (mimeType.startsWith('image/')) return 'images';
+  if (mimeType.startsWith('video/')) return 'videos';
+  return 'other';
+};
+
+
+const getFileTypeFromExtension = (fileName) => {
+  const fileExtension = fileName.split('.').pop()?.toLowerCase();
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+  const videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'];
+  
+  if (imageExtensions.includes(fileExtension)) return 'images';
+  if (videoExtensions.includes(fileExtension)) return 'videos';
+  return 'other';
+};
 
   return (
     <div
@@ -197,7 +234,7 @@ export default function FileManagerPage() {
                 <th className="p-3 text-left">Size</th>
                 <th className="p-3 text-left">Type</th>
                 <th className="p-3 text-left">Uploaded At</th>
-                <th className="p-3 text-left">Actions</th>
+                {/* <th className="p-3 text-left">Actions</th> */}
               </tr>
             </thead>
             <tbody>
@@ -245,7 +282,7 @@ export default function FileManagerPage() {
                     <td className="p-3">
                       {new Date(file.uploadedAt).toLocaleString()}
                     </td>
-                    <td className="p-3 flex gap-2">
+                    {/* <td className="p-3 flex gap-2">
                       <button
                         className="p-2 bg-red-700 hover:bg-red-600 rounded text-white"
                         onClick={() => handleRemoveFile(file.fileId)}
@@ -253,7 +290,7 @@ export default function FileManagerPage() {
                       >
                         <FiTrash2 />
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}

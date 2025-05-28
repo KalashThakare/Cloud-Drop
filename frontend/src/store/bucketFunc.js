@@ -171,4 +171,34 @@ export const bucketFunc = create((set, get) => ({
   //     console.error(error);
   //   }
   // },
+
+  deleteFiles:async({userId,files})=>{
+
+    try {
+
+      const bucketName = get().selectedBucket;
+
+      const res = await axiosInstance.post("/use-platform-bucket/s3client/delete-multiple",{
+        bucketName,
+        userId,
+        files
+      })
+
+      toast.success("files deleted successfully");
+      
+    } catch (error) {
+
+      const status = error?.response?.status
+      const msg = error?.response?.data?.message || error?.response?.data?.error;
+      if(status === 400){
+        toast.warning(msg);
+      }else if(status === 207){
+        toast.warning(msg);
+      }else{
+        toast.error(msg)
+      }
+      
+    }
+
+  }
 }));
