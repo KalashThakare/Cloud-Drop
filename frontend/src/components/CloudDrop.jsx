@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { FiX } from "react-icons/fi";
 import { useAuthStore } from "@/store/useAuthStore.js";
 import { getErrorMessage } from "@/lib/errorUtils";
+import { subscriptionHandler } from "@/store/subscriptionHandle.Store";
+import { useRouter } from "next/navigation";
 
 function UploadForm() {
   const [files, setFiles] = useState([]);
@@ -20,6 +22,10 @@ function UploadForm() {
   const selectedBucket = bucketFunc((state) => state.selectedBucket);
   const authUser = useAuthStore((state) => state.authUser);
   const currentUserId = authUser?._id;
+
+  const checkLimits = subscriptionHandler((s) => s.checkLimits);
+  const incrementUsage = subscriptionHandler((s) => s.incrementUsage);
+  const router = useRouter();
 
   // react-hook-form for validation
   const {
@@ -80,6 +86,34 @@ function UploadForm() {
       return;
     }
 
+    // 1. Check usage limit
+    try {
+      const result = await checkLimits(currentUserId, "fileUpload");
+      if (result.allowed === false) {
+        toast.error(
+          <>
+            {result.message}
+            <button
+              style={{
+                marginLeft: 8,
+                color: "#00ffff",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => router.push("/subscribe")}
+            >
+              Upgrade Plan
+            </button>
+          </>
+        );
+        return;
+      }
+    } catch (err) {
+      toast.error("Failed to check limits. Please try again.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("bucketName", selectedBucket);
     formData.append("userId", currentUserId);
@@ -111,6 +145,13 @@ function UploadForm() {
 
       setProgress(100);
       toast.success("Files uploaded successfully!");
+
+      // 2. Increment usage after successful upload
+      try {
+        await incrementUsage(currentUserId, "fileUpload");
+      } catch (err) {
+        // Optional: handle increment error
+      }
 
       setTimeout(() => {
         setProgress(0);

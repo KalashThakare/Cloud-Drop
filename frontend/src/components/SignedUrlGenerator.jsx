@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import "@/app/globals.css";
 import { useAuthStore } from "@/store/useAuthStore";
 import { getErrorMessage } from "@/lib/errorUtils";
+import { subscriptionHandler } from "@/store/subscriptionHandle.Store";
+import { useRouter } from "next/navigation";
 
 export default function SignedUrlGenerator() {
   const searchParams = useSearchParams();
@@ -32,12 +34,44 @@ export default function SignedUrlGenerator() {
   const authUser = useAuthStore((state) => state.authUser);
   const userId = authUser?._id;
 
+  const checkLimits = subscriptionHandler((s) => s.checkLimits);
+  const incrementUsage = subscriptionHandler((s) => s.incrementUsage);
+  const router = useRouter();
+
   const generateSignedUrl = async () => {
     setHasInteracted(true);
     if (!fileName || !expiration) {
       toast.warning("Please enter a file name and expiration time.");
       return;
     }
+    // 1. Check usage limit
+    try {
+      const result = await checkLimits(userId, "signedUrl");
+      if (result.allowed === false) {
+        toast.error(
+          <>
+            {result.message}
+            <button
+              style={{
+                marginLeft: 8,
+                color: "#00ffff",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => router.push("/subscribe")}
+            >
+              Upgrade Plan
+            </button>
+          </>
+        );
+        return;
+      }
+    } catch (err) {
+      toast.error("Failed to check limits. Please try again.");
+      return;
+    }
+
     try {
       let urlResult = null;
       if (useDefault === true) {
@@ -52,8 +86,13 @@ export default function SignedUrlGenerator() {
       if (urlResult && urlResult.Url) {
         setShowLeftPanel(true);
         toast.success("Signed URL generated!");
+        // 2. Increment usage after successful generation
+        try {
+          await incrementUsage(userId, "signedUrl");
+        } catch (err) {
+          // Optional: handle increment error
+        }
       } else {
-        // Do not show success or navigate if no URL
         setShowLeftPanel(false);
       }
     } catch (error) {
@@ -67,45 +106,50 @@ export default function SignedUrlGenerator() {
   };
 
   const sendEmail = async () => {
-  setHasInteracted(true);
-  if (!recipients) {
-    toast.warning("Please enter at least one recipient email address.");
-    return;
-  }
-  // Split and validate emails
-  const emailArray = recipients
-    .split(",")
-    .map((email) => email.trim())
-    .filter((email) => email.length > 0);
+    setHasInteracted(true);
+    if (!recipients) {
+      toast.warning("Please enter at least one recipient email address.");
+      return;
+    }
+    // Split and validate emails
+    const emailArray = recipients
+      .split(",")
+      .map((email) => email.trim())
+      .filter((email) => email.length > 0);
 
-  // Simple email validation (optional, for better UX)
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (emailArray.length === 0 || !emailArray.every((email) => emailRegex.test(email))) {
-    toast.warning("Please enter valid email address(es), separated by commas.");
-    return;
-  }
+    // Simple email validation (optional, for better UX)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      emailArray.length === 0 ||
+      !emailArray.every((email) => emailRegex.test(email))
+    ) {
+      toast.warning(
+        "Please enter valid email address(es), separated by commas."
+      );
+      return;
+    }
 
-        const fileExtension = fileName.split('.').pop().toLowerCase();
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
-        const videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'];
+    const fileExtension = fileName.split(".").pop().toLowerCase();
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+    const videoExtensions = ["mp4", "mov", "avi", "wmv", "flv", "webm", "mkv"];
 
-        let fileCategory = 'other';
-        if (imageExtensions.includes(fileExtension)) fileCategory = 'images';
-        else if (videoExtensions.includes(fileExtension)) fileCategory = 'videos';
+    let fileCategory = "other";
+    if (imageExtensions.includes(fileExtension)) fileCategory = "images";
+    else if (videoExtensions.includes(fileExtension)) fileCategory = "videos";
 
-        const filePath = `users/${userId}/${fileCategory}/${fileName}`;
+    const filePath = `users/${userId}/${fileCategory}/${fileName}`;
 
-  // try {
-  await sendMail(filePath, expiration, emailArray);
-  //   toast.success("Email sent!");
-  // } catch (error) {
-  //   if (error?.response?.status && error.response.status < 500) {
-  //     toast.warning(getErrorMessage(error, "Failed to send email."));
-  //   } else {
-  //     toast.error(getErrorMessage(error, "Failed to send email."));
-  //   }
-  // }
-};
+    // try {
+    await sendMail(filePath, expiration, emailArray);
+    //   toast.success("Email sent!");
+    // } catch (error) {
+    //   if (error?.response?.status && error.response.status < 500) {
+    //     toast.warning(getErrorMessage(error, "Failed to send email."));
+    //   } else {
+    //     toast.error(getErrorMessage(error, "Failed to send email."));
+    //   }
+    // }
+  };
 
   useEffect(() => {
     if (generatedUrl) {
