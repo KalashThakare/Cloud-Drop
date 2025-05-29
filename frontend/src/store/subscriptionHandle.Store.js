@@ -59,11 +59,12 @@ export const subscriptionHandler = create((set, get) => ({
             });
 
             const data = res.data;
-            
+            console.log("Check limits response:", data);
             return data;
             
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to check limits";
+            console.error("Check limits error:", errorMessage);
             toast.error(errorMessage);
             throw error;
         }
@@ -78,7 +79,7 @@ export const subscriptionHandler = create((set, get) => ({
             });
 
             const data = res.data;
-            
+            console.log("Increment usage response:", data);
             // Update local usage stats if available
             const currentStats = get().usageStats;
             if (currentStats && action === "upload") {

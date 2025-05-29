@@ -1,5 +1,9 @@
 import React from "react";
 import { IconPlus } from "@tabler/icons-react";
+import { subscriptionHandler } from "@/store/subscriptionHandle.Store";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const CreateGroupInput = ({
   showInput,
@@ -8,6 +12,53 @@ const CreateGroupInput = ({
   setGroupName,
   handleCreateGroup,
 }) => {
+  const checkLimits = subscriptionHandler((s) => s.checkLimits);
+  const incrementUsage = subscriptionHandler((s) => s.incrementUsage);
+  const authUser = useAuthStore((s) => s.authUser);
+  const userId = authUser?._id;
+  const router = useRouter();
+
+  const handleCreateGroupWithLimit = async () => {
+    // 1. Check usage limit
+    try {
+      const result = await checkLimits(userId, "groupCreation");
+      console.log("Check limits result:", result);
+      if (result.allowed === false) {
+        toast.error(
+          <>
+            {result.message}
+            <button
+              style={{
+                marginLeft: 8,
+                color: "#00ffff",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => router.push("/subscribe")}
+            >
+              Upgrade Plan
+            </button>
+          </>
+        );
+        return;
+      }
+    } catch (err) {
+      toast.error("Failed to check limits. Please try again.");
+      return;
+    }
+
+    // 2. Proceed with group creation
+    await handleCreateGroup();
+
+    // 3. Increment usage after successful creation
+    try {
+      await incrementUsage(userId, "groupCreation");
+    } catch (err) {
+      // Optional: handle increment error
+    }
+  };
+
   return (
     <div className="mb-4">
       {!showInput ? (
@@ -32,7 +83,7 @@ const CreateGroupInput = ({
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
             <button
-              onClick={handleCreateGroup}
+              onClick={handleCreateGroupWithLimit}
               className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 xs:py-2.5 sm:py-3 rounded-lg transition text-base xs:text-lg"
               style={{ minHeight: "2.5rem" }}
             >

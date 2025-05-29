@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
@@ -213,84 +214,21 @@ const SelectButton = styled.button`
   @media (max-width: 600px) { padding: 0.7rem 1rem; font-size: 0.95rem; }
 `;
 
-// const plans = [
-//   {
-//     title: "Free Plan",
-//     price: "$0",
-//     highlight: false,
-//     badge: "Free Forever",
-//     icon: <Star size={18} />,
-//     features: [
-//       "Up to 2 Groups",
-//       "Up to 10 Members per Group",
-//       "100MB Cloud Storage",
-//       "Basic File Sharing",
-//       "Generate Signed URLs",
-//       "Community Support",
-//     ],
-//     cta: "Get Started",
-//   },
-//   {
-//     title: "Pro Plan",
-//     price: "$9",
-//     highlight: true,
-//     badge: "Most Popular",
-//     icon: <Crown size={18} />,
-//     features: [
-//       "Unlimited Groups",
-//       "Up to 100 Members per Group",
-//       "10GB Cloud Storage",
-//       // "Advanced File Sharing",
-//       "Signed URLs with Expiry",
-//       // "Priority Email Support",
-//       "Role Management",
-//       "Bucket Integration",
-//       "Team Collaboration Tools",
-//     ],
-//     cta: "Upgrade Now",
-//   },
-//   {
-//     title: "Enterprise",
-//     price: "Custom",
-//     highlight: false,
-//     badge: "Best for Teams",
-//     icon: <Star size={18} />,
-//     features: [
-//       "All Pro Features",
-//       "Unlimited Members",
-//       "Unlimited Storage",
-//       // "Custom Integrations",
-//       "Dedicated Account Manager",
-//       // "SLA & Compliance",
-//       "Onboarding & Training",
-//       "Premium Support",
-//     ],
-//     cta: "Contact Sales",
-//   },
-// ];
-
-const SubscriptionPlans = ({handleFreeClick}) => {
-  useEffect(() => {
-          subscriptionStore.getState().getPlans();
-      }, []);
+const Subscribe = ({handleFreeClick}) => {
+    useEffect(() => {
+        subscriptionStore.getState().getPlans();
+    }, []);
   const plans = subscriptionStore((state) => state.plans);
   const subscribe = subscriptionStore((state)=>state.subscribeToPlan);
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
 
-  console.log(plans);
-
   const handleClick=(planId)=>{
-    // console.log("SelectedPlanId=>",planId)
-    if(planId === "6837e385792da421d38c9d95"){
-      // console.log("Free plan selected");
+    if(planId === "6832088eddb43751ca46304d"){
       handleFreeClick();
     } else {
-      console.log("Premium plan selected");
       subscribe({userId,planId});
     }
-    
-
   }
 
   return (
@@ -305,14 +243,14 @@ const SubscriptionPlans = ({handleFreeClick}) => {
           </span>
         </Desc>
         <PackagesContainer>
-          {plans.slice(0).map((pkg, index) => (
+          {plans.slice(0).reverse().map((pkg, index) => (
             <PackageCard
               key={pkg._id}
               delay={index}
               className={pkg.isFree ? "" : "highlight"}
             >
               <Badge>
-                {pkg.isFree ? <Star size={18} /> : <Crown size={18} />}  {pkg.isFree ? "Free Plan" : "Premium Plan"} {/* Placeholder icon + label */}
+                {pkg.isFree ? <Star size={18} /> : <Crown size={18} />}  {pkg.isFree ? "Free Plan" : "Premium Plan"}
               </Badge>
               <PackageTitle>{pkg.name}</PackageTitle>
               <Price>{pkg.price === 0 ? "Free" : `₹ ${pkg.price}`}</Price>
@@ -340,5 +278,6 @@ const SubscriptionPlans = ({handleFreeClick}) => {
   );
 };
 
-export default SubscriptionPlans;
+export default Subscribe;
+
 

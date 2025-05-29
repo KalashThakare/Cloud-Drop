@@ -34,7 +34,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.1",
-    "styled-components": "^6.1.17",
+    "styled-components": "^6.1.18",
     "tailwind-merge": "^3.1.0",
     "tailwind-scrollbar-hide": "^2.0.0",
     "zustand": "^5.0.3"
