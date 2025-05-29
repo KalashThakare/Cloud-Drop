@@ -276,15 +276,15 @@ const SubscriptionPlans = ({handleFreeClick}) => {
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
 
-  // console.log(plans);
+  console.log(plans);
 
   const handleClick=(planId)=>{
     // console.log("SelectedPlanId=>",planId)
-    if(planId === "6832088eddb43751ca46304d"){
+    if(planId === "6837e385792da421d38c9d95"){
       // console.log("Free plan selected");
       handleFreeClick();
     } else {
-      // console.log("Premium plan selected");
+      console.log("Premium plan selected");
       subscribe({userId,planId});
     }
     
@@ -303,7 +303,7 @@ const SubscriptionPlans = ({handleFreeClick}) => {
           </span>
         </Desc>
         <PackagesContainer>
-          {plans.slice(0).reverse().map((pkg, index) => (
+          {plans.slice(0).map((pkg, index) => (
             <PackageCard
               key={pkg._id}
               delay={index}

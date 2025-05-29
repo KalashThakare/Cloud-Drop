@@ -8,10 +8,19 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
 
 const seed = async () => {
   await SubscriptionModel.create({
-    name: "Free",
-    price: 0,
-    razorpayPlanId: "", 
-    isFree: true,
+    name: "Pro",
+    price: 341.89,
+    razorpayPlanId: "plan_QabkP72GzeCBWr",
+    features: [
+      "Upload up to 15 files",
+      "Generate up to 15 signed URLs",
+      "File expiration: 24–48 hours",
+      "Create up to 3 groups",
+      "Send signed URLs via verified email",
+      "Use /signedUrl command in group to share links"
+    ],
+
+    isFree: false,
   });
 
   console.log("Subscription plan seeded!");

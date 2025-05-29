@@ -175,7 +175,7 @@ export const sendUrl = async (email, url, expiration) => {
                         <div>
                             <h4 style="color: #92400e; margin: 0 0 6px; font-size: 15px; font-weight: 600;">⏰ Time Sensitive</h4>
                             <p style="color: #92400e; margin: 0; font-size: 14px; line-height: 1.5;">
-                                This secure link will <strong>expire on ${expiration}</strong>. Please access your file promptly to avoid losing access.
+                                This secure link will <strong>expire in ${expiration}mins</strong>. Please access your file promptly to avoid losing access.
                             </p>
                         </div>
                     </div>

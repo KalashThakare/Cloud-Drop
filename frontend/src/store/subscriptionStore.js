@@ -37,6 +37,7 @@ export const subscriptionStore = create((set, get) => ({
         planId,
       });
       const data = res.data;
+      console.log(data)
       if (data.isFree) {
         toast.success("Subscribed to free plan successfully!");
         return;
@@ -71,9 +72,9 @@ export const subscriptionStore = create((set, get) => ({
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       subscription_id: subscriptionId,
-      name: "Your App Name",
+      name: "CloudDrop",
       description: `Subscription to ${planDetails.name}`,
-      image: "/logo.png", // Your app logo
+      image: "/logo.jpeg", 
       handler: function (response) {
         // Payment successful
         get().handlePaymentSuccess(response, userId);
@@ -87,7 +88,7 @@ export const subscriptionStore = create((set, get) => ({
         address: "Your Corporate Office",
       },
       theme: {
-        color: "#3399cc",
+        color: "#00ACC1",
       },
       modal: {
         ondismiss: function () {
