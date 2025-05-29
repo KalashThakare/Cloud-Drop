@@ -1,5 +1,21 @@
-import { createSubscription } from "../controller/Subscribtion/handler.js";
 import Subscription from "../models/subscriptionHandler.Model.js";
+
+// Helper function to create subscription (moved from controller)
+const createSubscription = async (userId, plan = 'free') => {
+    try {
+        const subscription = new Subscription({
+            userId,
+            plan,
+            status: 'active'
+        });
+        
+        await subscription.save();
+        return subscription;
+    } catch (error) {
+        console.error('Error creating subscription:', error);
+        throw error;
+    }
+};
 
 export const checkSubscriptionLimits = async (req, res, next) => {
     try {

@@ -12,7 +12,6 @@ import {app} from "../src/lib/socket.js";
 import subscriptionRoutes from "../src/routes/subscriptionRoutes.js";
 import fileManagementRoutes from "../src/routes/fileManagement/fileManagementRoutes.js";
 import OTPverificationRoutes from "../src/routes/mailVerification/otp.Routes.js";
-import subscriptionHandlerRoutes from "../src/routes/subscriptionHandler.Routes.js"
 
 dotenv.config();
 
@@ -34,6 +33,6 @@ app.use("/api/group",groupRoute);
 app.use("/api/subscription",subscriptionRoutes);
 app.use("/api/files",fileManagementRoutes);
 app.use("/api",OTPverificationRoutes);
-app.use("/api",subscriptionHandlerRoutes);
+
 
 export default app;

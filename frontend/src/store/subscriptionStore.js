@@ -12,9 +12,12 @@ export const subscriptionStore = create((set, get) => ({
     try {
       set({ isLoading: true });
       const res = await axiosInstance.get("/subscription/plans");
-      set({ plans: res.data });
-      if (res.data.length > 0) {
-        set({ selectedPlan: res.data[1]._id });
+      
+      const plansData = res.data.plans || res.data;
+      set({ plans: plansData });
+      
+      if (plansData.length > 0) {
+        set({ selectedPlan: plansData[1]._id });
       }
     } catch (error) {
       const status = error?.response?.status;
@@ -104,7 +107,7 @@ export const subscriptionStore = create((set, get) => ({
 
   handlePaymentSuccess: async (response, userId) => {
     try {
-      // Verify payment with backend
+  
       const verifyRes = await axiosInstance.post(
         "/subscription/verify-payment",
         {
@@ -119,8 +122,7 @@ export const subscriptionStore = create((set, get) => ({
 
       if (result.success) {
         toast.success("Payment successful! Subscription activated.");
-        // You might want to refresh user data or redirect here
-        // window.location.reload(); // or navigate to dashboard
+  
       } else {
         toast.error("Payment verification failed. Please contact support.");
       }
@@ -140,7 +142,6 @@ export const subscriptionStore = create((set, get) => ({
     }
   },
 
-  // Optional: Get user's current subscription status
   getUserSubscription: async (userId) => {
     try {
       const res = await axiosInstance.get(`/subscription/status/${userId}`);

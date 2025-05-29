@@ -17,7 +17,7 @@ export const subscriptionHandler = create((set, get) => ({
         try {
             set({ loading: true, error: null });
 
-            const res = await axiosInstance.post("/get-subscription", {
+            const res = await axiosInstance.post("/subscription/current", {
                 userId
             });
 
@@ -36,7 +36,7 @@ export const subscriptionHandler = create((set, get) => ({
         try {
             set({ loading: true, error: null });
 
-            const res = await axiosInstance.post("/usage-stats", {
+            const res = await axiosInstance.post("/subscription/usage-stats", {
                 userId
             });
 
@@ -53,7 +53,7 @@ export const subscriptionHandler = create((set, get) => ({
 
     checkLimits: async (userId, action) => {
         try {
-            const res = await axiosInstance.post("/check-limits", {
+            const res = await axiosInstance.post("/subscription/check-limits", {
                 userId,
                 action
             });
@@ -78,7 +78,7 @@ export const subscriptionHandler = create((set, get) => ({
     incrementUsage: async (userId, action) => {
         try {
 
-            const res = await axiosInstance.post("/increment-usage", {
+            const res = await axiosInstance.post("/subscription/increment-usage", {
                 userId,
                 action
             });
@@ -163,7 +163,7 @@ export const subscriptionHandler = create((set, get) => ({
         try {
             set({ loading: true, error: null });
 
-            const res = await axiosInstance.post("/reset-usage", {
+            const res = await axiosInstance.post("/subscription/reset-usage", {
                 userId
             });
 
