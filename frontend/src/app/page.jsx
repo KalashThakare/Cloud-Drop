@@ -11,15 +11,13 @@ import { subscriptionStore } from "@/store/subscriptionStore.js";
 export default function Home() {
   const router = useRouter();
   const checkAuth = useAuthStore((state) => state.checkAuth);
-  const getPlans = subscriptionStore((state)=>state.getPlans)
+  const getPlans = subscriptionStore((state) => state.getPlans);
 
   // Mobile nav state
   const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
-
     getPlans();
-    // Smooth scroll with offset for hash links
     const handleHashClick = (e) => {
       const targetId = e.currentTarget.getAttribute("href");
       if (targetId?.startsWith("#")) {
@@ -347,9 +345,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <SubscriptionPlans 
-      handleFreeClick={handleFreeClick}
-      />
+      <SubscriptionPlans handleFreeClick={handleFreeClick} />
 
       {/* Testimonials Section */}
       <section
@@ -390,31 +386,32 @@ export default function Home() {
             Built With Modern Technology
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6">
-            {[{
-              name: "Next.js",
-              category: "Frontend Framework",
-            },
-            {
-              name: "Node.js",
-              category: "Backend Runtime",
-            },
-            {
-              name: "Express",
-              category: "API Framework",
-            },
-            {
-              name: "AWS S3",
-              category: "Cloud Storage",
-            },
-            {
-              name: "MongoDB",
-              category: "Database",
-            },
-            {
-              name: "Tailwind CSS",
-              category: "Styling",
-            },
-          ].map((tech, index) => (
+            {[
+              {
+                name: "Next.js",
+                category: "Frontend Framework",
+              },
+              {
+                name: "Node.js",
+                category: "Backend Runtime",
+              },
+              {
+                name: "Express",
+                category: "API Framework",
+              },
+              {
+                name: "AWS S3",
+                category: "Cloud Storage",
+              },
+              {
+                name: "MongoDB",
+                category: "Database",
+              },
+              {
+                name: "Tailwind CSS",
+                category: "Styling",
+              },
+            ].map((tech, index) => (
               <div
                 key={index}
                 className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 sm:p-4 text-center hover:border-cyan-900/20 transition-all"
@@ -431,8 +428,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full bg-zinc-900/50 py-6 sm:py-8 text-center border-t border-zinc-800">
+      {/* Call to Action Section */}
+      <section className="w-full bg-gradient-to-t from-zinc-900/50 to-zinc-950 py-6 sm:py-8 text-center border-t border-zinc-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h3 className="text-xl sm:text-2xl font-bold mb-4">
             Ready to Transform Your Cloud Workflow?
@@ -443,9 +440,210 @@ export default function Home() {
           >
             Get Started Now
           </button>
-          <p className="text-zinc-400 text-sm">
-            © {new Date().getFullYear()} CloudDrop. All rights reserved.
-          </p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="w-full bg-zinc-900/70 py-8 sm:py-10 border-t border-zinc-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            className="grid grid-cols-2 grid-rows-2 md:grid-rows-1 md:grid-cols-3 gap-10 md:gap-8 mb-8 justify-between items-start"
+            // style={{ gridTemplateColumns: "30% 25% 45%" }}
+          >
+            {/* Column 1: About Us, Pricing, Policy */}
+            <div className="flex flex-col gap-8 col-span-1">
+              {/* About Us */}
+              <div>
+                <h4 className="text-cyan-400 font-semibold mb-2 text-lg">
+                  About Us
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  CloudDrop is a modern cloud collaboration platform enabling
+                  secure file management, team chat, and seamless AWS S3
+                  integration. Built for teams and individuals who value
+                  privacy, security, and productivity.
+                </p>
+              </div>
+              {/* Pricing */}
+              <div>
+                <h4 className="text-cyan-400 font-semibold mb-2 text-lg">
+                  Pricing
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Flexible plans for every need.
+                  <br />
+                  <a href="#pricing" className="text-cyan-300 hover:underline">
+                    View Pricing
+                  </a>
+                </p>
+              </div>
+              {/* Policies (links only) */}
+              <div>
+                <h4 className="text-cyan-400 font-semibold mb-2 text-lg">
+                  Policies
+                </h4>
+                <ul className="text-zinc-400 text-sm space-y-1">
+                  <li>
+                    <button
+                      className="hover:underline text-cyan-300 text-left"
+                      onClick={() =>
+                        window.scrollTo({
+                          top: document.body.scrollHeight,
+                          behavior: "smooth",
+                        })
+                      }
+                    >
+                      Privacy Policy
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="hover:underline text-cyan-300 text-left"
+                      onClick={() =>
+                        window.scrollTo({
+                          top: document.body.scrollHeight,
+                          behavior: "smooth",
+                        })
+                      }
+                    >
+                      Terms &amp; Conditions
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="hover:underline text-cyan-300 text-left"
+                      onClick={() =>
+                        window.scrollTo({
+                          top: document.body.scrollHeight,
+                          behavior: "smooth",
+                        })
+                      }
+                    >
+                      Cancellation/Refund Policy
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            {/* Column 2: Quick Links, Contact */}
+            <div className="flex flex-col gap-8 col-span-1">
+              {/* Quick Links */}
+              <div>
+                <h4 className="text-cyan-400 font-semibold mb-2 text-lg">
+                  Quick Links
+                </h4>
+                <ul className="text-zinc-400 text-sm space-y-1">
+                  <li>
+                    <a
+                      href="#features"
+                      className="hover:underline text-cyan-300"
+                    >
+                      Features
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#testimonials"
+                      className="hover:underline text-cyan-300"
+                    >
+                      Testimonials
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#technology"
+                      className="hover:underline text-cyan-300"
+                    >
+                      Technology
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              {/* Contact Us */}
+              <div>
+                <h4 className="text-cyan-400 font-semibold mb-2 text-lg">
+                  Contact Us
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Have questions or need support?
+                  <br />
+                  <a
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=clouddrop.s3@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-300 hover:underline break-all"
+                  >
+                    clouddrop.s3@gmail.com
+                  </a>
+                  <br />
+                  <span className="text-zinc-500">Mon-Fri, 9am-6pm IST</span>
+                </p>
+              </div>
+            </div>
+            {/* Column 3: Policy Descriptions */}
+            <div className="flex flex-col flex-1 gap-6 col-span-2 md:col-span-1">
+              <div>
+                <h5 className="text-cyan-300 font-semibold mb-1">
+                  Privacy Policy
+                </h5>
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  CloudDrop values your privacy. We do not share your files or
+                  personal data with third parties. All files are encrypted in
+                  transit and at rest. You control your data at all times. For
+                  more details, contact us at{" "}
+                  <a
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=clouddrop.s3@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-300 hover:underline break-all"
+                  >
+                    clouddrop.s3@gmail.com
+                  </a>
+                  .
+                </p>
+              </div>
+              <div>
+                <h5 className="text-cyan-300 font-semibold mb-1">
+                  Terms &amp; Conditions
+                </h5>
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  By using CloudDrop, you agree to use the service for lawful
+                  purposes only. You are responsible for the content you upload
+                  and share. CloudDrop is not liable for data loss due to user
+                  actions or third-party integrations. Please review our full
+                  terms before using the platform.
+                </p>
+              </div>
+              <div>
+                <h5 className="text-cyan-300 font-semibold mb-1">
+                  Cancellation/Refund Policy
+                </h5>
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  You may cancel your subscription at any time from your account
+                  dashboard. Premium plan payments are non-refundable once the
+                  billing cycle has started. If you experience issues, contact{" "}
+                  <a
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=clouddrop.s3@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-300 hover:underline break-all"
+                  >
+                    clouddrop.s3@gmail.com
+                  </a>{" "}
+                  for assistance.
+                </p>
+              </div>
+            </div>
+          </div>
+          {/* Copyright */}
+          <div className="mt-10 border-t border-zinc-800 px-6 pt-4 flex flex-col md:flex-row items-center justify-between gap-2">
+            <span className="text-zinc-400 text-sm text-center md:text-left">
+              © {new Date().getFullYear()} CloudDrop. All rights reserved.
+            </span>
+            <span className="text-xs text-zinc-500 text-center md:text-right">
+              Built with Next.js, AWS S3, MongoDB, and Tailwind CSS.
+            </span>
+          </div>
         </div>
       </footer>
     </div>
