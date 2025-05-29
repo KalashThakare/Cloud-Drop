@@ -47,7 +47,7 @@ export default function SignedUrlGenerator() {
     // 1. Check usage limit
     try {
       const result = await checkLimits(userId, "signedUrl");
-      if (result.allowed === false) {
+      if (result.success === false) {
         toast.error(
           <>
             {result.message}
@@ -58,6 +58,7 @@ export default function SignedUrlGenerator() {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
+                textDecoration: "underline",
               }}
               onClick={() => router.push("/subscribe")}
             >

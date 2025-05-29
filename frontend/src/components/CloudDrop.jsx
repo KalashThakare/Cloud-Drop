@@ -102,6 +102,7 @@ function UploadForm() {
                             background: "none",
                             border: "none",
                             cursor: "pointer",
+                            textDecoration: "underline",
                         }}
                         onClick={() => router.push("/subscribe")}
                     >

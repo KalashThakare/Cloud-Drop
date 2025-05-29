@@ -23,7 +23,7 @@ const CreateGroupInput = ({
     try {
       const result = await checkLimits(userId, "groupCreation");
       console.log("Check limits result:", result);
-      if (result.allowed === false) {
+      if (result.success === false) {
         toast.error(
           <>
             {result.message}
@@ -34,6 +34,7 @@ const CreateGroupInput = ({
                 background: "none",
                 border: "none",
                 cursor: "pointer",
+                textDecoration: "underline",
               }}
               onClick={() => router.push("/subscribe")}
             >

@@ -4,8 +4,10 @@ import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import "@/app/globals.css";
 
-// Animations
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px);}
   to { opacity: 1; transform: translateY(0);}
@@ -17,11 +19,11 @@ const pulse = keyframes`
   100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0);}
 `;
 
-// Styled Components
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  padding-bottom: 4rem;
   font-family: "Inter", sans-serif;
   @media (max-width: 1024px) { padding: 2rem 0.5rem; }
   @media (max-width: 600px) { padding: 1rem 0.25rem; }
@@ -215,25 +217,30 @@ const SelectButton = styled.button`
 `;
 
 const Subscribe = ({handleFreeClick}) => {
-    useEffect(() => {
-        subscriptionStore.getState().getPlans();
-    }, []);
+  useEffect(() => {
+          subscriptionStore.getState().getPlans();
+      }, []);
   const plans = subscriptionStore((state) => state.plans);
   const subscribe = subscriptionStore((state)=>state.subscribeToPlan);
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
+  const router = useRouter();
+
+  console.log(plans);
 
   const handleClick=(planId)=>{
-    if(planId === "6832088eddb43751ca46304d"){
-      handleFreeClick();
+    if(planId === "6837e385792da421d38c9d95"){
+      router.push("/Main?useDefault=true");
+      toast.success("You are now subscribed to the Free Plan! but features are limited. Upgrade to Premium for more features.");
     } else {
+      console.log("Premium plan selected");
       subscribe({userId,planId});
     }
   }
 
   return (
-    <section id="pricing">
-      <Container>
+    <section id="pricing" className="bg-gradient-to-b from-gray-950 to-slate-950 flex justify-center hide-scrollbar" style={{overflowY: "auto", maxHeight: "100vh"}}>
+      <Container className="hide-scrollbar">
         <Title>Subscription Plans</Title>
         <Desc>
           Choose the plan that fits your team. Upgrade anytime as your needs grow.
@@ -243,7 +250,7 @@ const Subscribe = ({handleFreeClick}) => {
           </span>
         </Desc>
         <PackagesContainer>
-          {plans.slice(0).reverse().map((pkg, index) => (
+          {plans.slice(0).map((pkg, index) => (
             <PackageCard
               key={pkg._id}
               delay={index}
@@ -277,6 +284,7 @@ const Subscribe = ({handleFreeClick}) => {
     </section>
   );
 };
+
 
 export default Subscribe;
 
