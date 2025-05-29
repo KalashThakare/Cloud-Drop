@@ -87,32 +87,37 @@ function UploadForm() {
     }
 
     // 1. Check usage limit
-    try {
-      const result = await checkLimits(currentUserId, "fileUpload");
-      if (result.allowed === false) {
-        toast.error(
-          <>
-            {result.message}
-            <button
-              style={{
-                marginLeft: 8,
-                color: "#00ffff",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-              }}
-              onClick={() => router.push("/subscribe")}
-            >
-              Upgrade Plan
-            </button>
-          </>
-        );
+    
+      try {
+        const result = await checkLimits(currentUserId, "fileUpload");
+        
+        if (result.success === false) {
+            toast.error(
+                <>
+                    {result.message}
+                    <button
+                        style={{
+                            marginLeft: 8,
+                            color: "#00ffff",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                        }}
+                        onClick={() => router.push("/subscribe")}
+                    >
+                        Upgrade Plan
+                    </button>
+                </>
+            );
+            return;
+        }
+    } catch (error) {
+        // Handle any unexpected errors from checkLimits
+        console.error("Error checking limits:", error);
+        toast.error("Failed to check usage limits. Please try again.");
         return;
-      }
-    } catch (err) {
-      toast.error("Failed to check limits. Please try again.");
-      return;
     }
+    
 
     const formData = new FormData();
     formData.append("bucketName", selectedBucket);

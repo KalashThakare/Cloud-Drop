@@ -16,7 +16,7 @@ export const subscriptionHandler = create((set, get) => ({
     getSubscription: async (userId) => {
         try {
             set({ loading: true, error: null });
-            
+
             const res = await axiosInstance.post("/get-subscription", {
                 userId
             });
@@ -24,7 +24,7 @@ export const subscriptionHandler = create((set, get) => ({
             const subscription = res.data;
             set({ subscription, loading: false });
             return subscription;
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to get subscription";
             set({ error: errorMessage, loading: false });
@@ -35,7 +35,7 @@ export const subscriptionHandler = create((set, get) => ({
     getUsageStats: async (userId) => {
         try {
             set({ loading: true, error: null });
-            
+
             const res = await axiosInstance.post("/usage-stats", {
                 userId
             });
@@ -43,7 +43,7 @@ export const subscriptionHandler = create((set, get) => ({
             const stats = res.data;
             set({ usageStats: stats, loading: false });
             return stats;
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to get usage stats";
             set({ error: errorMessage, loading: false });
@@ -61,10 +61,15 @@ export const subscriptionHandler = create((set, get) => ({
             const data = res.data;
             console.log("Check limits response:", data);
             return data;
-            
+
         } catch (error) {
+            if (error.response?.status === 403) {
+                const data = error.response.data;
+                console.log("Limit reached response:", data);
+                return data;
+            }
+
             const errorMessage = error.response?.data?.message || "Failed to check limits";
-            console.error("Check limits error:", errorMessage);
             toast.error(errorMessage);
             throw error;
         }
@@ -72,7 +77,7 @@ export const subscriptionHandler = create((set, get) => ({
 
     incrementUsage: async (userId, action) => {
         try {
-    
+
             const res = await axiosInstance.post("/increment-usage", {
                 userId,
                 action
@@ -92,9 +97,9 @@ export const subscriptionHandler = create((set, get) => ({
                 };
                 set({ usageStats: updatedStats });
             }
-            
+
             return data;
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to increment usage";
             toast.error(errorMessage);
@@ -105,21 +110,21 @@ export const subscriptionHandler = create((set, get) => ({
     upgradeToPro: async (userId) => {
         try {
             set({ loading: true, error: null });
-            
+
             const res = await axiosInstance.post("/upgrade-to-pro", {
                 userId
             });
 
             const data = res.data;
-            
-            set({ 
+
+            set({
                 subscription: { ...get().subscription, type: 'pro' },
-                loading: false 
+                loading: false
             });
-            
+
             toast.success("Successfully upgraded to Pro!");
             return data;
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to upgrade to Pro";
             set({ error: errorMessage, loading: false });
@@ -131,21 +136,21 @@ export const subscriptionHandler = create((set, get) => ({
     downgradeToFree: async (userId) => {
         try {
             set({ loading: true, error: null });
-            
+
             const res = await axiosInstance.post("/downgrade-to-free", {
                 userId
             });
 
             const data = res.data;
-            
-            set({ 
+
+            set({
                 subscription: { ...get().subscription, type: 'free' },
-                loading: false 
+                loading: false
             });
-            
+
             toast.success("Successfully downgraded to Free plan");
             return data;
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to downgrade to Free";
             set({ error: errorMessage, loading: false });
@@ -157,13 +162,13 @@ export const subscriptionHandler = create((set, get) => ({
     resetUsage: async (userId) => {
         try {
             set({ loading: true, error: null });
-            
+
             const res = await axiosInstance.post("/reset-usage", {
                 userId
             });
 
             const data = res.data;
-            
+
             const currentStats = get().usageStats;
             if (currentStats) {
                 const resetStats = {
@@ -175,11 +180,11 @@ export const subscriptionHandler = create((set, get) => ({
                 };
                 set({ usageStats: resetStats });
             }
-            
+
             set({ loading: false });
             toast.success("Usage stats reset successfully!");
             return data;
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to reset usage";
             set({ error: errorMessage, loading: false });
