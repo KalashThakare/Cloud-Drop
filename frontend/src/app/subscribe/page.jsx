@@ -226,7 +226,7 @@ const Subscribe = ({handleFreeClick}) => {
   const userId = authUser?._id;
   const router = useRouter();
 
-  console.log(plans);
+  // console.log(plans);
 
   const handleClick=(planId)=>{
     if(planId === "6837e385792da421d38c9d95"){
@@ -234,7 +234,7 @@ const Subscribe = ({handleFreeClick}) => {
       toast.success("You are now subscribed to the Free Plan! but features are limited. Upgrade to Premium for more features.");
     } else {
       console.log("Premium plan selected");
-      subscribe({userId,planId});
+      subscribe({userId,planId,router});
     }
   }
 

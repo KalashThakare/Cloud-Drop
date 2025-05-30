@@ -32,7 +32,7 @@ export const subscriptionStore = create((set, get) => ({
     }
   },
 
-  subscribeToPlan: async ({ userId, planId }) => {
+  subscribeToPlan: async ({ userId, planId, router }) => {
     try {
       set({ isLoading: true });
       const res = await axiosInstance.post("/subscription/subscribe", {
@@ -49,7 +49,8 @@ export const subscriptionStore = create((set, get) => ({
         get().initiateRazorpayPayment(
           data.subscriptionId,
           data.planDetails,
-          userId
+          userId,
+          router,
         );
       }
     } catch (error) {
@@ -71,7 +72,7 @@ export const subscriptionStore = create((set, get) => ({
     }
   },
 
-  initiateRazorpayPayment: (subscriptionId, planDetails, userId) => {
+  initiateRazorpayPayment: (subscriptionId, planDetails, userId, router) => {
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       subscription_id: subscriptionId,
@@ -80,7 +81,7 @@ export const subscriptionStore = create((set, get) => ({
       image: "/logo.jpeg", 
       handler: function (response) {
         // Payment successful
-        get().handlePaymentSuccess(response, userId);
+        get().handlePaymentSuccess(response, userId, router);
       },
       prefill: {
         name: "User Name", // You can get this from user context/store
@@ -105,7 +106,7 @@ export const subscriptionStore = create((set, get) => ({
     razorpay.open();
   },
 
-  handlePaymentSuccess: async (response, userId) => {
+  handlePaymentSuccess: async (response, userId, router) => {
     try {
   
       const verifyRes = await axiosInstance.post(
@@ -122,6 +123,7 @@ export const subscriptionStore = create((set, get) => ({
 
       if (result.success) {
         toast.success("Payment successful! Subscription activated.");
+        router.push("/Main?useDefault=true");
   
       } else {
         toast.error("Payment verification failed. Please contact support.");

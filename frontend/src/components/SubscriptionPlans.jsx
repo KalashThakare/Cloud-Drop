@@ -3,6 +3,8 @@ import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
+// import { r } from "framer-motion/dist/types.d-CQt5spQA";
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px);}
@@ -219,15 +221,15 @@ const SubscriptionPlans = ({handleFreeClick}) => {
   const subscribe = subscriptionStore((state)=>state.subscribeToPlan);
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
-
+  const router = useRouter();
   console.log(plans);
 
   const handleClick=(planId)=>{
     if(planId === "6837e385792da421d38c9d95"){
       handleFreeClick();
     } else {
-      console.log("Premium plan selected");
-      subscribe({userId,planId});
+      // console.log("Premium plan selected");
+      subscribe({userId,planId,router});
     }
   }
 
