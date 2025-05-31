@@ -1,45 +1,48 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useLocomotiveScroll } from "@/components/hooks/useLocomotiveScroll.js";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import SubscriptionPlans from "@/components/SubscriptionPlans";
 import { useRouter } from "next/navigation";
 import { isTokenValid } from "../lib/utils.js";
 import { useAuthStore } from "@/store/useAuthStore.js";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
+import "@/app/custom.css"; 
 
 // Responsive, attractive dashboard/landing page for CloudDrop
 export default function Home() {
+  const [scrollRef, locoInstance] = useLocomotiveScroll();
   const router = useRouter();
   const checkAuth = useAuthStore((state) => state.checkAuth);
   const getPlans = subscriptionStore((state) => state.getPlans);
 
   // Mobile nav state
   const [navOpen, setNavOpen] = useState(false);
-
+  function isDesktop() {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth === 1920 || window.innerWidth === 2560 || window.innerWidth === 2880 || window.innerWidth === 1680 || window.innerWidth === 1440 || window.innerWidth === 1536 || window.innerWidth === 1366;
+}
   useEffect(() => {
-    getPlans();
-    const handleHashClick = (e) => {
-      const targetId = e.currentTarget.getAttribute("href");
-      if (targetId?.startsWith("#")) {
+  getPlans();
+  const handleAnchorClick = (e) => {
+    const href = e.currentTarget.getAttribute("href");
+    if (href?.startsWith("#")) {
+      const el = document.querySelector(href);
+      if (isDesktop() && el && locoInstance.current) {
         e.preventDefault();
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          window.scrollTo({
-            top: targetElement.offsetTop - 80,
-            behavior: "smooth",
-          });
-        }
+        locoInstance.current.scrollTo(el, { offset: 10 });
       }
-    };
-
-    const links = document.querySelectorAll('a[href^="#"]');
-    links.forEach((link) => link.addEventListener("click", handleHashClick));
-    return () => {
-      links.forEach((link) =>
-        link.removeEventListener("click", handleHashClick)
-      );
-    };
-  }, []);
+      // On mobile, let the browser handle the anchor normally (no preventDefault)
+    }
+  };
+  const links = document.querySelectorAll('a[href^="#"]');
+  links.forEach((link) => link.addEventListener("click", handleAnchorClick));
+  return () => {
+    links.forEach((link) =>
+      link.removeEventListener("click", handleAnchorClick)
+    );
+  };
+}, [locoInstance, getPlans]);
 
   const handleFreeClick = async () => {
     const token = localStorage.getItem("authToken");
@@ -135,18 +138,21 @@ export default function Home() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-zinc-950 text-white overflow-hidden font-sans">
+    <div ref={scrollRef} data-scroll-container className="relative min-h-screen bg-zinc-950 text-white overflow-hidden font-sans">
       {/* Decorative background */}
       <div className="absolute top-40 left-1/8 w-3/4 h-0.5 bg-cyan-700/30 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(8,145,178,0.15)]"></div>
       <div className="absolute -right-20 -top-20 w-64 h-64 bg-zinc-700/80 rounded-full filter blur-3xl opacity-20"></div>
       <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-cyan-900/30 rounded-full filter blur-3xl opacity-15"></div>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4 sm:py-6 backdrop-blur-sm bg-zinc-950/80 border-b border-zinc-800/50">
+      <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4 sm:py-2 backdrop-blur-sm bg-zinc-950/80 border-b border-zinc-800/50">
+        <div className="relative flex flex-row justify-between items-center">
+        <img src="Logo.png" alt="Logo" className="h-[4rem] -top-2"/>  
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
           <span className="text-zinc-300">Cloud</span>
           <span className="text-cyan-600">Drop</span>
         </h1>
+        </div>
         <nav className="hidden md:flex items-center space-x-6">
           <a
             href="#features"
