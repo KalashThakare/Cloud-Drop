@@ -112,7 +112,7 @@ Before running this application, make sure you have:
 
 The application will be available at:
 - Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:5000`
+- Backend API: `http://localhost:4000`
 
 ## 📁 Project Structure
 
