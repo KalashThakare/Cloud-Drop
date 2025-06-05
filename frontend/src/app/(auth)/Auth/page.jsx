@@ -12,6 +12,7 @@ export default function Auth() {
   const [isOtpStep, setIsOtpStep] = useState(false);
   const [otpEmail, setOtpEmail] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
+  const [isOtpSending, setIsOtpSending] = useState(false);
 
   const login = useAuthStore((state) => state.login);
   const signup = useAuthStore((state) => state.signup);
@@ -24,11 +25,12 @@ export default function Auth() {
     reset: resetLogin,
   } = useForm();
 
-  // Signup form
+  // Signup form - ADD getValues here
   const {
     register: signupRegister,
     handleSubmit: handleSignupSubmit,
     watch: signupWatch,
+    getValues: signupGetValues, // This was missing!
     formState: { errors: signupErrors, isSubmitting: isSignupSubmitting },
     reset: resetSignup,
   } = useForm();
@@ -89,12 +91,14 @@ export default function Auth() {
     return;
   }
 
+  setIsOtpSending(true);
   const sent = await OTPstore.getState().sendOTP(email);
   if (sent) {
     setOtpEmail(email);
     setIsOtpStep(true);
     setResendTimer(60);
   }
+  setIsOtpSending(false);
 };
 
   // Resend OTP handler
@@ -111,12 +115,12 @@ export default function Auth() {
     }
   }, [isOtpStep, resendTimer]);
 
-  // OTP verification handler
+  // OTP verification handler - NOW FIXED
   const handleVerifyOtp = async (otp) => {
     const verified = await OTPstore.getState().verifyOTP(otpEmail, otp);
     if (verified !== false) {
       // Now create the user
-      const data = signupGetValues();
+      const data = signupGetValues(); // This will now work!
       const authUser = await signup({
         name: data.name,
         email: data.email,
@@ -306,10 +310,11 @@ export default function Auth() {
                   <div className="flex justify-center items-center gap-2">
                     <button
                       type="button"
-                      className="py-2 px-4 w-full bg-cyan-500 hover:bg-cyan-600 text-black font-medium rounded transition duration-200"
+                      disabled={isOtpSending}
+                      className="py-2 px-4 w-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-600 disabled:opacity-50 text-black font-medium rounded transition duration-200"
                       onClick={handleSendOtp}
                     >
-                      Send OTP
+                      {isOtpSending ? "Sending OTP..." : "Send OTP"}
                     </button>
                   </div>
                 </form>

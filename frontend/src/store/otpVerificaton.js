@@ -26,7 +26,7 @@ export const OTPstore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/verifyOTP", { email, otp });
       if (res.data.verified === true) {
-        toast.success(res.data.message || "OTP verified successfully");
+        toast.success("OTP verified successfully");
         return true;
       } else {
         toast.warning(res.data.message || "OTP verification failed");
