@@ -9,7 +9,6 @@ import { useAuthStore } from "@/store/useAuthStore.js";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
 import "@/app/custom.css"; 
 
-// Responsive, attractive dashboard/landing page for CloudDrop
 export default function Home() {
   const [scrollRef, locoInstance] = useLocomotiveScroll();
   const router = useRouter();
@@ -32,7 +31,6 @@ export default function Home() {
         e.preventDefault();
         locoInstance.current.scrollTo(el, { offset: 10 });
       }
-      // On mobile, let the browser handle the anchor normally (no preventDefault)
     }
   };
   const links = document.querySelectorAll('a[href^="#"]');
@@ -139,7 +137,6 @@ export default function Home() {
 
   return (
     <div ref={scrollRef} data-scroll-container className="relative min-h-screen bg-zinc-950 text-white overflow-hidden font-sans">
-      {/* Decorative background */}
       <div className="absolute top-40 left-1/8 w-3/4 h-0.5 bg-cyan-700/30 rounded-3xl blur-lg opacity-30 shadow-[0_0_150px_150px_rgba(8,145,178,0.15)]"></div>
       <div className="absolute -right-20 -top-20 w-64 h-64 bg-zinc-700/80 rounded-full filter blur-3xl opacity-20"></div>
       <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-cyan-900/30 rounded-full filter blur-3xl opacity-15"></div>

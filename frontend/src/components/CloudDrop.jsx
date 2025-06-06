@@ -208,6 +208,7 @@ function UploadForm() {
   };
 
   return (
+    <div className="w-full h-full flex items-start md:items-center justify-center py-20">
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="w-full max-w-7xl mx-auto pl-2 pr-1 sm:pl-4 md:pl-6 sm:pr-2 md:pr-3 pt-4 md:pt-6 pb-2 rounded-xl bg-zinc-900 shadow-xl flex flex-col gap-4 sm:gap-6 border border-zinc-700 overflow-y-scroll hide-scrollbar max-h-[90vh]"
@@ -386,6 +387,7 @@ function UploadForm() {
         )}
       </div>
     </form>
+    </div>
   );
 }
 

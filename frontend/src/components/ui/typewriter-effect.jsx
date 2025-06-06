@@ -85,7 +85,6 @@ export const TypewriterEffectSmooth = ({
   className,
   cursorClassName
 }) => {
-  // split text inside of words into array of characters
   const wordsArray = words.map((word) => {
     return {
       ...word,
@@ -94,7 +93,7 @@ export const TypewriterEffectSmooth = ({
   });
   const renderWords = () => {
     return (
-      <div>
+      <div className="whitespace-normal sm:whitespace-nowrap">
         {wordsArray.map((word, idx) => {
           return (
             <div key={`word-${idx}`} className="inline-block">
@@ -114,27 +113,23 @@ export const TypewriterEffectSmooth = ({
   };
 
   return (
-    <div className={cn("flex flex-wrap space-x-1 my-6 font-bold text-center text-nowrap", className)}>
+    <div className={cn("flex my-6 font-bold text-center text-nowrap", className)}>
       <motion.div
         className="overflow-hidden pb-2"
         initial={{
           width: "0%",
         }}
         whileInView={{
-          // width: "100%",
           width: "fit-content",
         }}
         transition={{
           duration: 2,
-          ease: "linear",
+          ease: "easeInOut",
           delay: 1,
         }}>
                <div
-          className="font-bold whitespace-normal sm:whitespace-nowrap break-words"
-          style={{
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
-          }}>
+          className="font-bold whitespace-normal sm:whitespace-nowrap"
+          >
           {renderWords()}{" "}
         </div>{" "}
       </motion.div>
@@ -147,7 +142,6 @@ export const TypewriterEffectSmooth = ({
         }}
         transition={{
           duration: 0.8,
-
           repeat: Infinity,
           repeatType: "reverse",
         }}

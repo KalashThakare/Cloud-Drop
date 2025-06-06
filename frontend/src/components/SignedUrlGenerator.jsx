@@ -180,8 +180,8 @@ export default function SignedUrlGenerator() {
   };
 
   return (
-    <div className="w-full max-w-6xl min-h-[calc(100vh-2rem)] flex justify-center items-center">
-      <div className="w-full h-fit sm:h-[86.5vh] md:h-fit flex flex-col justify-center items-center bg-zinc-900 border border-zinc-700 rounded-2xl shadow-xl p-3 xs:p-4 sm:p-5 md:p-6 transition-all duration-300">
+    <div className="w-full max-w-6xl min-h-[calc(100vh-2rem)] flex justify-center items-start py-16 md:items-center">
+      <div className="w-full h-fit flex flex-col justify-center items-center bg-zinc-900 border border-zinc-700 rounded-2xl shadow-xl p-3 xs:p-4 sm:p-5 md:p-6 transition-all duration-300">
         {/* Show Right Panel (Form) if not showing left panel */}
         {!showLeftPanel && (
           <div className="w-full h-full flex flex-col gap-3 xs:gap-4 sm:gap-5 md:gap-6 mx-auto animate-fade-in">

@@ -107,6 +107,18 @@ export default function Auth() {
     setResendTimer(60);
   };
 
+  useEffect(() => {
+    window.history.pushState(null, '', window.location.pathname);
+    const handleBackButton = (e) => {
+      e.preventDefault();
+      router.push('/');
+    };
+    window.addEventListener('popstate', handleBackButton);
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, [router]);
+
   // Timer effect
   useEffect(() => {
     if (isOtpStep && resendTimer > 0) {
@@ -145,8 +157,8 @@ export default function Auth() {
           }}
         >
           {/* Login Form */}
-          <div className="w-1/2 h-full flex items-center">
-            <div className="w-full md:w-[400px] bg-black bg-opacity-70 p-8 rounded-lg mx-auto border border-gray-800">
+          <div className="w-1/2 h-full flex items-start md:items-center my-20 md:my-0">
+            <div className="w-full md:w-[400px] bg-black bg-opacity-70 p-8 rounded-lg md:mx-auto mx-6 border border-gray-800">
               <h2 className="text-3xl font-bold text-white text-center mb-8">
                 Welcome Back
               </h2>
