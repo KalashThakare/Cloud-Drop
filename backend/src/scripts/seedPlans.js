@@ -12,13 +12,13 @@ const seed = async () => {
     price: 341.89,
     razorpayPlanId: "plan_QabkP72GzeCBWr",
     features: [
-      "Upload up to 15 files",
-      "Generate up to 15 signed URLs",
-      "File expiration: 24–48 hours",
-      "Create up to 3 groups",
-      "Send signed URLs via verified email",
-      "Use /signedUrl command in group to share links"
-    ],
+    "Unlimited file uploads",
+    "File expiration from 1 minute",
+    "Unlimited group creation",
+    "Unlimited signed URLs",
+    "Send signed URLs via verified email",
+    "Use /signedUrl command in group to share links"
+  ],
 
     isFree: false,
   });
