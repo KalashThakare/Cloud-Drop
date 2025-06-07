@@ -316,7 +316,7 @@ export const incrementUsage = async (req, res) => {
     }
 };
 
-const createSubscription = async (userId, plan = 'free') => {
+export const createSubscription = async (userId, plan = 'free') => {
     try {
         const subscription = new Subscription({
             userId,

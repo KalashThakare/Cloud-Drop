@@ -4,6 +4,8 @@ import { getS3Client } from "../../lib/platformClient/s3.js";
 import { v4 as uuidv4 } from 'uuid';
 import { addMultipleFilesToDatabase, removeMultipleFilesFromDatabase } from "./file.Controller.js";
 import dotenv from "dotenv";
+import Subscription from "../../models/subscriptionHandler.Model.js";
+import { createSubscription } from "../Subscribtion/unifiedController.js";
 
 
 dotenv.config();
@@ -26,8 +28,8 @@ export const Upload = async (req, res) => {
         }
 
         const uploadResults = [];
-        const fileDataForDB = []; 
-        const failedUploads = []; 
+        const fileDataForDB = [];
+        const failedUploads = [];
 
         // Process each file
         for (const file of files) {
@@ -44,7 +46,7 @@ export const Upload = async (req, res) => {
                 }
 
                 const fileId = uuidv4();
-                const fileName = file.originalname; 
+                const fileName = file.originalname;
                 const filePath = `users/${userId}/${fileCategory}/${fileName}`;
 
                 // Upload to S3
@@ -103,17 +105,35 @@ export const Upload = async (req, res) => {
 
         if (!dbResult.success) {
             console.error("Database update failed:", dbResult.error);
-            
+
             // Files were uploaded to S3 but database update failed
             // You might want to implement a cleanup mechanism here
             // or handle this scenario based on your business logic
-            
+
             return res.status(207).json({ // 207 Multi-Status
                 message: "Files uploaded to S3 but database update failed",
                 uploadedFiles: uploadResults,
                 databaseError: dbResult.message,
                 warning: "Files exist in storage but may not be tracked in database"
             });
+        }
+
+        try {
+            const successfulUploads = uploadResults.length;
+
+            // Get or create subscription
+            let subscription = await Subscription.findOne({ userId });
+            if (!subscription) {
+                subscription = await createSubscription(userId);
+            }
+
+            // Increment usage directly
+            await subscription.incrementUsage('fileUpload', successfulUploads);
+
+            console.log(`Usage incremented by ${successfulUploads} for user ${userId}`);
+
+        } catch (usageError) {
+            console.error('Error incrementing usage:', usageError);
         }
 
         // Success response
@@ -140,16 +160,16 @@ export const Upload = async (req, res) => {
 
     } catch (error) {
         console.error("Error in upload controller:", error);
-        res.status(500).json({ 
+        res.status(500).json({
             message: "Error in upload controller",
-            error: error.message 
+            error: error.message
         });
     }
 };
 
 export const generateSignedUrl = async (req, res) => {
     try {
-        
+
         const { fileName, expiration, userId, bucketName } = req.body;
 
         if (!fileName || !expiration || !userId || !bucketName) {
@@ -212,31 +232,31 @@ export const generateSignedUrl = async (req, res) => {
 export const deleteMultipleFiles = async (req, res) => {
     try {
         const s3Client = await getS3Client(req);
-        
+
         console.log("req-body", req.body);
-        
+
         const { bucketName, userId, files } = req.body;
-        
+
         if (!bucketName || !userId || !files) {
-            return res.status(400).json({ 
-                message: "Missing required fields: bucketName, userId, and files are required" 
+            return res.status(400).json({
+                message: "Missing required fields: bucketName, userId, and files are required"
             });
         }
-        
+
         if (!Array.isArray(files) || files.length === 0) {
-            return res.status(400).json({ 
-                message: "Files must be a non-empty array" 
+            return res.status(400).json({
+                message: "Files must be a non-empty array"
             });
         }
-        
+
         const deletionResults = [];
         const failedDeletions = [];
         const fileIdsForDB = [];
-        
+
         for (const fileData of files) {
             try {
                 const { fileName, fileId, fileType } = fileData;
-                
+
                 if (!fileName) {
                     failedDeletions.push({
                         fileId: fileId || 'unknown',
@@ -245,7 +265,7 @@ export const deleteMultipleFiles = async (req, res) => {
                     });
                     continue;
                 }
-                
+
                 let fileCategory = 'other';
                 if (fileType) {
                     fileCategory = fileType;
@@ -253,21 +273,21 @@ export const deleteMultipleFiles = async (req, res) => {
                     const fileExtension = fileName.split('.').pop().toLowerCase();
                     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
                     const videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'];
-                    
+
                     if (imageExtensions.includes(fileExtension)) fileCategory = 'images';
                     else if (videoExtensions.includes(fileExtension)) fileCategory = 'videos';
                 }
-                
+
                 const filePath = `users/${userId}/${fileCategory}/${fileName}`;
-                
+
                 const deleteParams = {
                     Bucket: bucketName,
                     Key: filePath
                 };
-                
+
                 const command = new DeleteObjectCommand(deleteParams);
                 await s3Client.send(command);
-                
+
                 deletionResults.push({
                     fileId: fileId,
                     fileName: fileName,
@@ -275,13 +295,13 @@ export const deleteMultipleFiles = async (req, res) => {
                     fileType: fileCategory,
                     deletedAt: new Date()
                 });
-                
+
                 if (fileId) {
                     fileIdsForDB.push(fileId);
                 }
-                
+
                 console.log(`File ${fileName} deleted successfully from S3`);
-                
+
             } catch (fileError) {
                 console.error(`Failed to delete file ${fileData.fileName}:`, fileError);
                 failedDeletions.push({
@@ -291,21 +311,21 @@ export const deleteMultipleFiles = async (req, res) => {
                 });
             }
         }
-    
+
         if (deletionResults.length === 0) {
             return res.status(500).json({
                 message: "All file deletions failed",
                 failedDeletions: failedDeletions
             });
         }
-    
+
         let dbResult = { success: true };
         if (fileIdsForDB.length > 0) {
             dbResult = await removeMultipleFilesFromDatabase(userId, fileIdsForDB);
-            
+
             if (!dbResult.success) {
                 console.error("Database update failed:", dbResult.error);
-                
+
                 return res.status(207).json({
                     message: "Files deleted from S3 but database update failed",
                     deletedFiles: deletionResults,
@@ -314,7 +334,7 @@ export const deleteMultipleFiles = async (req, res) => {
                 });
             }
         }
-        
+
         const responseData = {
             message: "Files deleted successfully",
             deletedFiles: deletionResults,
@@ -327,20 +347,20 @@ export const deleteMultipleFiles = async (req, res) => {
                 lastModified: dbResult.data.lastModified
             } : null
         };
-        
+
         if (failedDeletions.length > 0) {
             responseData.failedDeletions = failedDeletions;
             responseData.message = `${deletionResults.length} files deleted successfully, ${failedDeletions.length} failed`;
         }
-        
+
         res.status(200).json(responseData);
         console.log("Delete process completed successfully");
-        
+
     } catch (error) {
         console.error("Error in delete controller:", error);
-        res.status(500).json({ 
+        res.status(500).json({
             message: "Error in delete controller",
-            error: error.message 
+            error: error.message
         });
     }
 };

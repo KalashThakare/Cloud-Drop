@@ -136,12 +136,12 @@ subscriptionSchema.methods.canPerformAction = function(action) {
 };
 
 // Increment usage counter
-subscriptionSchema.methods.incrementUsage = async function(action) {
+subscriptionSchema.methods.incrementUsage = async function(action,count=1) {
     await this.resetUsageIfNeeded();
     
     switch (action) {
         case 'fileUpload':
-            this.filesUploaded += 1;
+            this.filesUploaded += count;
             break;
         case 'signedUrl':
             this.signedUrlsGenerated += 1;
