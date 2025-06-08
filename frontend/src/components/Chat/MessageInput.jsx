@@ -4,10 +4,10 @@ import { IconLink, IconSend } from "@tabler/icons-react";
 const MessageInput = ({ selectedGroup, input, setInput, handleSend }) => {
     return (
         <div className="
-            mt-3 xs:mt-4
+            my-3 xs:my-4
             flex items-center gap-4
             border-t border-zinc-800
-            pt-3 xs:pt-4
+            py-3 xs:py-4
             bg-gradient-to-bl from-zinc-950/80 via-slate-950/80 to-zinc-950/60
             rounded-b-xl
             px-2 xs:px-4 sm:px-6

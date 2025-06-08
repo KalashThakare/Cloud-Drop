@@ -296,7 +296,7 @@ const ChatLayout = () => {
   }, []);
 
   return (
-    <div className="flex md:h-full h-[93vh] w-full text-white">
+    <div className="flex md:h-full h-[96vh] w-full text-white">
       <Sidebar
         createdGroups={createdGroups}
         memberGroups={memberGroups}

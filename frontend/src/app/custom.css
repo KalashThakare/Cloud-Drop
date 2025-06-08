@@ -1,6 +1,9 @@
 html, body {
   height: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
 }
+
 /* For 1366px */
 @media (width: 1366px) {
   html, body {
@@ -43,6 +46,33 @@ html, body {
     overflow: hidden;
   }
 }
+
+@media (min-width:203px) and (max-width: 265px) {
+  .customMediumHeight{
+    max-height: 110px;
+
+  }
+}
+
+@media (min-width:20px) and (max-width: 202px) {
+  .customSmallHeight{
+    max-height: 150px;
+  }
+}
+
+@media (min-width:266px) and (max-width: 492px) {
+  .customHeight{
+    max-height:75px;
+
+  }
+}
+
+@media (min-width:493px) and (max-width: 1023px) {
+  .customLargeHeight{
+    max-height:40px;
+  }
+}
+
 [data-scroll-container] {
   min-height: 100vh;
 }

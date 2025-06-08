@@ -1,5 +1,5 @@
 "use client";
-
+import "@/app/custom.css";
 import { cn } from "@/lib/utils";
 import { motion, stagger, useAnimate, useInView } from "motion/react";
 import { useEffect } from "react";
@@ -93,7 +93,7 @@ export const TypewriterEffectSmooth = ({
   });
   const renderWords = () => {
     return (
-      <div className="whitespace-normal sm:whitespace-nowrap">
+      <div className="whitespace-normal sm:whitespace-nowrap customMediumHeight customSmallHeight customLargeHeight customHeight sm:max-h-[75px] overflow-hidden">
         {wordsArray.map((word, idx) => {
           return (
             <div key={`word-${idx}`} className="inline-block">
@@ -118,14 +118,17 @@ export const TypewriterEffectSmooth = ({
         className="overflow-hidden pb-2"
         initial={{
           width: "0%",
+          height:"30%",
         }}
         whileInView={{
           width: "fit-content",
+          height:"100%",
         }}
+        viewport={{ once: true }}
         transition={{
           duration: 2,
           ease: "easeInOut",
-          delay: 1,
+          delay: 0.25,
         }}>
                <div
           className="font-bold whitespace-normal sm:whitespace-nowrap"
@@ -141,14 +144,14 @@ export const TypewriterEffectSmooth = ({
           opacity: 1,
         }}
         transition={{
-          duration: 0.8,
+          duration: 2,
           repeat: Infinity,
           repeatType: "reverse",
         }}
         className={cn(
           "inline-block rounded-sm w-[0.1em] h-[1em] align-middle bg-blue-500",
           cursorClassName
-        )}></motion.span>
+        )}>{" "}</motion.span>
     </div>
   );
 };

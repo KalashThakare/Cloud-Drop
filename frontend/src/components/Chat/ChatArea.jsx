@@ -70,7 +70,7 @@ const ChatArea = ({
   <div
   className="
     fixed
-    bottom-16 sm:bottom-20
+    bottom-20 sm:bottom-26
     left-1/2
     transform -translate-x-1/2
     z-50

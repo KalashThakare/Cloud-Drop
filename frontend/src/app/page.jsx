@@ -20,18 +20,24 @@ export default function Home() {
   function isDesktop() {
   if (typeof window === "undefined") return false;
   return window.innerWidth === 1920 || window.innerWidth === 2560 || window.innerWidth === 2880 || window.innerWidth === 1680 || window.innerWidth === 1440 || window.innerWidth === 1536 || window.innerWidth === 1366;
-}
+  }
+
   useEffect(() => {
-  getPlans();
   const handleAnchorClick = (e) => {
     const href = e.currentTarget.getAttribute("href");
     if (href?.startsWith("#")) {
       const el = document.querySelector(href);
+      if (el) {
+        e.preventDefault();
       if (isDesktop() && el && locoInstance.current) {
         e.preventDefault();
         locoInstance.current.scrollTo(el, { offset: 10 });
+      } else {
+        el.scrollIntoView({
+          behavior: "smooth",
+        });
       }
-    }
+    }}
   };
   const links = document.querySelectorAll('a[href^="#"]');
   links.forEach((link) => link.addEventListener("click", handleAnchorClick));
@@ -40,10 +46,17 @@ export default function Home() {
       link.removeEventListener("click", handleAnchorClick)
     );
   };
-}, [locoInstance, getPlans]);
+}, [locoInstance, isDesktop]);
+
+  // Fetch subscription plans on mount
+  useEffect(() => {
+    getPlans();
+  }, [getPlans]);
+
 
   const handleFreeClick = async () => {
     const token = localStorage.getItem("authToken");
+    window.sessionStorage.setItem('fromHome', 'true');
     if (token && isTokenValid(token)) {
       checkAuth();
       router.push("/Main?useDefault=true");
@@ -51,17 +64,6 @@ export default function Home() {
       router.push("/Auth");
     }
   };
-
-  // const handleYourClick = () => {
-  //   const token = localStorage.getItem("authToken");
-  //   const authUser = useAuthStore.getState().authUser;
-  //   if (token && isTokenValid(token) && authUser) {
-  //     router.push("/Own?useDefault=false");
-  //   } else {
-  //     localStorage.setItem("redirectAfterLogin", "/Own?useDefault=false");
-  //     router.push("/Auth");
-  //   }
-  // };
 
   const words = [
     { text: "Transform" },
@@ -202,28 +204,28 @@ export default function Home() {
           <div className="absolute top-full left-0 w-full bg-zinc-950/95 border-b border-zinc-800/50 flex flex-col items-center py-4 space-y-2 md:hidden z-50">
             <a
               href="#features"
-              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors"
+              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors w-full text-center"
               onClick={() => setNavOpen(false)}
             >
               Features
             </a>
             <a
               href="#pricing"
-              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors"
+              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors w-full text-center"
               onClick={() => setNavOpen(false)}
             >
               Pricing
             </a>
             <a
               href="#testimonials"
-              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors"
+              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors w-full text-center"
               onClick={() => setNavOpen(false)}
             >
               Testimonials
             </a>
             <a
               href="#technology"
-              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors"
+              className="text-base text-zinc-400 hover:text-cyan-400 transition-colors w-full text-center"
               onClick={() => setNavOpen(false)}
             >
               Technology
@@ -234,6 +236,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 pt-28 pb-16 sm:pt-32 sm:pb-20 md:pt-36 md:pb-24 mt-4 z-10 relative">
+        <section className="scroll-mt-[100px] md:scroll-mt-[80px]">
         <TypewriterEffectSmooth
           className="
             text-3xl
@@ -243,44 +246,18 @@ export default function Home() {
             xl:text-6xl
             font-extrabold
             leading-tight
+            mt-16
+            md:mt-10
           "
           words={words}
         />
-        <p className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-md sm:max-w-xl md:max-w-2xl mx-auto mb-8 leading-relaxed">
+        </section>
+        <p className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-md sm:max-w-xl md:max-w-2xl mx-auto mb-8 leading-relaxed mt-2">
           The ultimate cloud collaboration platform with secure file sharing,
           AI-powered insights, and seamless bucket management. Built for teams
           that demand performance and security.
         </p>
-        <div className="w-full max-w-xs sm:max-w-md justify-center">
-          {/* <button
-            onClick={handleFreeClick}
-            className="relative inline-flex h-12 overflow-hidden rounded-full p-[1px] shadow-lg shadow-zinc-900/50 focus:outline-none group transition-all hover:shadow-cyan-900/20 w-full sm:w-48"
-          >
-            <span className="absolute inset-0 overflow-hidden rounded-full">
-              <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(8,145,178,0.2)_0%,rgba(8,145,178,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            </span>
-            <div className="w-full relative flex items-center justify-center space-x-2 z-10 rounded-full bg-zinc-900 py-2 px-4 ring-1 ring-zinc-700/50 group-hover:ring-cyan-800/30 transition-all">
-              <span className="text-sm font-semibold text-white">
-                Try Free Bucket
-              </span>
-              <svg
-                fill="none"
-                height="16"
-                viewBox="0 0 24 24"
-                width="16"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10.75 8.75L14.25 12L10.75 15.25"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                />
-              </svg>
-            </div>
-            <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-cyan-800/0 via-cyan-800/70 to-cyan-800/0 transition-opacity duration-500 group-hover:opacity-40" />
-          </button> */}
+        <div className="w-full max-w-xs sm:max-w-md justify-center mt-2">
           <button
             onClick={handleFreeClick}
             className="relative inline-flex h-12 overflow-hidden rounded-full p-[1px] focus:outline-none group transition-all hover:shadow-[0_0_15px_5px_rgba(8,145,178,0.1)] w-full sm:w-48"
@@ -291,7 +268,7 @@ export default function Home() {
             </span>
           </button>
         </div>
-        <div className="flex justify-center mt-12 animate-pulse">
+        <div className="flex justify-center mt-16 animate-pulse">
           <a
             href="#features"
             className="text-zinc-500 hover:text-cyan-400 transition-colors flex flex-col items-center"
@@ -316,7 +293,7 @@ export default function Home() {
       </main>
 
       {/* Features Section */}
-      <section id="features" className="py-16 sm:py-20 relative">
+      <section id="features" className="pb-16 pt-8 sm:py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900/80 to-zinc-950 z-0">
           <div className="absolute left-1/4 top-1/4 w-1/2 h-1/2 bg-cyan-900/5 rounded-full filter blur-3xl"></div>
         </div>
@@ -450,8 +427,7 @@ export default function Home() {
       <footer className="w-full bg-zinc-900/70 py-8 sm:py-10 border-t border-zinc-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            className="grid grid-cols-2 grid-rows-2 md:grid-rows-1 md:grid-cols-3 gap-10 md:gap-8 mb-8 justify-between items-start"
-            // style={{ gridTemplateColumns: "30% 25% 45%" }}
+            className="h-fit grid grid-cols-2 grid-rows-2 md:grid-rows-1 md:grid-cols-3 gap-10 md:gap-8 mb-8 justify-between items-start"
           >
             {/* Column 1: About Us, Pricing, Policy */}
             <div className="flex flex-col gap-8 col-span-1">

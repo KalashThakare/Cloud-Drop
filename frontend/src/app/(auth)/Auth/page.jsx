@@ -45,9 +45,13 @@ export default function Auth() {
     });
     if (authUser) {
       const redirectTo =
-        localStorage.getItem("redirectAfterLogin") || "/Main?useDefault=true";
+      localStorage.getItem("redirectAfterLogin") || "/Main?useDefault=true";
+      console.log("Redirect after login:", localStorage.getItem("redirectAfterLogin"));
       localStorage.removeItem("redirectAfterLogin");
-      router.replace(redirectTo);
+      router.replace('/');
+      setTimeout(() => {
+        router.push(redirectTo);
+      }, 0);
     }
   };
 
@@ -108,16 +112,17 @@ export default function Auth() {
   };
 
   useEffect(() => {
-    window.history.pushState(null, '', window.location.pathname);
-    const handleBackButton = (e) => {
-      e.preventDefault();
-      router.push('/');
-    };
-    window.addEventListener('popstate', handleBackButton);
-    return () => {
-      window.removeEventListener('popstate', handleBackButton);
-    };
-  }, [router]);
+  const handlePopState = () => {
+    router.replace('http://localhost:3000/');
+  };
+  window.history.pushState({ page: 'auth' }, '', '/Auth');
+  // window.history.pushState(null, '', window.location.pathname);
+  window.addEventListener('popstate', handlePopState);
+  return () => {
+    window.removeEventListener('popstate', handlePopState);
+  };
+}, [router]);
+
 
   // Timer effect
   useEffect(() => {
@@ -126,6 +131,7 @@ export default function Auth() {
       return () => clearTimeout(timer);
     }
   }, [isOtpStep, resendTimer]);
+
 
   // OTP verification handler - NOW FIXED
   const handleVerifyOtp = async (otp) => {
