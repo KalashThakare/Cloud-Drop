@@ -112,7 +112,7 @@ export default function Auth() {
 
   useEffect(() => {
   const handlePopState = () => {
-    router.replace('https://clouddrop.pro/');
+    router.replace('http://localhost:3000/');
   };
   window.history.pushState({ page: 'auth' }, '', '/Auth');
   // window.history.pushState(null, '', window.location.pathname);

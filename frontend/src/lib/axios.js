@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-    baseURL:"https://backend.clouddrop.pro/api",
+    baseURL:"http://localhost:4000/api",
     withCredentials:true,
 })

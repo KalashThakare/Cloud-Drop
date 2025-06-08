@@ -206,7 +206,7 @@ const getFileTypeFromExtension = (fileName) => {
         >
           <table className="min-w-full text-sm">
             <thead className="sticky top-0 bg-zinc-900 z-10">
-              <tr className="bg-zinc-800 text-cyan-200">
+              <tr className="bg-zinc-800 text-cyan-400">
                 <th className="p-3 text-left w-10">
                   <button
                     onClick={handleSelectAll}
@@ -269,7 +269,7 @@ const getFileTypeFromExtension = (fileName) => {
                           navigator.clipboard.writeText(file.fileName);
                           toast.success("Filename copied!");
                         }}
-                        className="text-blue-400 underline hover:text-blue-500 hover:underline focus:outline-none transition"
+                        className="text-cyan-200 underline hover:text-cyan-400 hover:underline focus:outline-none transition"
                         title="Click to copy filename"
                       >
                         {file.fileName}
