@@ -46,7 +46,6 @@ export default function Auth() {
     if (authUser) {
       const redirectTo =
       localStorage.getItem("redirectAfterLogin") || "/Main?useDefault=true";
-      console.log("Redirect after login:", localStorage.getItem("redirectAfterLogin"));
       localStorage.removeItem("redirectAfterLogin");
       router.replace('/');
       setTimeout(() => {
@@ -113,7 +112,7 @@ export default function Auth() {
 
   useEffect(() => {
   const handlePopState = () => {
-    router.replace('http://localhost:3000/');
+    router.replace('https://clouddrop.pro/');
   };
   window.history.pushState({ page: 'auth' }, '', '/Auth');
   // window.history.pushState(null, '', window.location.pathname);

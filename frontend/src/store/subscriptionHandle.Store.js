@@ -59,13 +59,13 @@ export const subscriptionHandler = create((set, get) => ({
             });
 
             const data = res.data;
-            console.log("Check limits response:", data);
+            // console.log("Check limits response:", data);
             return data;
 
         } catch (error) {
             if (error.response?.status === 403) {
                 const data = error.response.data;
-                console.log("Limit reached response:", data);
+                // console.log("Limit reached response:", data);
                 return data;
             }
 
@@ -84,7 +84,7 @@ export const subscriptionHandler = create((set, get) => ({
             });
 
             const data = res.data;
-            console.log("Increment usage response:", data);
+            // console.log("Increment usage response:", data);
             // Update local usage stats if available
             const currentStats = get().usageStats;
             if (currentStats && action === "upload") {

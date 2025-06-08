@@ -90,7 +90,7 @@ const ChatLayout = () => {
   };
 
   const confirmDelete = () => {
-    console.log(selectedGroup._id);
+    // console.log(selectedGroup._id);
     deleteGroup(selectedGroup._id);
     setShowConfirm(false);
   };
@@ -179,7 +179,7 @@ const ChatLayout = () => {
         });
       }
 
-      console.log(generatedUrl);
+      // console.log(generatedUrl);
       setInput("");
     } catch (error) {
       console.error("Error generating signed URL:", error);
@@ -197,7 +197,7 @@ const ChatLayout = () => {
       selectedGroup.members.forEach((member) => {
         roles[member._id] = member.role || "";
       });
-      console.log("Initial roles:", roles);
+      // console.log("Initial roles:", roles);
       setMemberRoles(roles);
     }
   }, [selectedGroup]);
@@ -208,7 +208,7 @@ const ChatLayout = () => {
     
     if (socket) {
       const handleRoleUpdate = (data) => {
-        console.log("Received role update:", data);
+        // console.log("Received role update:", data);
         
         // Update local state
         setMemberRoles(prev => ({

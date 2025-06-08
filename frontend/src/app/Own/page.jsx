@@ -17,7 +17,7 @@ export default function OnboardingFlow() {
   };
 
   const handleComplete = (roleArn) => {
-    console.log("Onboarding Complete. Role ARN:", roleArn);
+    // console.log("Onboarding Complete. Role ARN:", roleArn);
     toast.success("Bucket Connection Complete!");
     // Handle completion logic here
   };

@@ -127,7 +127,7 @@ function UploadForm() {
       }
     } catch (error) {
       // Handle any unexpected errors from checkLimits
-      console.error("Error checking limits:", error);
+      // console.error("Error checking limits:", error);
       toast.error("Failed to check usage limits. Please try again.");
       return;
     }

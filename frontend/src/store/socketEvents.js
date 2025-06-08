@@ -81,17 +81,17 @@ export const useSocketEventStore = create((set, get) => ({
         socket.off("groupDeleted");
 
         socket.on("newGroupCreated", (groupData) => {
-            console.log("New group created:", groupData);
+            // console.log("New group created:", groupData);
             groupFunc.getState().addGroup(groupData);
         });
 
         socket.on("groupUpdated", (updatedGroup) => {
-            console.log("Group updated:", updatedGroup);
+            // console.log("Group updated:", updatedGroup);
             groupFunc.getState().updateGroup(updatedGroup);
         });
 
         socket.on("groupDeleted", (data) => {
-            console.log("Group deleted:", data);
+            // console.log("Group deleted:", data);
             const groupId = data.groupId || data;
             groupFunc.getState().removeGroup(groupId);
 
@@ -114,11 +114,11 @@ export const useSocketEventStore = create((set, get) => ({
     subscribeToUserEvents: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) {
-        console.log("❌ No socket available for user events");
+        // console.log("❌ No socket available for user events");
         return;
     }
 
-    console.log("🔄 Subscribing to user events...");
+    // console.log("🔄 Subscribing to user events...");
 
     // Remove existing listeners first
     socket.off('userAddedToGroup');
@@ -126,18 +126,18 @@ export const useSocketEventStore = create((set, get) => ({
     socket.off("roleUpdated");
 
     socket.on('userAddedToGroup', ({ groupId, user }) => {
-        console.log("✅ RECEIVED userAddedToGroup:", { groupId, user });
+        // console.log("✅ RECEIVED userAddedToGroup:", { groupId, user });
         groupFunc.getState().addUserToGroup(groupId, user);
     });
 
     socket.on("userRemovedFromGroup", ({ groupId, userId }) => {
-        console.log("✅ RECEIVED userRemovedFromGroup:", { groupId, userId });
+        // console.log("✅ RECEIVED userRemovedFromGroup:", { groupId, userId });
         groupFunc.getState().removeUserFromGroup(groupId, userId);
 
         // Check if current user was removed
         const currentUser = useAuthStore.getState().user;
         if (userId === currentUser?._id) {
-            console.log("🚨 Current user was removed from group");
+            // console.log("🚨 Current user was removed from group");
             if (get().activeGroupId === groupId) {
                 get().clearActiveChat();
                 chatFunc.getState().clearSelectedGroup();
@@ -146,11 +146,11 @@ export const useSocketEventStore = create((set, get) => ({
     });
 
     socket.on("roleUpdated", ({ groupId, memberId, role, updatedMember }) => {
-        console.log("✅ RECEIVED roleUpdated:", { groupId, memberId, role, updatedMember });
+        // console.log("✅ RECEIVED roleUpdated:", { groupId, memberId, role, updatedMember });
         groupFunc.getState().updateMemberRole(groupId, memberId, role);
     });
 
-    console.log("✅ User events subscribed successfully");
+    // console.log("✅ User events subscribed successfully");
 },
 
     unsubscribeFromUserEvents: () => {
@@ -167,11 +167,11 @@ export const useSocketEventStore = create((set, get) => ({
         if (!socket) return;
 
         socket.on("connect", () => {
-            console.log("Socket connected");
+            // console.log("Socket connected");
         });
 
         socket.on("disconnect", () => {
-            console.log("Socket disconnected");
+            // console.log("Socket disconnected");
         });
 
         get().subscribeToEvents();
@@ -197,12 +197,12 @@ export const useSocketEventStore = create((set, get) => ({
     testSocketConnection: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) {
-        console.log("❌ No socket connection");
+        // console.log("❌ No socket connection");
         return false;
     }
     
-    console.log("🔍 Socket connected:", socket.connected);
-    console.log("🔍 Socket ID:", socket.id);
+    // console.log("🔍 Socket connected:", socket.connected);
+    // console.log("🔍 Socket ID:", socket.id);
     
     // Test emit
     socket.emit('test', 'Hello from frontend');

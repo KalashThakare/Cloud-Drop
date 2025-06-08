@@ -58,7 +58,6 @@ function Main() {
   const deleteBucket = bucketFunc((state) => state.deleteBucket);
   const addBucket = bucketFunc((state) => state.addBucket);
   
-console.log("viewHistory:", viewHistory);
 const changeView = (newView) => {
   isNavigating.current = true;
   
@@ -70,7 +69,6 @@ const changeView = (newView) => {
   }
   
   window.history.pushState({ view: newView }, "");
-  console.log("Current view history:", viewHistory);
   setActiveView(newView);
   setTimeout(() => isNavigating.current = false, 100);
 };
@@ -90,19 +88,6 @@ useEffect(() => {
 
 useEffect(() => {
   const handlePopState = (event) => {
-  //   const targetView = event.state?.view || "home";
-  //   // Always maintain home as our root view
-  //   if (viewHistory.current.length <= 1 && targetView === "home") {
-  //     // If we're at the root, let browser handle back normally
-  //     if (window.history.state?.idx > 0) {
-  //       router.back();
-  //       console.log("Back to home, used first inner if");
-  //     } else {
-  //       router.replace("http://localhost:3000/");
-  //       console.log("No previous view, redirecting to home used first inner else");
-  //     }
-  //     return;
-  //   } 
     if (isNavigating.current){ return;}
     if (viewHistory.current.length > 1) {
       viewHistory.current.pop();
@@ -110,13 +95,10 @@ useEffect(() => {
       setActiveView(prevView);
     } else {
       router.replace("/");
-      console.log("No previous view, redirecting to home");
     }
-    console.log("Pop state triggered, current view history:", viewHistory);
   };
 
   window.addEventListener('popstate', handlePopState);
-  // handlePopState({ state: window.history.state });
   return () => window.removeEventListener('popstate', handlePopState);
 }, [router]);
 
@@ -282,7 +264,7 @@ useEffect(() => {
       } else {
         toast.error(getErrorMessage(error, "Failed to connect bucket"));
       }
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -298,7 +280,7 @@ useEffect(() => {
       } else {
         toast.error(getErrorMessage(error, "Failed to delete bucket"));
       }
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -327,7 +309,7 @@ useEffect(() => {
       } else {
         toast.error(getErrorMessage(error, "Failed to add bucket"));
       }
-      console.error(error);
+      // console.error(error);
     }
   };
 

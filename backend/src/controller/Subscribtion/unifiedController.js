@@ -27,7 +27,6 @@ export const subscribeToPlan = async (req, res) => {
         if (!userId || !planId) {
             return res.status(400).json({
                 success: false,
-                // message: "userId and planId are required"
                 message: "Please Login to Subscribe"
             });
         }

@@ -108,13 +108,6 @@ export default function FileManagerPage() {
     }
   };
 
-  // Remove single file
-  // const handleRemoveFile = (fileId) => {
-  //   console.log("Remove file with id:", fileId);
-    
-  // };
-
-
 const handleRemoveSelected =async () => {
   if (selectedFiles.length === 0) {
     toast.warning("No files selected.");
@@ -129,7 +122,6 @@ const handleRemoveSelected =async () => {
     fileType: file.mimeType ? getFileTypeFromMimeType(file.mimeType) : getFileTypeFromExtension(file.fileName)
   }));
   
-  console.log("Remove files with details:", selectedFileDetails);
 
   deleteFiles({
     userId,
@@ -230,11 +222,9 @@ const getFileTypeFromExtension = (fileName) => {
                   </button>
                 </th>
                 <th className="p-3 text-left">File Name</th>
-                {/* <th className="p-3 text-left">Original Name</th> */}
                 <th className="p-3 text-left">Size</th>
                 <th className="p-3 text-left">Type</th>
                 <th className="p-3 text-left">Uploaded At</th>
-                {/* <th className="p-3 text-left">Actions</th> */}
               </tr>
             </thead>
             <tbody>
@@ -273,8 +263,18 @@ const getFileTypeFromExtension = (fileName) => {
                         )}
                       </button>
                     </td>
-                    <td className="p-3">{file.fileName}</td>
-                    {/* <td className="p-3">{file.originalName}</td> */}
+                    <td className="p-3">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(file.fileName);
+                          toast.success("Filename copied!");
+                        }}
+                        className="text-blue-400 underline hover:text-blue-500 hover:underline focus:outline-none transition"
+                        title="Click to copy filename"
+                      >
+                        {file.fileName}
+                      </button>
+                    </td>
                     <td className="p-3">
                       {(file.fileSize / 1024).toFixed(2)} KB
                     </td>
@@ -282,15 +282,6 @@ const getFileTypeFromExtension = (fileName) => {
                     <td className="p-3">
                       {new Date(file.uploadedAt).toLocaleString()}
                     </td>
-                    {/* <td className="p-3 flex gap-2">
-                      <button
-                        className="p-2 bg-red-700 hover:bg-red-600 rounded text-white"
-                        onClick={() => handleRemoveFile(file.fileId)}
-                        title="Remove"
-                      >
-                        <FiTrash2 />
-                      </button>
-                    </td> */}
                   </tr>
                 ))
               )}

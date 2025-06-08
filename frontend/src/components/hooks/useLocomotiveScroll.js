@@ -21,7 +21,7 @@ export function useLocomotiveScroll() {
           smooth: true,
         });
         locoInstance.current = scroll;
-        console.log("Locomotive Scroll initialized", scroll);
+        // console.log("Locomotive Scroll initialized", scroll);
 
         // Update after images/content load to fix footer issue
         timeout = setTimeout(() => {

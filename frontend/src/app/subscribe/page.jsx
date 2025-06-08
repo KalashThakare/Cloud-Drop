@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import "@/app/globals.css";
+import { set } from "lodash";
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px);}
@@ -225,16 +226,20 @@ const Subscribe = ({handleFreeClick}) => {
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
   const router = useRouter();
+  const [value, setValue] = useState("");
 
-  // console.log(plans);
 
-  const handleClick=(planId)=>{
+  const handleClick=async(planId)=>{
     if(planId === "6837e385792da421d38c9d95"){
+      setValue("free");
+      await new Promise(resolve => setTimeout(resolve, 1000));
       router.push("/Main?useDefault=true");
       toast.success("You are now subscribed to the Free Plan! but features are limited. Upgrade to Premium for more features.");
     } else {
-      console.log("Premium plan selected");
+      setValue("premium");
+      await new Promise(resolve => setTimeout(resolve, 4000));
       subscribe({userId,planId,router});
+      setValue("");
     }
   }
 
@@ -275,7 +280,10 @@ const Subscribe = ({handleFreeClick}) => {
                 )}
               </FeatureList>
               <SelectButton onClick={()=>handleClick(pkg._id)} highlight={!pkg.isFree ? "true" : undefined}>
-                {pkg.isFree ? "Start Free" : "Subscribe"}
+                {pkg.isFree ? 
+                (value !== "free" ? "Start Free" : "Activating.....") : 
+                (value === "premium" ? "Upgrading....." : "Subscribe") 
+                }
               </SelectButton>
             </PackageCard>
           ))}

@@ -40,7 +40,7 @@ export const subscriptionStore = create((set, get) => ({
         planId,
       });
       const data = res.data;
-      console.log(data)
+      // console.log(data)
       if (data.isFree) {
         toast.success("Subscribed to free plan successfully!");
         return;
@@ -129,7 +129,7 @@ export const subscriptionStore = create((set, get) => ({
         toast.error("Payment verification failed. Please contact support.");
       }
     } catch (error) {
-      console.log("Payment verification error:", error);
+      // console.log("Payment verification error:", error);
       const status = error?.response?.status;
       if (status === 400) {
         toast.warning(getErrorMessage(error, "Payment verification failed"));
@@ -149,7 +149,7 @@ export const subscriptionStore = create((set, get) => ({
       const res = await axiosInstance.get(`/subscription/status/${userId}`);
       return res.data;
     } catch (error) {
-      console.log("getUserSubscription error:", error);
+      // console.log("getUserSubscription error:", error);
       const status = error?.response?.status;
       if (status === 404) {
         toast.warning(getErrorMessage(error, "No subscription found"));

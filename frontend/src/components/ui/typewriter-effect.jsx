@@ -9,7 +9,6 @@ export const TypewriterEffect = ({
   className,
   cursorClassName
 }) => {
-  // split text inside of words into array of characters
   const wordsArray = words.map((word) => {
     return {
       ...word,
@@ -128,7 +127,7 @@ export const TypewriterEffectSmooth = ({
         transition={{
           duration: 2,
           ease: "easeInOut",
-          delay: 0.25,
+          delay: 0,
         }}>
                <div
           className="font-bold whitespace-normal sm:whitespace-nowrap"
@@ -144,7 +143,7 @@ export const TypewriterEffectSmooth = ({
           opacity: 1,
         }}
         transition={{
-          duration: 2,
+          duration: 0.5,
           repeat: Infinity,
           repeatType: "reverse",
         }}

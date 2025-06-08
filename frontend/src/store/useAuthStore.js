@@ -20,7 +20,7 @@ export const useAuthStore = create(
         const { authUser, socket } = get();
         if (!authUser || socket?.connected) return;
 
-        const newSocket = io("http://localhost:4000", {
+        const newSocket = io("https://backend.clouddrop.pro", {
           query: { userId: authUser._id },
           reconnection: true,
           reconnectionAttempts: 5,

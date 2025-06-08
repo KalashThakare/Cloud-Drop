@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { CheckCircle, Star, Crown } from "lucide-react";
 import { subscriptionStore } from "@/store/subscriptionStore.js";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-// import { r } from "framer-motion/dist/types.d-CQt5spQA";
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px);}
@@ -222,14 +221,18 @@ const SubscriptionPlans = ({handleFreeClick}) => {
   const authUser = useAuthStore((state)=>state.authUser)
   const userId = authUser?._id;
   const router = useRouter();
-  console.log(plans);
+  const [value, setValue] = useState("");
 
-  const handleClick=(planId)=>{
+  const handleClick=async (planId)=>{
     if(planId === "6837e385792da421d38c9d95"){
+      setValue("free");
+      await new Promise(resolve => setTimeout(resolve, 1000));
       handleFreeClick();
     } else {
-      // console.log("Premium plan selected");
+      setValue("premium");
       subscribe({userId,planId,router});
+      await new Promise(resolve => setTimeout(resolve, 4000)); 
+      setValue("")
     }
   }
 
@@ -270,7 +273,10 @@ const SubscriptionPlans = ({handleFreeClick}) => {
                 )}
               </FeatureList>
               <SelectButton onClick={()=>handleClick(pkg._id)} highlight={!pkg.isFree ? "true" : undefined}>
-                {pkg.isFree ? "Start Free" : "Subscribe"}
+                {pkg.isFree ? 
+                (value !== "free" ? "Start Free" : "Activating.....") : 
+                (value === "premium" ? "Upgrading....." : "Subscribe") 
+                }
               </SelectButton>
             </PackageCard>
           ))}

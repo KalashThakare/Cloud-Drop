@@ -18,7 +18,7 @@ export const fileManagementStore = create((set,get)=>({
         } catch (error) {
 
             set({files:[]});
-            console.log("error in fetching files store",error);
+            // console.log("error in fetching files store",error);
             
         }
     },
@@ -34,7 +34,7 @@ export const fileManagementStore = create((set,get)=>({
         } catch (error) {
 
             set({fileStats:null});
-            console.log("error fetching file stats",error);
+            // console.log("error fetching file stats",error);
             
         }
     },
