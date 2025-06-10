@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 import { subscriptionHandler } from "@/store/subscriptionHandle.Store";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -17,8 +17,10 @@ const CreateGroupInput = ({
   const authUser = useAuthStore((s) => s.authUser);
   const userId = authUser?._id;
   const router = useRouter();
+  const [create, setCreate] = useState(false);
 
   const handleCreateGroupWithLimit = async () => {
+    setCreate(true);
     // 1. Check usage limit
     try {
       const result = await checkLimits(userId, "groupCreation");
@@ -88,7 +90,7 @@ const CreateGroupInput = ({
               className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 xs:py-2.5 sm:py-3 rounded-lg transition text-base xs:text-lg"
               style={{ minHeight: "2.5rem" }}
             >
-              Create
+              { create ? "Creating..." : "Create" }
             </button>
             <button
               onClick={() => {

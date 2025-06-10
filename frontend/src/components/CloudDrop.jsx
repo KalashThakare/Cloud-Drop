@@ -86,6 +86,7 @@ function UploadForm() {
       return;
     }
 
+    setIsUploading(true);
     // 1. Check usage limit
 
     try {
@@ -132,7 +133,6 @@ function UploadForm() {
       return;
     }
 
-
     const formData = new FormData();
     formData.append("bucketName", selectedBucket);
     formData.append("userId", currentUserId);
@@ -142,8 +142,6 @@ function UploadForm() {
       });
       formData.append("images", renamedFile);
     });
-
-    setIsUploading(true);
 
     try {
       setProgress(1);
@@ -233,7 +231,7 @@ function UploadForm() {
               }`}
           >
             <label className="text-sm sm:text-base text-zinc-400 font-medium">
-              Upload Image
+              Upload Files
               <input
                 ref={fileInputRef}
                 onChange={handleFileChange}
