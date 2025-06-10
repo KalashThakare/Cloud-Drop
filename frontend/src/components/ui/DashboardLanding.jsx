@@ -74,22 +74,23 @@ const DashboardLanding = () => {
             <i className="lucide lucide-rocket" /> Getting Started
           </h4>
           <ul className="list-disc pl-4 xs:pl-5 text-zinc-400 text-sm xs:text-md space-y-1">
-            <li>
-              Go to <strong>File Upload</strong> to start uploading your files.
-            </li>
-            <li>
-              Use <strong>Signed URL</strong> to generate secure, temporary
-              links.
-            </li>
-            <li>
-              Switch between <strong>Platform</strong> and{" "}
-              <strong>Personal Buckets</strong>.
-            </li>
-            <li>
-              Head into <strong>Chat Rooms</strong> and collaborate with your
-              team.
-            </li>
-          </ul>
+  <li>
+    Click on the <strong>Cloud-Drop</strong> tab to upload your files.
+  </li>
+  <li>
+    Navigate to <strong>File Manager</strong> to copy the uploaded file name.
+  </li>
+  <li>
+    Go to <strong>Generate Signed URL</strong>, paste the file name, set the expiration time, and create a secure, temporary link.
+  </li>
+  <li>
+    You can send the signed URL directly to an email. A verification email is sent first—once verified, the signed link is delivered.
+  </li>
+  <li>
+    Use <strong>Chat Rooms</strong> to create teams, collaborate, and securely share files in real time.
+  </li>
+</ul>
+
         </div>
         </div>
       </div>

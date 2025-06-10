@@ -103,6 +103,7 @@ export default function FileManagerPage() {
   const handleSelectAll = () => {
     if (selectedFiles.length === files.length) {
       setSelectedFiles([]);
+      console.log(selectedFiles)
     } else {
       setSelectedFiles(files.map((file) => file.fileId));
     }

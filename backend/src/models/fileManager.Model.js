@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const fileInfoSchema = new mongoose.Schema({
     fileId: {
         type: String,
-        required: true,
-        unique: true 
+        required: true
+        // Remove unique: true from here
     },
     fileName: {
         type: String,
@@ -48,6 +48,14 @@ const filesSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const fileSchema = new mongoose.model("FileSchema",filesSchema);
+// Create a compound index for better performance and partial uniqueness
+filesSchema.index({ 
+    "uploadedFiles.fileId": 1 
+}, { 
+    sparse: true,
+    background: true 
+});
+
+const fileSchema = mongoose.model("FileSchema", filesSchema);
 
 export default fileSchema;
