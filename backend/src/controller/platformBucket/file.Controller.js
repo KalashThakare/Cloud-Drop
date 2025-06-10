@@ -150,9 +150,19 @@ export const removeMultipleFilesFromDatabase = async (userId, fileIds) => {
             };
         }
 
+        // Filter out null/undefined values
+        const validFileIds = fileIds.filter(id => id !== null && id !== undefined && id !== '');
+        
+        if (validFileIds.length === 0) {
+            return {
+                success: false,
+                message: 'No valid file IDs provided'
+            };
+        }
+
         // Get user files to calculate total size to remove
         const userFiles = await fileSchema.findOne({ userId });
-        if (!userFiles) {
+        if (!userFiles || !userFiles.uploadedFiles) {
             return {
                 success: false,
                 message: 'User files not found'
@@ -160,7 +170,7 @@ export const removeMultipleFilesFromDatabase = async (userId, fileIds) => {
         }
 
         const filesToRemove = userFiles.uploadedFiles.filter(file => 
-            fileIds.includes(file.fileId)
+            validFileIds.includes(file.fileId)
         );
 
         if (filesToRemove.length === 0) {
@@ -170,30 +180,71 @@ export const removeMultipleFilesFromDatabase = async (userId, fileIds) => {
             };
         }
 
-        const totalSizeToRemove = filesToRemove.reduce((sum, file) => sum + file.fileSize, 0);
+        const totalSizeToRemove = filesToRemove.reduce((sum, file) => sum + (file.fileSize || 0), 0);
 
-        const result = await fileSchema.findOneAndUpdate(
-            { userId },
-            {
-                $pull: { uploadedFiles: { fileId: { $in: fileIds } } },
-                $inc: { 
-                    totalFiles: -filesToRemove.length,
-                    totalSize: -totalSizeToRemove
-                },
-                $set: { lastModified: new Date() }
-            },
-            { new: true }
+        // Check if we're deleting all files
+        const remainingFiles = userFiles.uploadedFiles.filter(file => 
+            !validFileIds.includes(file.fileId)
         );
+
+        let result;
+
+        if (remainingFiles.length === 0) {
+            // Deleting ALL files - use $set to avoid the unique index issue
+            result = await fileSchema.findOneAndUpdate(
+                { userId },
+                {
+                    $set: {
+                        uploadedFiles: [],
+                        totalFiles: 0,
+                        totalSize: 0,
+                        lastModified: new Date()
+                    }
+                },
+                { new: true }
+            );
+        } else {
+            // Use array replacement approach to avoid $pull issues with unique index
+            const newTotalFiles = remainingFiles.length;
+            const newTotalSize = remainingFiles.reduce((sum, file) => sum + (file.fileSize || 0), 0);
+
+            result = await fileSchema.findOneAndUpdate(
+                { userId },
+                {
+                    $set: {
+                        uploadedFiles: remainingFiles,
+                        totalFiles: newTotalFiles,
+                        totalSize: newTotalSize,
+                        lastModified: new Date()
+                    }
+                },
+                { new: true }
+            );
+        }
 
         return {
             success: true,
             data: result,
             filesRemoved: filesToRemove.length,
             totalSizeRemoved: totalSizeToRemove,
+            remainingFiles: remainingFiles.length,
+            deletedAllFiles: remainingFiles.length === 0,
             message: `${filesToRemove.length} files removed successfully`
         };
+
     } catch (error) {
         console.error('Error removing multiple files from database:', error);
+        
+        // Handle specific duplicate key error
+        if (error.code === 11000 && error.message.includes('uploadedFiles.fileId')) {
+            return {
+                success: false,
+                error: error.message,
+                message: 'Database constraint error during file deletion. Please remove the unique index on uploadedFiles.fileId',
+                errorType: 'DUPLICATE_KEY'
+            };
+        }
+
         return {
             success: false,
             error: error.message,
