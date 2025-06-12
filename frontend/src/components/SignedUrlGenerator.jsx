@@ -119,17 +119,27 @@ export default function SignedUrlGenerator() {
       .filter((email) => email.length > 0);
 
     // Simple email validation (optional, for better UX)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (
-      emailArray.length === 0 ||
-      !emailArray.every((email) => emailRegex.test(email))
-    ) {
-      toast.warning(
-        "Please enter valid email address(es), separated by commas."
-      );
-      return;
-    }
+    if (emailArray.length === 0) {
+    toast.warning("Please enter valid email address(es), separated by commas.");
+    return;
+  }
 
+  // Check email count limit first
+  if (emailArray.length > 4) {
+    toast.warning("Number of emails should be less than 5.");
+    return;
+  }
+
+  // Simple email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const invalidEmails = emailArray.filter(email => !emailRegex.test(email));
+  
+  if (invalidEmails.length > 0) {
+    toast.warning(
+      `Invalid email address(es): ${invalidEmails.join(", ")}. Please enter valid email addresses separated by commas.`
+    );
+    return;
+  }
     const fileExtension = fileName.split(".").pop().toLowerCase();
     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
     const videoExtensions = ["mp4", "mov", "avi", "wmv", "flv", "webm", "mkv"];
