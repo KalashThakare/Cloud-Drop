@@ -70,6 +70,7 @@ export default function Home() {
     { text: "Your", className: "text-cyan-500/80 dark:text-cyan-400/80" },
     { text: "Cloud" },
     { text: "Workflow", className: "text-cyan-500/80 dark:text-cyan-400/80" },
+    { text: " "}
   ];
 
   // Enhanced features for CloudDrop
